@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, HostListener, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -21,6 +21,7 @@ export class Navbar {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly menuOpen = signal(false);
+  readonly profileDropdownOpen = signal(false);
   readonly currentPath = signal(this.router.url);
 
   readonly isAuthenticated = computed(() => !!this.authSession.session()?.user?.email);
@@ -46,6 +47,10 @@ export class Navbar {
   readonly displayName = computed(() => {
     const user = this.authSession.getUser();
     return user?.fullName?.trim() || user?.username?.trim() || user?.email?.split('@')[0] || 'Usuario';
+  });
+  readonly userHandle = computed(() => {
+    const user = this.authSession.getUser();
+    return user?.username ? `@${user.username}` : user?.email?.split('@')[0] || '';
   });
   readonly userInitials = computed(() => {
     const name = this.displayName();
@@ -75,6 +80,16 @@ export class Navbar {
 
   closeMenu(): void {
     this.menuOpen.set(false);
+  }
+
+  toggleProfileDropdown(event: MouseEvent): void {
+    event.stopPropagation();
+    this.profileDropdownOpen.update(v => !v);
+  }
+
+  @HostListener('document:click')
+  closeProfileDropdown(): void {
+    this.profileDropdownOpen.set(false);
   }
 
   signOut(): void {
