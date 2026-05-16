@@ -132,11 +132,11 @@ function resolveRoles(payload: Record<string, unknown>, nestedUser: Record<strin
   if (Array.isArray(roles)) {
     return roles
       .filter((role): role is string => typeof role === 'string' && !!role.trim())
-      .map((role) => normalizeRoleLabel(role));
+      .map((role) => role.trim().toUpperCase());
   }
 
   const role = getString(payload, 'role') || getString(nestedUser, 'role');
-  return role ? [normalizeRoleLabel(role)] : undefined;
+  return role ? [role.trim().toUpperCase()] : undefined;
 }
 
 function normalizeRoleLabel(role: string): string {

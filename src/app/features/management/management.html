@@ -1,0 +1,53 @@
+<div class="management-layout">
+  <aside class="management-sidebar">
+    <div class="sidebar-header">
+      <div class="logo-container">
+        <span class="material-symbols-outlined logo-icon">Hub</span>
+        <div class="logo-text">
+          <span class="text-white font-black tracking-tighter">NEXORA</span>
+          <span class="text-brand-red text-[10px] font-bold tracking-widest block -mt-1">ADMIN</span>
+        </div>
+      </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+      @for (item of filterMenuItems(); track item.path) {
+        <a [routerLink]="item.path" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon material-symbols-outlined">{{ item.icon }}</span>
+          <span class="nav-label">{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+    
+    <div class="sidebar-footer">
+      <a routerLink="/" class="back-link">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Volver al Sitio
+      </a>
+    </div>
+  </aside>
+  
+  <main class="management-content">
+    <header class="content-header">
+      <div class="header-breadcrumb">
+        <span>Gestión</span>
+        <span class="separator">/</span>
+        <span class="current">Dashboard</span>
+      </div>
+      
+      <div class="header-user">
+        <div class="user-info">
+          <span class="user-name">{{ permissionService.user()?.fullName }}</span>
+          <span class="user-role">{{ permissionService.isAdmin() ? 'Administrador' : 'Oficial' }}</span>
+        </div>
+        <div class="user-avatar">
+          {{ permissionService.user()?.fullName?.charAt(0) || 'A' }}
+        </div>
+      </div>
+    </header>
+    
+    <section class="content-body">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+</div>

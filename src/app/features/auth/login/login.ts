@@ -11,6 +11,8 @@ import { LOADING_MESSAGES } from '../../../shared/constants/loading-messages';
 import { AuthApiService } from '../services/auth-api.service';
 import { normalizeEmail } from '../../../utils/email-normalization.util';
 
+import { PermissionService } from '../../../core/services/permission.service';
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -39,7 +41,8 @@ export class Login {
     private readonly authApi: AuthApiService,
     private readonly supabaseAuth: SupabaseAuthService,
     private readonly toastr: ToastrService,
-    private readonly authSession: AuthSession
+    private readonly authSession: AuthSession,
+    private readonly permissionService: PermissionService
   ) { }
 
   goToSignUp(): void {
@@ -120,14 +123,22 @@ export class Login {
         this.rememberMe
       );
 
-      if (response.user?.profileComplete === false) {
+      const isManagementUser = this.permissionService.isOfficialOrAdmin();
+
+      if (response.user?.profileComplete === false && !isManagementUser) {
         this.toastr.info('Completa tu perfil academico para continuar.', 'Perfil incompleto');
         this.router.navigate(['/register']);
         return;
       }
 
       this.toastr.success('Inicio de sesión exitoso.', 'Bienvenido');
-      this.router.navigate(['/feed']);
+      
+      // Prioritize management dashboard for admins and officials
+      if (isManagementUser) {
+        this.router.navigate(['/management']);
+      } else {
+        this.router.navigate(['/feed']);
+      }
     } catch (error: any) {
       if (sessionStarted) {
         this.authSession.clear();

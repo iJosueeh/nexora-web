@@ -1,0 +1,25 @@
+<div class="form-shell-overlay" (click)="onCancel.emit()">
+  <div class="form-shell-card" (click)="$event.stopPropagation()">
+    <header class="form-shell-header">
+      <h2>{{ title() }}</h2>
+      <button class="close-btn" (click)="onCancel.emit()">×</button>
+    </header>
+    
+    <main class="form-shell-content">
+      <ng-content></ng-content>
+    </main>
+    
+    <footer class="form-shell-footer">
+      <button class="nexora-btn btn-secondary" [disabled]="loading()" (click)="onCancel.emit()">
+        {{ cancelLabel() }}
+      </button>
+      <button class="nexora-btn btn-primary" [disabled]="loading()" (click)="onSave.emit()">
+        @if (loading()) {
+          <span class="spinner"></span>
+        } @else {
+          {{ saveLabel() }}
+        }
+      </button>
+    </footer>
+  </div>
+</div>
