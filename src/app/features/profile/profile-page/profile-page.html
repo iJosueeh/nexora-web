@@ -125,6 +125,15 @@
                       {{ shareLabel() }}
                     </button>
                   }
+                  @if (isOwnProfile()) {
+                    <button
+                      type="button"
+                      (click)="goToEditProfile($event)"
+                      class="rounded-full border border-white/12 bg-white/6 px-5 py-2.5 text-sm font-semibold text-[#e8eaf0] transition-colors hover:bg-white/10"
+                    >
+                      Editar perfil
+                    </button>
+                  }
                   @if (canFollow()) {
                     <button
                       type="button"
