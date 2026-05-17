@@ -1,3 +1,26 @@
 :host {
   display: block;
 }
+
+.author-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.author-avatar-link {
+  display: block;
+  transition: transform 0.2s ease-in-out;
+}
+
+.author-avatar-link:hover {
+  transform: scale(1.05);
+}
+
+.author-name-link {
+  transition: color 0.2s ease-in-out;
+}
+
+.author-name-link:hover {
+  color: #ffffff;
+}

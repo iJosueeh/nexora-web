@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal, OnInit, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Apollo } from 'apollo-angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Post } from '../../../../interfaces/feed';
@@ -9,7 +10,7 @@ import { FeedInteractionService } from '../../services/feed-interaction.service'
 @Component({
 	selector: 'app-post-card',
 	standalone: true,
-	imports: [CommonModule],
+	imports: [CommonModule, RouterLink],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	host: {
 		class: 'block'

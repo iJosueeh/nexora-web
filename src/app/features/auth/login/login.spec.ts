@@ -8,6 +8,7 @@ import { SupabaseAuthService } from '../../../core/services/supabase-auth.servic
 import { AuthApiService } from '../services/auth-api.service';
 import { AuthSession } from '../../../core/services/auth-session';
 import { of, throwError } from 'rxjs';
+import { PermissionService } from '../../../core/services/permission.service';
 
 describe('Login', () => {
   let component: Login;
@@ -15,6 +16,7 @@ describe('Login', () => {
   let supabaseAuthSpy: any;
   let authApiSpy: any;
   let authSessionSpy: any;
+  let permissionServiceSpy: any;
   let router: Router;
   let toastrSpy: any;
 
@@ -36,6 +38,10 @@ describe('Login', () => {
       clear: vi.fn(),
     };
 
+    permissionServiceSpy = {
+      isOfficialOrAdmin: vi.fn().mockReturnValue(false),
+    };
+
     toastrSpy = {
       success: vi.fn(),
       error: vi.fn(),
@@ -52,6 +58,7 @@ describe('Login', () => {
         { provide: SupabaseAuthService, useValue: supabaseAuthSpy },
         { provide: AuthApiService, useValue: authApiSpy },
         { provide: AuthSession, useValue: authSessionSpy },
+        { provide: PermissionService, useValue: permissionServiceSpy },
         { provide: ToastrService, useValue: toastrSpy },
       ]
     }).compileComponents();
