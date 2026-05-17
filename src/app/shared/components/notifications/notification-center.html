@@ -59,11 +59,12 @@
                   @case ('LIKE') { le dio me gusta a tu publicación }
                   @case ('COMMENT') { comentó tu publicación }
                   @case ('COMMENT_REPLY') { respondió a tu comentario }
+                  @case ('FOLLOW') { ha comenzado a seguirte }
                   @default { interactuó contigo }
                 }
               </p>
               
-              @if (notif.content) {
+              @if (notif.content && notif.type !== 'FOLLOW') {
                 <p class="mt-1 line-clamp-2 text-[0.75rem] text-[#707887]">
                   "{{ notif.content }}"
                 </p>

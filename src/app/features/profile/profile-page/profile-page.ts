@@ -13,6 +13,7 @@ import { ProfileService } from '../services/profile.service';
 import { FeedSidebar } from '../../feed/components/feed-sidebar/feed-sidebar';
 import { ShellLayout } from '../../../shared/components/shell-layout/shell-layout';
 import { ProfileMenu } from './components/profile-menu/profile-menu';
+import { FollowModal } from './components/follow-modal/follow-modal';
 import {
   ProfileCard,
   ProfileTab,
@@ -27,7 +28,7 @@ import {
 @Component({
   selector: 'app-profile-page',
   standalone: true,
-  imports: [CommonModule, FeedSidebar, ShellLayout, ProfileMenu],
+  imports: [CommonModule, FeedSidebar, ShellLayout, ProfileMenu, FollowModal],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './profile-page.html',
   styleUrl: './profile-page.css',
@@ -59,6 +60,9 @@ export class ProfilePage {
   readonly isAuthenticated = computed(() => this.authSession.isAuthenticated());
   readonly showAnonymousLock = signal(false);
   readonly currentPath = signal(this.router.url);
+
+  readonly isFollowModalOpen = signal(false);
+  readonly followModalType = signal<'followers' | 'following'>('followers');
 
   readonly displayName = computed(() => this.profile()?.displayName ?? 'Perfil');
   readonly handle = computed(() => this.profile()?.handle ?? '@nexora');
@@ -108,33 +112,41 @@ export class ProfilePage {
   }
 
   ngOnInit(): void {
-    const routeHandle = this.normalizeHandle(this.route.snapshot.paramMap.get('handle'));
-    const sessionHandle = this.resolvePreferredHandle(this.authSession.getUser());
+    this.route.paramMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        const routeHandle = this.normalizeHandle(params.get('handle'));
+        const sessionUser = this.authSession.getUser();
+        const sessionHandle = this.resolvePreferredHandle(sessionUser);
 
-    if (!routeHandle && sessionHandle) {
-      void this.router.navigate(['/u', sessionHandle], { replaceUrl: true });
-      return;
-    }
+        // Reset state before loading new profile
+        this.activeTab.set('posts');
+        
+        if (!routeHandle && sessionHandle) {
+          void this.router.navigate(['/u', sessionHandle], { replaceUrl: true });
+          return;
+        }
 
-    if (routeHandle && sessionHandle && routeHandle === sessionHandle) {
-      this.loadFromSession();
-      return;
-    }
+        if (routeHandle && sessionHandle && routeHandle === sessionHandle) {
+          this.loadFromSession();
+          return;
+        }
 
-    if (routeHandle) {
-      this.isPublicView.set(true);
-      this.loadPublicProfile(routeHandle);
-      return;
-    }
+        if (routeHandle) {
+          this.isPublicView.set(true);
+          this.loadPublicProfile(routeHandle);
+          return;
+        }
 
-    if (!this.authSession.isAuthenticated()) {
-      this.isGuest.set(true);
-      this.isLoading.set(false);
-      this.updateAnonymousLockState();
-      return;
-    }
+        if (!this.authSession.isAuthenticated()) {
+          this.isGuest.set(true);
+          this.isLoading.set(false);
+          this.updateAnonymousLockState();
+          return;
+        }
 
-    this.loadFromSession();
+        this.loadFromSession();
+      });
   }
 
   @HostListener('window:scroll')
@@ -181,30 +193,43 @@ export class ProfilePage {
     const currentUser = this.authSession.getUser();
     const previousGlobalFollowing = currentUser?.followingCount ?? 0;
 
-    // Optimistic update for viewed profile
+    // 1. Optimistic Update
     this.isFollowing.set(!previousFollowing);
     this.profile.set({
       ...profile,
-      followersCount: previousFollowing ? previousFollowers - 1 : previousFollowers + 1,
+      followersCount: previousFollowing ? Math.max(0, previousFollowers - 1) : previousFollowers + 1,
     });
 
-    // Optimistic update for global session state
     const newGlobalFollowing = previousFollowing 
       ? Math.max(0, previousGlobalFollowing - 1) 
       : previousGlobalFollowing + 1;
       
     this.authSession.mergeUser({ followingCount: newGlobalFollowing });
 
+    // 2. API Call
     this.profileService.toggleFollow(profile.id).subscribe({
+      next: (isFollowing) => {
+        this.isFollowing.set(isFollowing);
+        
+        // 3. Forced Refresh to ensure counts are exact from DB
+        const handle = this.normalizeHandle(profile.handle);
+        if (handle) {
+          this.authApiService.getPublicProfile(handle).subscribe((response) => {
+            const user = response?.user;
+            if (user) {
+              this.profile.set(buildProfileViewModel(user));
+              this.isFollowing.set(user.isFollowing ?? isFollowing);
+            }
+          });
+        }
+      },
       error: () => {
-        // Rollback on error
+        // Rollback
         this.isFollowing.set(previousFollowing);
         this.profile.set({
           ...profile,
           followersCount: previousFollowers,
         });
-        
-        // Rollback global session state
         this.authSession.mergeUser({ followingCount: previousGlobalFollowing });
       },
     });
@@ -242,6 +267,38 @@ export class ProfilePage {
     this.isProfileMenuOpen.set(false);
     this.authSession.clear();
     void this.router.navigate(['/login']);
+  }
+
+  openFollowModal(type: 'followers' | 'following', event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Si no está autenticado, redirigir a login
+    if (!this.isAuthenticated()) {
+      this.goToLogin();
+      return;
+    }
+
+    // No permitir abrir en vista previa anónima (doble check)
+    if (this.isAnonymousPreview()) return;
+
+    this.followModalType.set(type);
+    this.isFollowModalOpen.set(true);
+  }
+
+  closeFollowModal(): void {
+    this.isFollowModalOpen.set(false);
+    // Refresh profile to update counts if something changed in the modal
+    const profile = this.profile();
+    const handle = this.normalizeHandle(profile?.handle);
+    if (handle) {
+      this.authApiService.getPublicProfile(handle).subscribe((response) => {
+        const user = response?.user;
+        if (user) {
+          this.profile.set(buildProfileViewModel(user));
+        }
+      });
+    }
   }
 
   goToHome(event?: MouseEvent): void {

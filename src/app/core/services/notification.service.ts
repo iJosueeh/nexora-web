@@ -82,12 +82,27 @@ export class NotificationService {
               this.fetchHistory(10, 0);
 
               if (payload.eventType === 'INSERT' && !data.is_read) {
-                this.toastr.success('Has recibido una nueva notificación', 'Nexora Académico', {
-                  timeOut: 5000,
-                  progressBar: true,
-                  positionClass: 'toast-top-right',
-                  enableHtml: true
-                });
+                const type = data.type;
+                const senderId = data.sender_id || data.senderId;
+
+                if (type === 'FOLLOW') {
+                  // Intentar obtener el username del sender desde la API si es posible, 
+                  // o mostrar un mensaje mejorado. 
+                  // Por ahora, usaremos el mensaje tipo @Username si el objeto ya viniera completo, 
+                  // pero como es Realtime de tabla pura, solo tenemos el ID.
+                  // Optaremos por un mensaje directo y recarga de datos.
+                  this.toastr.info('¡Tienes un nuevo seguidor!', 'Nexora Social', {
+                    timeOut: 5000,
+                    progressBar: true,
+                    positionClass: 'toast-top-right',
+                  });
+                } else {
+                  this.toastr.success('Has recibido una nueva notificación', 'Nexora Académico', {
+                    timeOut: 5000,
+                    progressBar: true,
+                    positionClass: 'toast-top-right',
+                  });
+                }
               }
             }
           }

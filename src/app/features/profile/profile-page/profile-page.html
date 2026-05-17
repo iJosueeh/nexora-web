@@ -183,10 +183,28 @@
 
         <section class="grid grid-cols-3 gap-3 border-b border-white/8 pb-4 sm:gap-5">
           @for (stat of stats(); track stat.label) {
-            <article class="rounded-xl border border-white/8 bg-white/[0.03] px-3 py-3 text-center sm:px-4">
-              <p class="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-[#7f8591] sm:text-[0.6rem] sm:tracking-[0.2em]">{{ stat.label }}</p>
-              <p class="mt-2 text-[1.65rem] font-bold leading-none text-[#f4f5f7] sm:text-[2rem]">{{ stat.value }}</p>
-            </article>
+            @if (stat.label === 'Seguidores') {
+              <article 
+                (click)="openFollowModal('followers', $event)"
+                class="rounded-xl border border-white/8 bg-white/[0.03] px-3 py-3 text-center sm:px-4 cursor-pointer hover:bg-white/8 transition-all hover:border-[#df3432]/30 group"
+              >
+                <p class="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-[#7f8591] sm:text-[0.6rem] sm:tracking-[0.2em] group-hover:text-[#f0b9b1]">{{ stat.label }}</p>
+                <p class="mt-2 text-[1.65rem] font-bold leading-none text-[#f4f5f7] sm:text-[2rem]">{{ stat.value }}</p>
+              </article>
+            } @else if (stat.label === 'Seguidos') {
+              <article 
+                (click)="openFollowModal('following', $event)"
+                class="rounded-xl border border-white/8 bg-white/[0.03] px-3 py-3 text-center sm:px-4 cursor-pointer hover:bg-white/8 transition-all hover:border-[#df3432]/30 group"
+              >
+                <p class="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-[#7f8591] sm:text-[0.6rem] sm:tracking-[0.2em] group-hover:text-[#f0b9b1]">{{ stat.label }}</p>
+                <p class="mt-2 text-[1.65rem] font-bold leading-none text-[#f4f5f7] sm:text-[2rem]">{{ stat.value }}</p>
+              </article>
+            } @else {
+              <article class="rounded-xl border border-white/8 bg-white/[0.03] px-3 py-3 text-center sm:px-4">
+                <p class="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-[#7f8591] sm:text-[0.6rem] sm:tracking-[0.2em]">{{ stat.label }}</p>
+                <p class="mt-2 text-[1.65rem] font-bold leading-none text-[#f4f5f7] sm:text-[2rem]">{{ stat.value }}</p>
+              </article>
+            }
           }
         </section>
 
@@ -299,3 +317,10 @@
     }
   </div>
 </app-shell-layout>
+
+<app-follow-modal
+  [userId]="profile()?.id || ''"
+  [type]="followModalType()"
+  [isOpen]="isFollowModalOpen()"
+  (close)="closeFollowModal()"
+></app-follow-modal>

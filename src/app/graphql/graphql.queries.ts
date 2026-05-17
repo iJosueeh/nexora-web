@@ -153,3 +153,29 @@ export const TOGGLE_FOLLOW_MUTATION = gql`
 		toggleFollow(targetUserId: $targetUserId)
 	}
 `;
+
+export const FOLLOWERS_QUERY = gql`
+  query Followers($userId: ID!) {
+    followers(userId: $userId) {
+      id
+      username
+      fullName
+      avatarUrl
+      isFollowing
+      bio
+    }
+  }
+`;
+
+export const FOLLOWING_QUERY = gql`
+  query Following($userId: ID!) {
+    following(userId: $userId) {
+      id
+      username
+      fullName
+      avatarUrl
+      isFollowing
+      bio
+    }
+  }
+`;
