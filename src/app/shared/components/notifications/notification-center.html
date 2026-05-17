@@ -64,7 +64,7 @@
                 }
               </p>
               
-              @if (notif.content) {
+              @if (notif.content && notif.type !== 'FOLLOW') {
                 <p class="mt-1 line-clamp-2 text-[0.75rem] text-[#707887]">
                   "{{ notif.content }}"
                 </p>
