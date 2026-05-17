@@ -12,4 +12,5 @@ export interface AuthUser {
 	academicInterests?: string[];
 	roles?: string[];
 	profileComplete?: boolean;
+	isFollowing?: boolean;
 }

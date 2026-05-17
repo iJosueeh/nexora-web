@@ -9,6 +9,7 @@ import { catchError } from 'rxjs/operators';
 import { AuthSession } from '../../../core/services/auth-session';
 import { AuthApiService } from '../../auth/services/auth-api.service';
 import { FeedService } from '../../feed/services/feed.service';
+import { ProfileService } from '../services/profile.service';
 import { FeedSidebar } from '../../feed/components/feed-sidebar/feed-sidebar';
 import { ShellLayout } from '../../../shared/components/shell-layout/shell-layout';
 import { ProfileMenu } from './components/profile-menu/profile-menu';
@@ -40,6 +41,7 @@ export class ProfilePage {
   private readonly authSession = inject(AuthSession);
   private readonly authApiService = inject(AuthApiService);
   private readonly feedService = inject(FeedService);
+  private readonly profileService = inject(ProfileService);
 
   readonly isLoading = signal(true);
   readonly isGuest = signal(false);
@@ -170,7 +172,42 @@ export class ProfilePage {
   }
 
   toggleFollow(): void {
-    this.isFollowing.update((value) => !value);
+    const profile = this.profile();
+    if (!profile?.id || this.isLoading()) return;
+
+    const previousFollowing = this.isFollowing();
+    const previousFollowers = profile.followersCount;
+    
+    const currentUser = this.authSession.getUser();
+    const previousGlobalFollowing = currentUser?.followingCount ?? 0;
+
+    // Optimistic update for viewed profile
+    this.isFollowing.set(!previousFollowing);
+    this.profile.set({
+      ...profile,
+      followersCount: previousFollowing ? previousFollowers - 1 : previousFollowers + 1,
+    });
+
+    // Optimistic update for global session state
+    const newGlobalFollowing = previousFollowing 
+      ? Math.max(0, previousGlobalFollowing - 1) 
+      : previousGlobalFollowing + 1;
+      
+    this.authSession.mergeUser({ followingCount: newGlobalFollowing });
+
+    this.profileService.toggleFollow(profile.id).subscribe({
+      error: () => {
+        // Rollback on error
+        this.isFollowing.set(previousFollowing);
+        this.profile.set({
+          ...profile,
+          followersCount: previousFollowers,
+        });
+        
+        // Rollback global session state
+        this.authSession.mergeUser({ followingCount: previousGlobalFollowing });
+      },
+    });
   }
 
   toggleProfileMenu(event: MouseEvent): void {
@@ -284,9 +321,14 @@ export class ProfilePage {
           return;
         }
 
+        const sessionUser = this.authSession.getUser();
+        const sessionHandle = this.normalizeHandle(sessionUser?.username);
+        const currentHandle = this.normalizeHandle(user.username);
+        
+        this.isOwnProfile.set(!!sessionHandle && sessionHandle === currentHandle);
         this.profile.set(buildProfileViewModel(user));
+        this.isFollowing.set(user.isFollowing ?? false);
         this.posts.set([]);
-        this.isFollowing.set(false);
 
         const profileHandle = this.normalizeHandle(user.username) || handle;
         this.loadProfilePosts(profileHandle, true);

@@ -147,3 +147,9 @@ export const TOGGLE_LIKE_MUTATION = gql`
 		toggleLike(postId: $postId)
 	}
 `;
+
+export const TOGGLE_FOLLOW_MUTATION = gql`
+	mutation ToggleFollow($targetUserId: ID!) {
+		toggleFollow(targetUserId: $targetUserId)
+	}
+`;
