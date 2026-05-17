@@ -63,6 +63,35 @@ export const routes: Routes = [
         ]
     },
     {
+        path: 'management',
+        loadComponent: () => import('./features/management/management').then(m => m.ManagementPage),
+        canActivate: [() => import('./core/guards/role-guard').then(m => m.roleGuard)],
+        data: { allowedRoles: ['ROLE_ADMIN', 'ROLE_OFFICIAL'] },
+        children: [
+            {
+                path: '',
+                redirectTo: 'dashboard',
+                pathMatch: 'full'
+            },
+            {
+                path: 'dashboard',
+                loadComponent: () => import('./features/management/pages/dashboard/dashboard').then(m => m.DashboardView)
+            },
+            {
+                path: 'users',
+                loadComponent: () => import('./features/management/pages/users/users').then(m => m.UsersView),
+                canActivate: [() => import('./core/guards/role-guard').then(m => m.roleGuard)],
+                data: { allowedRoles: ['ROLE_ADMIN'] }
+            },
+            {
+                path: 'posts',
+                loadComponent: () => import('./features/management/pages/posts/posts').then(m => m.PostsView),
+                canActivate: [() => import('./core/guards/role-guard').then(m => m.roleGuard)],
+                data: { allowedRoles: ['ROLE_ADMIN', 'ROLE_OFFICIAL'] }
+            }
+        ]
+    },
+    {
         path: '',
         loadComponent: () => import('./layout/auth-layout/auth-layout').then(m => m.AuthLayout),
         children: [

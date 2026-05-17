@@ -1,0 +1,147 @@
+:host {
+  display: block;
+}
+
+.bg-surface-2 {
+  background-color: var(--brand-surface-2);
+}
+
+/* Stat Cards Futuristas */
+.stat-card {
+  background: linear-gradient(135deg, var(--brand-surface) 0%, #0a0e17 100%);
+  border: 1px solid var(--brand-border);
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Quitar bordes blancos por defecto de focus o estados */
+.stat-card:focus, .stat-card:active {
+  outline: none;
+}
+
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 25px 30px -10px rgba(0, 0, 0, 0.6);
+  border-color: rgba(227, 38, 46, 0.3);
+}
+
+.stat-card.highlight {
+  background: linear-gradient(135deg, var(--brand-surface-2) 0%, #06080d 100%);
+  border: 1px solid rgba(227, 38, 46, 0.15);
+}
+
+.stat-card h3 {
+  color: var(--brand-muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  opacity: 0.8;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--brand-text);
+  letter-spacing: -0.05em;
+  margin-top: 0.25rem;
+  text-shadow: 0 0 20px rgba(240, 242, 247, 0.05);
+}
+
+/* Acciones Rápidas */
+.quick-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--brand-border);
+  border-radius: 1rem;
+  color: var(--brand-muted);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.quick-action:hover {
+  background: rgba(227, 38, 46, 0.08);
+  border-color: rgba(227, 38, 46, 0.4);
+  color: var(--brand-text);
+  transform: scale(1.05);
+}
+
+.quick-action span:first-child {
+  font-size: 1.75rem;
+  transition: transform 0.3s;
+}
+
+.quick-action:hover span:first-child {
+  transform: rotate(-10deg) scale(1.1);
+}
+
+.quick-action span:last-child {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Activity Cards */
+.activity-card {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(29, 36, 50, 0.5);
+  border-radius: 1rem;
+  transition: all 0.3s;
+}
+
+.activity-card:hover {
+  transform: translateX(6px);
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(227, 38, 46, 0.2);
+}
+
+.activity-indicator {
+  width: 4px;
+  height: auto;
+  background: var(--brand-red);
+  border-radius: 99px;
+  box-shadow: 0 0 15px rgba(227, 38, 46, 0.5);
+}
+
+/* Contenedores Principales */
+.bg-surface-2 {
+  background: var(--brand-surface);
+  border: 1px solid var(--brand-border);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+/* Scrollbar Custom - Nexora Style */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: var(--brand-border);
+  border-radius: 10px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-red);
+}
+
+/* Estilo para los canvas de gráficos */
+canvas {
+  filter: drop-shadow(0 0 10px rgba(227, 38, 46, 0.05));
+}

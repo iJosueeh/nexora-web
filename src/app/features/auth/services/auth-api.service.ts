@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import {
   RegisterIdentityRequest,
@@ -17,9 +17,7 @@ import { normalizeAuthResponse, normalizeCatalogsResponse } from './normalizers'
   providedIn: 'root',
 })
 export class AuthApiService {
-  constructor(
-    private readonly apiClient: ApiClientService
-  ) {}
+  private readonly apiClient = inject(ApiClientService);
 
   login(payload: LoginRequest): Observable<LoginResponse> {
     return this.apiClient

@@ -1,0 +1,151 @@
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+  <div>
+    <h2 class="text-3xl font-black tracking-tight text-white uppercase">Moderación de Feed</h2>
+    <p class="text-brand-muted text-sm mt-1">Supervisa y oficializa contenido para la comunidad Nexora.</p>
+  </div>
+</div>
+
+@if (loading() && posts().length === 0) {
+  <div class="flex flex-col items-center justify-center py-20">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-red mb-4"></div>
+    <p class="text-xs font-bold text-brand-muted uppercase tracking-widest">Analizando publicaciones...</p>
+  </div>
+} @else {
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    @for (post of posts(); track post.id) {
+      <div class="mod-card group" [class.official-card]="post.is_official">
+        @if (post.is_official) {
+          <div class="official-ribbon">
+            <span class="material-symbols-outlined text-[14px]">verified</span>
+            OFICIAL
+          </div>
+        }
+
+        <div class="mod-card-content">
+          <!-- Thumbnail -->
+          <div class="post-thumb-container">
+            @if (post.imageUrl) {
+              <img [src]="post.imageUrl" class="post-thumb" alt="preview">
+            } @else {
+              <div class="post-thumb-placeholder">
+                <span class="material-symbols-outlined text-3xl opacity-20">article</span>
+              </div>
+            }
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-start mb-2">
+              <div class="flex items-center gap-2">
+                <div class="author-mini-avatar">
+                  {{ (post.author.fullName || 'U').charAt(0) }}
+                </div>
+                <span class="text-xs font-bold text-brand-muted truncate max-w-[120px]">
+                  {{ post.author.fullName || 'Anónimo' }}
+                </span>
+              </div>
+              <span class="text-[10px] text-brand-muted uppercase font-bold tracking-tighter">
+                {{ post.createdAt | date:'shortDate' }}
+              </span>
+            </div>
+
+            <h4 class="text-white font-black text-lg leading-tight line-clamp-1 mb-2">
+              {{ post.title || 'Sin título' }}
+            </h4>
+            <p class="text-brand-muted text-sm line-clamp-2 leading-relaxed">
+              {{ post.content }}
+            </p>
+
+            <div class="mt-4 flex items-center gap-3">
+              <div class="flex items-center gap-1 text-[10px] font-bold text-brand-muted bg-white/5 px-2 py-0.5 rounded">
+                <span class="material-symbols-outlined text-[12px]">favorite</span>
+                {{ post.likesCount }}
+              </div>
+              <div class="flex items-center gap-1 text-[10px] font-bold text-brand-muted bg-white/5 px-2 py-0.5 rounded">
+                <span class="material-symbols-outlined text-[12px]">chat</span>
+                {{ post.commentsCount }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Acciones de Moderación al final de la tarjeta -->
+        <div class="mod-card-actions">
+          <button 
+            (click)="openConfirmModal(post, 'official')"
+            class="mod-btn flex-1"
+            [class.official-active]="post.is_official">
+            <span class="material-symbols-outlined text-[18px]">
+              {{ post.is_official ? 'verified' : 'new_releases' }}
+            </span>
+            {{ post.is_official ? 'Quitar Oficial' : 'Hacer Oficial' }}
+          </button>
+          
+          <button 
+            (click)="openConfirmModal(post, 'delete')"
+            class="mod-btn danger w-12 flex justify-center">
+            <span class="material-symbols-outlined text-[18px]">delete</span>
+          </button>
+        </div>
+      </div>
+    } @empty {
+      <div class="col-span-full py-20 text-center bg-surface border border-dashed border-border rounded-3xl">
+        <span class="material-symbols-outlined text-5xl text-brand-muted opacity-20">inbox</span>
+        <p class="text-brand-muted mt-4 font-medium">No hay publicaciones pendientes de moderación.</p>
+      </div>
+    }
+  </div>
+
+  @if (hasMore()) {
+    <div class="mt-12 flex justify-center">
+      <button 
+        (click)="loadMorePosts()"
+        [disabled]="loading()"
+        class="px-8 py-3 bg-surface border border-border rounded-full text-xs font-black text-brand-muted hover:text-white hover:border-brand-red transition-all flex items-center gap-3 disabled:opacity-50">
+        @if (loading()) {
+          <div class="animate-spin h-4 w-4 border-2 border-brand-red border-t-transparent rounded-full"></div>
+          Procesando...
+        } @else {
+          <span class="material-symbols-outlined text-[18px]">history</span>
+          Cargar más publicaciones
+        }
+      </button>
+    </div>
+  }
+}
+
+<!-- Modal de Moderación Centrado -->
+@if (isModalOpen()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content shadow-2xl" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-icon-container" [class.danger-mode]="modalAction() === 'delete'">
+          <span class="material-symbols-outlined">
+            {{ modalAction() === 'delete' ? 'delete_forever' : 'verified' }}
+          </span>
+        </div>
+        <h3 class="text-xl font-black text-white">Confirmar Moderación</h3>
+        <p class="text-brand-muted text-sm mt-2">
+          @if (modalAction() === 'delete') {
+            ¿Estás seguro de que deseas eliminar permanentemente la publicación 
+            <strong class="text-white">"{{ selectedPost()?.title || 'esta publicación' }}"</strong>? Esta acción no se puede deshacer.
+          } @else {
+            ¿Deseas marcar la publicación como <strong class="text-white">Oficial</strong>? Esto le dará prioridad en el feed institucional.
+          }
+        </p>
+      </div>
+
+      <div class="modal-footer mt-8 flex gap-3">
+        <button (click)="closeModal()" class="flex-1 px-4 py-3 bg-white/5 hover:bg-white/10 text-brand-muted font-bold rounded-xl transition-all">
+          Cancelar
+        </button>
+        <button 
+          (click)="confirmAction()" 
+          [class.bg-brand-red]="modalAction() === 'delete'"
+          [class.bg-blue-600]="modalAction() === 'official'"
+          class="flex-1 px-4 py-3 text-white font-black rounded-xl transition-all shadow-lg hover:brightness-110">
+          Confirmar Acción
+        </button>
+      </div>
+    </div>
+  </div>
+}

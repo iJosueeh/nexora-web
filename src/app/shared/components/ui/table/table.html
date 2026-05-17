@@ -1,0 +1,60 @@
+<div class="nexora-table-container">
+  <table class="nexora-table">
+    <thead>
+      <tr>
+        @for (col of columns(); track col.key) {
+          <th>{{ col.label }}</th>
+        }
+        @if (actions().length > 0) {
+          <th class="text-right">Acciones</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (item of data(); track item.id || $index) {
+        <tr (click)="onRowClick.emit(item)">
+          @for (col of columns(); track col.key) {
+            <td>
+              @switch (col.type) {
+                @case ('badge') {
+                  <span class="nexora-badge" [ngClass]="getProperty(item, col.key) ? 'active' : 'inactive'">
+                    {{ col.transform ? col.transform(getProperty(item, col.key)) : getProperty(item, col.key) }}
+                  </span>
+                }
+                @case ('image') {
+                  <img [src]="getProperty(item, col.key)" class="nexora-table-img" alt="row-image">
+                }
+                @case ('date') {
+                  {{ getProperty(item, col.key) | date:'shortDate' }}
+                }
+                @default {
+                  {{ col.transform ? col.transform(getProperty(item, col.key)) : getProperty(item, col.key) }}
+                }
+              }
+            </td>
+          }
+          @if (actions().length > 0) {
+            <td class="text-right actions-cell">
+              @for (action of actions(); track action.label) {
+                @if (!action.show || action.show(item)) {
+                  <button 
+                    class="nexora-action-btn" 
+                    [class]="action.class"
+                    (click)="$event.stopPropagation(); action.callback(item)">
+                    {{ action.label }}
+                  </button>
+                }
+              }
+            </td>
+          }
+        </tr>
+      } @empty {
+        <tr>
+          <td [attr.colspan]="columns().length + (actions().length > 0 ? 1 : 0)" class="empty-state">
+            No se encontraron registros.
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

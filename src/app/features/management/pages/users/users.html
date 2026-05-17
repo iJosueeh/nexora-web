@@ -1,0 +1,158 @@
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+  <div>
+    <h2 class="text-3xl font-black tracking-tight text-white">Gestión de Usuarios</h2>
+    <p class="text-brand-muted text-sm mt-1">Monitorea y gestiona el acceso a la plataforma Nexora.</p>
+  </div>
+  
+  <div class="relative w-full md:w-72 group">
+    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted group-focus-within:text-brand-red transition-colors">search</span>
+    <input 
+      type="text" 
+      (input)="onSearch($event)"
+      placeholder="Buscar por email..." 
+      class="w-full bg-surface border border-border rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-all shadow-lg">
+  </div>
+</div>
+
+@if (loading() && users().length === 0) {
+  <div class="flex flex-col items-center justify-center py-20">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-red mb-4"></div>
+    <p class="text-xs font-bold text-brand-muted uppercase tracking-widest">Sincronizando registros...</p>
+  </div>
+} @else {
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    @for (user of users(); track user.id) {
+      <div class="user-card group" [class.inactive-card]="!user.profileComplete">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="user-avatar-container">
+            @if (user.avatarUrl) {
+              <img [src]="user.avatarUrl" [alt]="user.fullName" class="avatar-img">
+            } @else {
+              <div class="avatar-placeholder">
+                {{ user.fullName.charAt(0) }}
+              </div>
+            }
+            <div class="status-dot" [class.active]="user.profileComplete"></div>
+          </div>
+          
+          <div class="flex-1 min-w-0">
+            <h4 class="text-white font-bold truncate leading-tight group-hover:text-brand-red transition-colors">
+              {{ user.fullName }}
+            </h4>
+            <p class="text-brand-muted text-xs truncate">@{{ user.username || 'sin_usuario' }}</p>
+          </div>
+        </div>
+
+        <div class="space-y-3 mb-6">
+          <div class="detail-item">
+            <span class="material-symbols-outlined text-[18px]">mail</span>
+            <span class="truncate">{{ user.email }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="material-symbols-outlined text-[18px]">school</span>
+            <span class="truncate">{{ user.career || 'No especificada' }}</span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-border/50 flex justify-between items-center">
+          <span class="status-badge" [class.active]="user.profileComplete">
+            {{ user.profileComplete ? 'Activo' : 'Inactivo' }}
+          </span>
+          
+          <div class="flex gap-2">
+            <button 
+              (click)="openConfirmModal(user, user.profileComplete ? 'deactivate' : 'activate')"
+              class="action-btn"
+              [class.danger]="user.profileComplete"
+              [title]="user.profileComplete ? 'Desactivar' : 'Activar'">
+              <span class="material-symbols-outlined text-[20px]">
+                {{ user.profileComplete ? 'block' : 'check_circle' }}
+              </span>
+            </button>
+            <button (click)="openEditModal(user)" class="action-btn edit" title="Editar Perfil">
+              <span class="material-symbols-outlined text-[20px]">edit</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="col-span-full py-20 text-center bg-surface border border-dashed border-border rounded-3xl">
+        <span class="material-symbols-outlined text-5xl text-brand-muted opacity-20">person_off</span>
+        <p class="text-brand-muted mt-4 font-medium">No se encontraron usuarios para "{{ searchTerm() }}".</p>
+      </div>
+    }
+  </div>
+
+  @if (hasMore()) {
+    <div class="mt-12 flex justify-center">
+      <button 
+        (click)="loadMoreUsers()"
+        [disabled]="loading()"
+        class="px-8 py-3 bg-surface border border-border rounded-full text-xs font-black text-brand-muted hover:text-white hover:border-brand-red transition-all flex items-center gap-3 disabled:opacity-50">
+        @if (loading()) {
+          <div class="animate-spin h-4 w-4 border-2 border-brand-red border-t-transparent rounded-full"></div>
+          Cargando...
+        } @else {
+          <span class="material-symbols-outlined text-[18px]">add_circle</span>
+          Cargar más usuarios
+        }
+      </button>
+    </div>
+  }
+}
+
+<!-- Modal de Acción NEXORA -->
+@if (isModalOpen()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content shadow-2xl" (click)="$event.stopPropagation()">
+      
+      @if (modalAction() === 'edit') {
+        <div class="modal-header">
+          <h3 class="text-xl font-black text-white self-start">Editar Perfil</h3>
+          <p class="text-brand-muted text-xs uppercase font-bold tracking-widest mt-1 self-start">Información Administrativa</p>
+          
+          <form class="w-full mt-8 space-y-5">
+            <div class="form-group">
+              <label>Nombre Completo</label>
+              <input type="text" [(ngModel)]="editForm().fullName" name="fullName" class="form-input">
+            </div>
+            <div class="form-group">
+              <label>Nombre de Usuario</label>
+              <input type="text" [(ngModel)]="editForm().username" name="username" class="form-input">
+            </div>
+            <div class="form-group">
+              <label>Carrera Académica</label>
+              <input type="text" [(ngModel)]="editForm().career" name="career" class="form-input">
+            </div>
+          </form>
+        </div>
+      } @else {
+        <div class="modal-header">
+          <div class="header-icon-container" [class.deactivate-mode]="modalAction() === 'deactivate'">
+            <span class="material-symbols-outlined">
+              {{ modalAction() === 'deactivate' ? 'warning' : 'verified_user' }}
+            </span>
+          </div>
+          <h3 class="text-xl font-black text-white">Confirmar Acción</h3>
+          <p class="text-brand-muted text-sm mt-2 text-center">
+            ¿Estás seguro de que deseas <strong>{{ modalAction() === 'activate' ? 'activar' : 'desactivar' }}</strong> al usuario 
+            <span class="text-white font-bold">{{ modalUser()?.fullName }}</span>?
+          </p>
+        </div>
+      }
+
+      <div class="modal-footer mt-8 flex gap-3">
+        <button (click)="closeModal()" class="flex-1 px-4 py-3 bg-white/5 hover:bg-white/10 text-brand-muted font-bold rounded-xl transition-all">
+          Cancelar
+        </button>
+        <button 
+          (click)="confirmAction()" 
+          [class.bg-brand-red]="modalAction() !== 'activate'"
+          [class.bg-green-600]="modalAction() === 'activate'"
+          class="flex-1 px-4 py-3 text-white font-black rounded-xl transition-all shadow-lg hover:brightness-110">
+          {{ modalAction() === 'edit' ? 'Guardar Cambios' : 'Confirmar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { API_BASE_URL } from '../../core/tokens/api-endpoints.token';
@@ -8,10 +8,8 @@ import { API_BASE_URL } from '../../core/tokens/api-endpoints.token';
   providedIn: 'root',
 })
 export class ApiClientService {
-  constructor(
-    private readonly http: HttpClient,
-    @Inject(API_BASE_URL) private readonly apiBaseUrl: string
-  ) {}
+  private readonly http = inject(HttpClient);
+  private readonly apiBaseUrl = inject(API_BASE_URL);
 
   get<T>(path: string): Observable<T> {
     return this.http.get<T>(this.buildUrl(path));
