@@ -14,9 +14,20 @@ import { CommonModule } from '@angular/common';
 class MockProfilePage {
   profile = signal({ username: 'testuser', handle: '@testuser' });
   isOwnProfile = signal(true);
+  isFollowModalOpen = signal(false);
+  followModalType = signal('followers');
+
+  openFollowModal(type: string, event: any) {
+    this.followModalType.set(type);
+    this.isFollowModalOpen.set(true);
+  }
+
+  closeFollowModal() {
+    this.isFollowModalOpen.set(false);
+  }
 }
 
-describe('ProfilePage Logic', () => {
+describe('ProfilePage Logic (Unit)', () => {
   let component: MockProfilePage;
   let fixture: ComponentFixture<MockProfilePage>;
 
@@ -36,5 +47,14 @@ describe('ProfilePage Logic', () => {
 
   it('should render profile username', () => {
     expect(fixture.nativeElement.textContent).toContain('testuser');
+  });
+
+  it('should manage follow modal state', () => {
+    component.openFollowModal('following', {});
+    expect(component.isFollowModalOpen()).toBe(true);
+    expect(component.followModalType()).toBe('following');
+
+    component.closeFollowModal();
+    expect(component.isFollowModalOpen()).toBe(false);
   });
 });
