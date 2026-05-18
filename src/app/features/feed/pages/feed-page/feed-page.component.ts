@@ -11,17 +11,19 @@ if (typeof globalThis.IntersectionObserver === 'undefined') {
     readonly root: Element | Document | null = null;
     readonly rootMargin = '0px';
     readonly thresholds: ReadonlyArray<number> = [];
+    readonly scrollMargin = '0px';
 
-    observe(): void {}
-    unobserve(): void {}
+    constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {}
+
+    observe(target: Element): void {}
+    unobserve(target: Element): void {}
     disconnect(): void {}
     takeRecords(): IntersectionObserverEntry[] {
       return [];
     }
   }
 
-  // 🔽 CORREGIDO: Se eliminó la directiva obsoleta @ts-expect-error
-  globalThis.IntersectionObserver = MockIntersectionObserver;
+  globalThis.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
 }
 
 class MockWebSocket {
