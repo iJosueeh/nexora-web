@@ -37,8 +37,8 @@ function dtoToCommentAuthor(dto: CommentThreadDTO): CommentThread['author'] {
     id: authorId,
     email: `${authorId}@nexora.app`,
     username: dto.autorId ?? 'usuario',
-    fullName: null,
-    avatarUrl: null
+    fullName: undefined,
+    avatarUrl: undefined
   };
 }
 
