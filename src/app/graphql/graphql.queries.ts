@@ -173,6 +173,11 @@ export const COMMENT_THREADS_QUERY = gql`
 					createdAt
 					respuestas {
 						id
+						postId
+						parentId
+						autorId
+						contenido
+						createdAt
 					}
 				}
 			}
