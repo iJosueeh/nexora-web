@@ -30,19 +30,36 @@ export class CommentService {
   }
 }
 
-function dtoToCommentThread(dto: CommentThreadDTO): CommentThread {
+function dtoToCommentAuthor(dto: CommentThreadDTO): CommentThread['author'] {
+  const authorId = dto.autorId ?? 'unknown';
+
   return {
+    id: authorId,
+    email: `${authorId}@nexora.app`,
+    username: dto.autorId ?? 'usuario',
+    fullName: null,
+    avatarUrl: null
+  };
+}
+
+function dtoToCreatedAt(createdAt?: string | null): Date {
+  if (!createdAt) {
+    return new Date();
+  }
+
+  const parsedDate = new Date(createdAt);
+  return Number.isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+}
+
+function dtoToCommentThread(dto: CommentThreadDTO): CommentThread {
+  const thread: CommentThread = {
     id: dto.id,
-    author: {
-      id: dto.autorId ?? 'unknown',
-      email: (dto.autorId ?? 'unknown') + '@nexora.app',
-      username: dto.autorId ?? 'usuario',
-      fullName: undefined,
-      avatarUrl: undefined
-    } as any,
+    author: dtoToCommentAuthor(dto),
     content: dto.contenido,
-    createdAt: dto.createdAt ? new Date(dto.createdAt) : new Date(),
+    createdAt: dtoToCreatedAt(dto.createdAt),
     likesCount: 0,
     replies: (dto.respuestas ?? []).map(dtoToCommentThread)
-  } as CommentThread;
+  };
+
+  return thread;
 }
