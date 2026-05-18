@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { of } from 'rxjs';
+import { of, firstValueFrom } from 'rxjs';
 import { CommentService } from './comment.service';
 import { Apollo } from 'apollo-angular';
 
@@ -16,12 +16,10 @@ describe('CommentService', () => {
     service = TestBed.inject(CommentService);
   });
 
-  it('maps DTO to CommentThread model', (done) => {
-    service.getThreads('p1').subscribe(result => {
-      expect(result.length).toBe(1);
-      expect(result[0].id).toBe('1');
-      expect(result[0].content).toBe('c1');
-      done();
-    });
+  it('maps DTO to CommentThread model', async () => {
+    const result = await firstValueFrom(service.getThreads('p1'));
+    expect(result?.length).toBe(1);
+    expect(result?.[0].id).toBe('1');
+    expect(result?.[0].content).toBe('c1');
   });
 });

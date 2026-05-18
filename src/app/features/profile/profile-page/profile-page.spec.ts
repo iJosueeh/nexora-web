@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-profile-page',
   standalone: true,
   imports: [CommonModule],
-  template: '<div>Profile of {{ profile()?.username }}</div>'
+  template: '<div>Profile of {{ profile().username }}</div>'
 })
 class MockProfilePage {
   profile = signal({ username: 'testuser', handle: '@testuser' });

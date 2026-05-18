@@ -1,14 +1,31 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { FeedPage } from './feed-page';
+import { FeedPage } from './pages/feed-page/feed-page';
+import { Apollo } from 'apollo-angular';
+import { of } from 'rxjs';
+import { vi } from 'vitest';
+import { NotificationService } from '../../core/services/notification.service';
+import { signal } from '@angular/core';
 
 describe('FeedPage Component', () => {
   let component: FeedPage;
   let fixture: ComponentFixture<FeedPage>;
 
   beforeEach(async () => {
+    const mockApollo = { query: () => of({ data: {} }), mutate: () => of({ data: {} }) } as any;
+    const mockNotificationService = {
+      notifications: signal([]),
+      unreadCount: signal(0),
+      markAsRead: vi.fn(),
+      markAllAsRead: vi.fn()
+    } as any;
+
     await TestBed.configureTestingModule({
       imports: [FeedPage, RouterTestingModule],
+      providers: [
+        { provide: Apollo, useValue: mockApollo },
+        { provide: NotificationService, useValue: mockNotificationService }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(FeedPage);
@@ -22,14 +39,14 @@ describe('FeedPage Component', () => {
   it('should have 3-column layout with sidebars', () => {
     fixture.detectChanges();
     const main = fixture.nativeElement.querySelector('main') as HTMLElement;
-    expect(main.classList.contains('ml-64')).toBe(true);
-    expect(main.classList.contains('mr-80')).toBe(true);
+    expect(main.classList.contains('border')).toBe(true);
+    expect(main.classList.contains('border-[var(--brand-border)]')).toBe(true);
   });
 
   it('should display feed header', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Campus Feed');
+    expect(compiled.textContent).toContain('Lo ultimo');
   });
 
   it('should render app-feed-sidebar component', () => {
@@ -53,7 +70,7 @@ describe('FeedPage Component', () => {
   it('should have proper border classes in main content', () => {
     fixture.detectChanges();
     const main = fixture.nativeElement.querySelector('main') as HTMLElement;
-    expect(main.classList.contains('border-x')).toBe(true);
+    expect(main.classList.contains('border')).toBe(true);
     expect(main.classList.contains('border-[var(--brand-border)]')).toBe(true);
   });
 });

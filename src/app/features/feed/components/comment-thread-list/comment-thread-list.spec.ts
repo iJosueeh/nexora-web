@@ -1,13 +1,14 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { Component, signal } from '@angular/core';
 import { describe, it, expect, beforeEach } from 'vitest';
+import { RouterTestingModule } from '@angular/router/testing';
 import { CommentThreadListComponent } from './comment-thread-list';
-import type { CommentThread } from '../../../interfaces/feed/comment.model';
+import type { CommentThread } from '../../../../interfaces/feed/comment.model';
 
 @Component({
   standalone: true,
   imports: [CommentThreadListComponent],
-  template: `<app-comment-thread-list [comments]="comments"></app-comment-thread-list>`
+  template: `<app-comment-thread-list [comments]="comments()"></app-comment-thread-list>`
 })
 class HostComponent {
   comments = signal<CommentThread[]>([
@@ -20,7 +21,7 @@ describe('CommentThreadListComponent', () => {
   let fixture: ComponentFixture<HostComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({ imports: [HostComponent] }).compileComponents();
+    await TestBed.configureTestingModule({ imports: [HostComponent, RouterTestingModule] }).compileComponents();
     fixture = TestBed.createComponent(HostComponent);
     fixture.detectChanges();
   });

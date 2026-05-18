@@ -1,6 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { SupabaseStorageService, StorageBucket } from './supabase-storage.service';
 import { SupabaseAuthService } from './supabase-auth.service';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+afterEach(() => {
+  TestBed.resetTestingModule();
+  vi.clearAllMocks();
+});
 
 describe('SupabaseStorageService', () => {
   let service: SupabaseStorageService;
