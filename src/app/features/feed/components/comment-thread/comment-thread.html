@@ -1,0 +1,56 @@
+<div class="relative" [style.paddingLeft.rem]="depth() > 0 ? 1.25 : 0">
+	@if (depth() > 0) {
+		<span aria-hidden="true" class="pointer-events-none absolute left-0 top-0 h-full w-px bg-gradient-to-b from-[var(--brand-border)] via-[var(--brand-border)] to-transparent"></span>
+		<span aria-hidden="true" class="pointer-events-none absolute left-0 top-6 h-px w-4 bg-[var(--brand-border)]"></span>
+	}
+
+	<article class="group rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-4 transition-colors duration-300 hover:border-[#df3432]/25 hover:bg-[var(--brand-surface-2)]">
+		<header class="flex items-start gap-3">
+			<a [routerLink]="['/u', comment().author.username]" class="shrink-0">
+				<img
+					[src]="avatarUrl()"
+					[alt]="displayName()"
+					class="h-10 w-10 rounded-full object-cover ring-1 ring-white/10"
+				/>
+			</a>
+
+			<div class="min-w-0 flex-1">
+				<div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+					<a [routerLink]="['/u', comment().author.username]" class="truncate text-sm font-semibold text-[var(--brand-text)] transition-colors group-hover:text-white">
+						{{ displayName() }}
+					</a>
+
+					@if (comment().author.verified) {
+						<span class="inline-flex items-center rounded-full bg-[#df3432]/10 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-[0.2em] text-[var(--brand-red)]">Oficial</span>
+					}
+
+					@if (depth() > 0) {
+						<span class="text-[0.65rem] uppercase tracking-[0.24em] text-[var(--brand-muted)]">Respuesta</span>
+					}
+				</div>
+
+				<p class="mt-1 text-[0.68rem] uppercase tracking-[0.24em] text-[var(--brand-muted)]">
+					{{ comment().author.role || 'Comunidad Nexora' }}
+					@if (relativeDate()) {
+						· {{ relativeDate() }}
+					}
+				</p>
+			</div>
+		</header>
+
+		<p class="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--brand-text)]/90">{{ comment().content }}</p>
+
+		<footer class="mt-4 flex items-center gap-4 border-t border-white/5 pt-3 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-[var(--brand-muted)]">
+			<span>♥ {{ comment().likesCount ?? 0 }}</span>
+			<span>↩ {{ replyCount() }}</span>
+		</footer>
+
+		@if (hasReplies()) {
+			<div class="mt-4 space-y-4">
+				@for (reply of replies(); track reply.id) {
+					<app-comment-thread [comment]="reply" [depth]="depth() + 1" />
+				}
+			</div>
+		}
+	</article>
+</div>

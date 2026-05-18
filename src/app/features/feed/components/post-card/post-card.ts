@@ -6,11 +6,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Post } from '../../../../interfaces/feed';
 import { TOGGLE_LIKE_MUTATION } from '../../../../graphql/graphql.queries';
 import { FeedInteractionService } from '../../services/feed-interaction.service';
+import { CommentService } from '../../services/comment.service';
+import { CommentThreadListComponent } from '../comment-thread-list/comment-thread-list';
+import { CommentThread } from '../../../../interfaces/feed';
 
 @Component({
 	selector: 'app-post-card',
 	standalone: true,
-	imports: [CommonModule, RouterLink],
+	imports: [CommonModule, RouterLink, CommentThreadListComponent],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	host: {
 		class: 'block'
@@ -22,15 +25,19 @@ export class PostCardComponent implements OnInit {
 	private readonly apollo = inject(Apollo);
 	private readonly interactionService = inject(FeedInteractionService);
 	private readonly destroyRef = inject(DestroyRef);
+	private readonly commentService = inject(CommentService);
 
 	readonly post = input.required<Post>();
 
 	// Estado local para feedback instantáneo
 	readonly isLiked = signal(false);
 	readonly likesCount = signal(0);
+	readonly showComments = signal(false);
+	readonly isLoadingComments = signal(false);
+	readonly comments = signal<CommentThread[]>([]);
 
 	ngOnInit(): void {
-		this.isLiked.set(this.post().isLiked);
+		this.isLiked.set(this.post().isLiked ?? false);
 		this.likesCount.set(this.post().likesCount);
 
 		// Escuchar actualizaciones globales de likes
@@ -90,5 +97,28 @@ export class PostCardComponent implements OnInit {
 				this.likesCount.set(previousCount);
 			}
 		});
+	}
+
+	toggleComments(event: MouseEvent): void {
+		event.stopPropagation();
+
+		if (this.showComments()) {
+			this.showComments.set(false);
+			return;
+		}
+
+		this.isLoadingComments.set(true);
+		this.commentService.getThreads(this.post().id)
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe({
+				next: (threads) => {
+					this.comments.set(threads);
+					this.isLoadingComments.set(false);
+					this.showComments.set(true);
+				},
+				error: () => {
+					this.isLoadingComments.set(false);
+				}
+			});
 	}
 }

@@ -148,6 +148,38 @@ export const TOGGLE_LIKE_MUTATION = gql`
 	}
 `;
 
+export const COMMENT_THREADS_QUERY = gql`
+	query CommentThreads($postId: ID!) {
+		obtenerHilosComentarios(postId: $postId) {
+			id
+			postId
+			parentId
+			autorId
+			contenido
+			createdAt
+			respuestas {
+				id
+				postId
+				parentId
+				autorId
+				contenido
+				createdAt
+				respuestas {
+					id
+					postId
+					parentId
+					autorId
+					contenido
+					createdAt
+					respuestas {
+						id
+					}
+				}
+			}
+		}
+	}
+`;
+
 export const TOGGLE_FOLLOW_MUTATION = gql`
 	mutation ToggleFollow($targetUserId: ID!) {
 		toggleFollow(targetUserId: $targetUserId)

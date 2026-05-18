@@ -10,8 +10,10 @@ export interface Post {
 	createdAt: Date;
 	likesCount: number;
 	commentsCount: number;
+	likes?: number;
+	comments?: number;
 	shares: number;
-	isLiked: boolean;
+	isLiked?: boolean;
 	tags?: string[];
 	location?: string;
 }
