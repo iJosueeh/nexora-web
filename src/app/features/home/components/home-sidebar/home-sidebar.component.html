@@ -1,0 +1,69 @@
+<aside
+  class="hidden h-fit w-full max-w-[22rem] rounded-2xl border border-zinc-200 bg-white/95 p-4 shadow-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/95 lg:sticky lg:top-20 lg:block"
+  aria-label="Panel lateral de descubrimiento y tendencias"
+>
+  @if (loading()) {
+    <div class="space-y-4">
+      <div class="h-40 animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-800"></div>
+      <div class="h-64 animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-800"></div>
+    </div>
+  } @else {
+    <section class="rounded-2xl border border-zinc-200/80 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-950/40">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">Tendencias</h2>
+        <span class="text-[11px] text-zinc-400 dark:text-zinc-500">Ahora</span>
+      </div>
+
+      <ul class="space-y-3">
+        @for (trend of trends(); track trend.id) {
+          <li class="rounded-xl border border-transparent p-3 transition-colors hover:border-zinc-200 hover:bg-white dark:hover:border-zinc-800 dark:hover:bg-zinc-900/70">
+            <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-500 dark:text-zinc-400">{{ trend.category }}</p>
+            <div class="mt-1 flex items-end justify-between gap-3">
+              <h3 class="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">{{ trend.title }}</h3>
+              <span class="shrink-0 text-xs text-zinc-500 dark:text-zinc-400">{{ formatPostsCount(trend.postsCount) }} posts</span>
+            </div>
+          </li>
+        } @empty {
+          <li class="rounded-xl border border-dashed border-zinc-200 p-4 text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+            No hay tendencias disponibles por ahora.
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section class="mt-4 rounded-2xl border border-zinc-200/80 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-950/40">
+      <h2 class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">Quién seguir</h2>
+
+      <ul class="space-y-3">
+        @for (user of suggestions(); track user.id) {
+          <li class="flex items-center gap-3 rounded-xl border border-transparent p-2 transition-colors hover:border-zinc-200 hover:bg-white dark:hover:border-zinc-800 dark:hover:bg-zinc-900/70">
+            <img
+              [src]="user.avatarUrl"
+              [alt]="user.name"
+              width="40"
+              height="40"
+              class="h-10 w-10 rounded-full object-cover ring-1 ring-zinc-200 dark:ring-zinc-700"
+            />
+
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">{{ user.name }}</p>
+              <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">@{{ user.username }}</p>
+            </div>
+
+            <button
+              type="button"
+              class="inline-flex h-9 items-center justify-center rounded-full border border-zinc-200 px-3 text-xs font-semibold text-zinc-700 transition-colors hover:border-[color:var(--brand-red,#df3432)] hover:bg-[color:color-mix(in_srgb,var(--brand-red,#df3432)_10%,transparent)] hover:text-[color:var(--brand-red,#df3432)] dark:border-zinc-700 dark:text-zinc-200"
+              [attr.aria-label]="'Seguir a ' + user.name"
+            >
+              Seguir
+            </button>
+          </li>
+        } @empty {
+          <li class="rounded-xl border border-dashed border-zinc-200 p-4 text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+            No hay sugerencias de usuarios en este momento.
+          </li>
+        }
+      </ul>
+    </section>
+  }
+</aside>

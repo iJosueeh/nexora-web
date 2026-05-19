@@ -1,6 +1,7 @@
 /* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
 /* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
 {
+  "extends": "./tsconfig.paths.json",
   "compileOnSave": false,
   "compilerOptions": {
     "strict": true,
@@ -11,17 +12,10 @@
     "skipLibCheck": true,
     "isolatedModules": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "importHelpers": true,
     "target": "ES2022",
     "module": "preserve",
-    "moduleResolution": "bundler",
-    "baseUrl": "./",
-    "paths": {
-      "@app/*": [
-        "src/app/*"
-      ]
-    }
+    "moduleResolution": "bundler"
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

@@ -1,20 +1,26 @@
-<app-hero></app-hero>
-<app-collaboration></app-collaboration>
+<div class="mx-auto grid w-full max-w-7xl gap-8 px-4 py-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start lg:px-6">
+  <div class="space-y-12">
+    <app-hero></app-hero>
+    <app-collaboration></app-collaboration>
 
-@defer (on viewport) {
-  <app-stats></app-stats>
-} @placeholder {
-  <div class="h-64 bg-[#0d0d0d]"></div>
-}
+    @defer (on viewport) {
+      <app-stats></app-stats>
+    } @placeholder {
+      <div class="h-64 rounded-2xl bg-[#0d0d0d]"></div>
+    }
 
-@defer (on viewport) {
-  <app-testimonials></app-testimonials>
-} @placeholder {
-  <div class="h-96 bg-[#0d0d0d]"></div>
-}
+    @defer (on viewport) {
+      <app-testimonials></app-testimonials>
+    } @placeholder {
+      <div class="h-96 rounded-2xl bg-[#0d0d0d]"></div>
+    }
 
-@defer (on viewport) {
-  <app-cta-banner></app-cta-banner>
-} @placeholder {
-  <div class="h-96 bg-[#0d0d0d]"></div>
-}
+    @defer (on viewport) {
+      <app-cta-banner></app-cta-banner>
+    } @placeholder {
+      <div class="h-96 rounded-2xl bg-[#0d0d0d]"></div>
+    }
+  </div>
+
+  <app-home-sidebar></app-home-sidebar>
+</div>
