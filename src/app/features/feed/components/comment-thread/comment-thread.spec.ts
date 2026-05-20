@@ -28,7 +28,14 @@ describe('CommentThreadComponent', () => {
 
   beforeEach(async () => {
     const mockCommentService: Partial<CommentService> = {
-      createComment: () => of({})
+      createComment: () => of({
+        id: 'new-c',
+        content: 'new',
+        createdAt: new Date(),
+        author: { username: 'test' } as any,
+        likesCount: 0,
+        replies: []
+      })
     };
 
     await TestBed.configureTestingModule({

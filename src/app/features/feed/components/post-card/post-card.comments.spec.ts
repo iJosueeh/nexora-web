@@ -6,6 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { PostCardComponent } from './post-card';
 import { CommentService } from '../../services/comment.service';
 import { Apollo } from 'apollo-angular';
+import { ToastrService } from 'ngx-toastr';
 import { of } from 'rxjs';
 import type { Post } from '../../../../interfaces/feed/post.model';
 
@@ -37,13 +38,15 @@ describe('PostCardComponent - comments', () => {
   let fixture: ComponentFixture<HostComponent>;
   const mockCommentService = { getThreads: vi.fn(() => of([])) } as any;
   const mockApollo = { mutate: vi.fn(() => of({ data: {} })) } as any;
+  const mockToastr = { success: vi.fn(), error: vi.fn(), info: vi.fn(), warning: vi.fn() };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HostComponent, RouterTestingModule],
       providers: [
         { provide: CommentService, useValue: mockCommentService },
-        { provide: Apollo, useValue: mockApollo }
+        { provide: Apollo, useValue: mockApollo },
+        { provide: ToastrService, useValue: mockToastr }
       ]
     }).compileComponents();
     fixture = TestBed.createComponent(HostComponent);

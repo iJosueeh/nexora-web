@@ -3,8 +3,8 @@ import { FeedTrends } from './feed-trends/feed-trends';
 import { ApolloTestingModule } from 'apollo-angular/testing';
 import { Trend, SuggestedUser } from '../models/trend.model';
 import { of } from 'rxjs';
-import { FeedTagsService } from '../../services/feed-tags.service';
-import { FeedService } from '../../services/feed.service';
+import { FeedTagsService } from '../services/feed-tags.service';
+import { FeedService } from '../services/feed.service';
 
 describe('FeedTrends Component', () => {
   let component: FeedTrends;
@@ -23,10 +23,16 @@ describe('FeedTrends Component', () => {
         of([
           {
             id: 'p1',
+            content: 'Test content',
+            createdAt: new Date(),
+            likesCount: 0,
+            commentsCount: 0,
+            shares: 0,
+            isLiked: false,
             author: { id: 'u1', username: 'tester', fullName: 'Tester', avatar: null }
-          }
+          } as any
         ])
-    } as Partial<FeedService>;
+    };
 
     await TestBed.configureTestingModule({
       imports: [FeedTrends, ApolloTestingModule],

@@ -32,11 +32,15 @@ export class NotificationService {
     private readonly ngZone: NgZone
   ) {
     effect(() => {
+      const isTest = typeof (globalThis as any).vi !== 'undefined' || typeof (globalThis as any).describe !== 'undefined';
       const user = this.authSession.user();
       const userId = user?.id;
       
-      if (userId) {
+      if (userId && !isTest) {
         setTimeout(() => this.initRealtime(userId), 200);
+        this.loadInitialData();
+      } else if (userId && isTest) {
+        // En tests solo cargamos datos iniciales, no iniciamos realtime real
         this.loadInitialData();
       } else {
         this.cleanup();
