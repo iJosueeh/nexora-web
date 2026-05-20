@@ -113,6 +113,10 @@ export class FeedContainerComponent implements AfterViewInit {
 		this.visiblePosts.update((current) => this.mergePosts([post], current));
 	}
 
+	removePost(postId: string): void {
+		this.visiblePosts.update((current) => current.filter((p) => p.id !== postId));
+	}
+
 	private mergePosts(existing: Post[], incoming: Post[]): Post[] {
 		const merged = new Map<string, Post>();
 

@@ -30,6 +30,22 @@
         </p>
       </div>
     </div>
+
+    @if (canDelete()) {
+      <button 
+        (click)="deletePost($event)"
+        class="flex h-8 w-8 items-center justify-center rounded-full text-[var(--brand-muted)] transition-all hover:bg-[#df3432]/10 hover:text-[var(--brand-red)]"
+        title="Eliminar publicación"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18"></path>
+          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </button>
+    }
   </header>
 
   <div class="space-y-3">
@@ -108,4 +124,15 @@
       <span class="text-[0.75rem] font-bold">{{ post().shares }}</span>
     </button>
   </footer>
+
+  <!-- Modal de Confirmación para eliminar -->
+  @if (showConfirmModal()) {
+    <app-confirm-modal
+      title="¿Eliminar publicación?"
+      message="Esta acción no se puede deshacer. Tu publicación desaparecerá del feed de Nexora."
+      [isLoading]="isDeleting()"
+      (confirm)="onConfirmDelete()"
+      (cancel)="onCancelDelete()"
+    ></app-confirm-modal>
+  }
 </article>

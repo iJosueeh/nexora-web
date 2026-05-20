@@ -142,6 +142,12 @@ export const MARK_ALL_NOTIFICATIONS_AS_READ_MUTATION = gql`
 	}
 `;
 
+export const DELETE_POST_MUTATION = gql`
+	mutation DeletePost($postId: ID!) {
+		deletePost(postId: $postId)
+	}
+`;
+
 export const TOGGLE_LIKE_MUTATION = gql`
 	mutation ToggleLike($postId: ID!) {
 		toggleLike(postId: $postId)
