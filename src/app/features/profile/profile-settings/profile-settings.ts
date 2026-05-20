@@ -22,15 +22,32 @@ import { AuthApiService } from '../../auth/services/auth-api.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileSettingsPage {
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly router: Router,
-    private readonly authSession: AuthSession,
-    private readonly apollo: Apollo,
-    private readonly storageService: SupabaseStorageService,
-    private readonly toastr: ToastrService,
-    private readonly authApi: AuthApiService
-  ) {
+  private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly authSession = inject(AuthSession);
+  private readonly apollo = inject(Apollo);
+  private readonly storageService = inject(SupabaseStorageService);
+  private readonly toastr = inject(ToastrService);
+  private readonly authApi = inject(AuthApiService);
+
+  readonly user = computed(() => this.authSession.getUser());
+  readonly isSaving = signal(false);
+  readonly previewAvatar = signal<string | null>(null);
+  readonly previewBanner = signal<string | null>(null);
+  readonly interestOptions = signal<string[]>([]);
+  readonly careerOptions = signal<string[]>([]);
+
+  readonly form = this.fb.group({
+    fullName: ['', [Validators.required, Validators.minLength(3)]],
+    username: ['', [Validators.required, Validators.minLength(3)]],
+    bio: [''],
+    avatarUrl: [''],
+    bannerUrl: [''],
+    career: [''],
+    academicInterests: [[] as string[]]
+  });
+
+  constructor() {
     this.loadCatalogs();
 
     // Sincronizar el formulario cuando el usuario cambie o se cargue la sesión
@@ -49,27 +66,6 @@ export class ProfileSettingsPage {
       }
     });
   }
-
-  user() {
-    return this.authSession.getUser();
-  }
-  readonly isSaving = signal(false);
-  readonly previewAvatar = signal<string | null>(null);
-  readonly previewBanner = signal<string | null>(null);
-  readonly interestOptions = signal<string[]>([]);
-  readonly careerOptions = signal<string[]>([]);
-
-  readonly form = this.fb.group({
-    fullName: ['', [Validators.required, Validators.minLength(3)]],
-    username: ['', [Validators.required, Validators.minLength(3)]],
-    bio: [''],
-    avatarUrl: [''],
-    bannerUrl: [''],
-    career: [''],
-    academicInterests: [[] as string[]]
-  });
-
-  // constructor body moved up to perform initializations
 
   async loadCatalogs(): Promise<void> {
     try {

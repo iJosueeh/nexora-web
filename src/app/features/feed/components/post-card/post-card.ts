@@ -28,11 +28,11 @@ import { ConfirmModal } from '../../../../shared/components/confirm-modal/confir
 export class PostCardComponent implements OnInit {
 	private readonly apollo = inject(Apollo);
 	private readonly interactionService = inject(FeedInteractionService);
-	private readonly authSession = inject(AuthSession);
+	public readonly authSession = inject(AuthSession);
 	private readonly toastr = inject(ToastrService);
 	private readonly destroyRef = inject(DestroyRef);
 	private readonly commentService = inject(CommentService);
-	private readonly router = inject(Router);
+	public readonly router = inject(Router);
 
 	readonly post = input.required<Post>();
 	readonly deleted = output<string>(); // Emite el ID del post eliminado
