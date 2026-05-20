@@ -149,8 +149,8 @@ export const TOGGLE_LIKE_MUTATION = gql`
 `;
 
 export const COMMENT_THREADS_QUERY = gql`
-	query CommentThreads($postId: ID!) {
-		obtenerHilosComentarios(postId: $postId) {
+		query CommentThreads($postId: ID!) {
+			comentariosPorPost(postId: $postId) {
 			id
 			postId
 			parentId
@@ -183,6 +183,19 @@ export const COMMENT_THREADS_QUERY = gql`
 			}
 		}
 	}
+`;
+
+export const CREATE_COMMENT_MUTATION = gql`
+  mutation CreateComment($input: CreateCommentInput!) {
+    crearComentario(input: $input) {
+      id
+      postId
+      parentId
+      autorId
+      contenido
+      createdAt
+    }
+  }
 `;
 
 export const TOGGLE_FOLLOW_MUTATION = gql`

@@ -1,8 +1,10 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { catchError, map, Observable, of } from 'rxjs';
 
 import { AVAILABLE_TAGS_QUERY } from '../../../graphql/graphql.queries';
+import { map as rxMap } from 'rxjs/operators';
+import { Trend, DEFAULT_TREND_CATEGORY } from '../models/trend.model';
 
 interface AvailableTagQueryModel {
   id: string;
@@ -23,7 +25,7 @@ interface AvailableTagsQueryResponse {
   providedIn: 'root'
 })
 export class FeedTagsService {
-  private readonly apollo = inject(Apollo);
+  constructor(private readonly apollo: Apollo) {}
 
   private readonly suggestedTags = [
     'ReactJS',
@@ -76,6 +78,21 @@ export class FeedTagsService {
         map((tags) => (tags.length > 0 ? tags : this.filterTags(search, this.suggestedTags).slice(0, limit))),
         catchError(() => of(this.filterTags(search, this.suggestedTags).slice(0, limit)))
       );
+  }
+
+  /**
+   * Get trends mapped from tags. Returns Observable<Trend[]>
+   */
+  getTrends(search = '', limit = 6): Observable<Trend[]> {
+    return this.getSuggestedTags(search, limit).pipe(
+      rxMap((tags) =>
+        tags.map((t, i) => ({
+          category: i === 0 ? DEFAULT_TREND_CATEGORY : 'RESEARCH',
+          title: `#${t}`,
+          conversations: `${Math.floor(Math.random() * 90) + 10}K`
+        }))
+      )
+    );
   }
 
   /**

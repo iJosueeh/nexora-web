@@ -34,9 +34,11 @@ interface CreatePublicationMutationResponse {
   providedIn: 'root'
 })
 export class FeedPublicationService {
-  private readonly apollo = inject(Apollo);
-  private readonly authSession = inject(AuthSession);
-  private readonly storageService = inject(SupabaseStorageService);
+  constructor(
+    private readonly apollo: Apollo,
+    private readonly authSession: AuthSession,
+    private readonly storageService: SupabaseStorageService
+  ) {}
 
   publish(draft: PublicationDraft): Observable<Post> {
     console.log('[FeedPublicationService] Iniciando publicación...', draft);

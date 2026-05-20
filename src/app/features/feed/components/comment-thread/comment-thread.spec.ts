@@ -2,6 +2,9 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { Component, signal } from '@angular/core';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { provideRouter } from '@angular/router';
+import { ApolloTestingModule } from 'apollo-angular/testing';
+import { of } from 'rxjs';
+import { CommentService } from '../../services/comment.service';
 import { CommentThreadComponent } from './comment-thread';
 import type { CommentThread } from '../../../../interfaces/feed/comment.model';
 
@@ -24,7 +27,14 @@ describe('CommentThreadComponent', () => {
   let fixture: ComponentFixture<HostComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({ imports: [HostComponent], providers: [provideRouter([])] }).compileComponents();
+    const mockCommentService: Partial<CommentService> = {
+      createComment: () => of({})
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [HostComponent, ApolloTestingModule],
+      providers: [provideRouter([]), { provide: CommentService, useValue: mockCommentService }]
+    }).compileComponents();
     fixture = TestBed.createComponent(HostComponent);
     fixture.detectChanges();
   });

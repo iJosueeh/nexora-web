@@ -1,10 +1,12 @@
 <div class="relative" [style.paddingLeft.rem]="depth() > 0 ? 1.25 : 0">
 	@if (depth() > 0) {
-		<span aria-hidden="true" class="pointer-events-none absolute left-0 top-0 h-full w-px bg-gradient-to-b from-[var(--brand-border)] via-[var(--brand-border)] to-transparent"></span>
-		<span aria-hidden="true" class="pointer-events-none absolute left-0 top-6 h-px w-4 bg-[var(--brand-border)]"></span>
+		<span aria-hidden="true" class="pointer-events-none absolute left-0 top-0 h-full w-px bg-gradient-to-b from-[var(--brand-border)] via-[var(--brand-border)] to-transparent z-0"></span>
+		<span aria-hidden="true" class="pointer-events-none absolute left-0 top-6 h-px w-4 bg-[var(--brand-border)] z-0"></span>
+		<!-- Connector handle: small dot where the horizontal connector meets the avatar -->
+		<span aria-hidden="true" class="pointer-events-none absolute left-4 top-6 -translate-y-1/2 w-3 h-3 rounded-full bg-[var(--brand-red)] ring-1 ring-white/10 z-10"></span>
 	}
 
-	<article class="group rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-4 transition-colors duration-300 hover:border-[#df3432]/25 hover:bg-[var(--brand-surface-2)]">
+	<article class="relative z-10 group rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-4 transition-colors duration-300 hover:border-[#df3432]/25 hover:bg-[var(--brand-surface-2)]">
 		<header class="flex items-start gap-3">
 			<a [routerLink]="['/u', comment().author.username]" class="shrink-0">
 				<img
@@ -45,10 +47,24 @@
 			<span>↩ {{ replyCount() }}</span>
 		</footer>
 
+		<div class="mt-3 flex items-center gap-3">
+			<button type="button" class="text-sm font-semibold text-[var(--brand-muted)]" (click)="reply()">Responder</button>
+		</div>
+
+		@if (showReply()) {
+			<div class="mt-3">
+				<textarea class="w-full rounded-md bg-transparent border border-white/5 p-3 text-sm text-[var(--brand-text)]" rows="3" [value]="replyText()" (input)="replyText.set($any($event.target).value)"></textarea>
+				<div class="mt-2 flex justify-end gap-2">
+					<button type="button" class="px-3 py-1 text-sm" (click)="replyText.set(''); showReply.set(false)">Cancelar</button>
+					<button type="button" class="px-3 py-1 rounded-full bg-[var(--brand-red)] text-white text-sm" (click)="submitReply()">Responder</button>
+				</div>
+			</div>
+		}
+
 		@if (hasReplies()) {
 			<div class="mt-4 space-y-4">
 				@for (reply of replies(); track reply.id) {
-					<app-comment-thread [comment]="reply" [depth]="depth() + 1" />
+					<app-comment-thread [comment]="reply" [depth]="depth() + 1" [postId]="postId()" [reloadComments]="reloadComments()" />
 				}
 			</div>
 		}

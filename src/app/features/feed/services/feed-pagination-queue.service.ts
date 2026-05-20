@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, ReplaySubject, Subject, EMPTY, of } from 'rxjs';
-import { catchError, concatMap, finalize, tap } from 'rxjs/operators';
+import { catchError, concatMap, finalize, tap, map } from 'rxjs/operators';
 
 import { Post } from '@app/interfaces/feed';
 import { FeedService } from '@app/features/feed/services/feed.service';
@@ -9,6 +9,7 @@ interface PageRequest {
   limit: number;
   offset: number;
   key: string;
+  tag?: string | null;
 }
 
 @Injectable({
@@ -27,10 +28,10 @@ export class FeedPaginationQueueService {
       .subscribe();
   }
 
-  enqueue(limit = 5, offset = 0): Observable<Post[]> {
+  enqueue(limit = 5, offset = 0, tag?: string | undefined): Observable<Post[]> {
     const normalizedLimit = Math.max(1, limit);
     const normalizedOffset = Math.max(0, offset);
-    const key = this.buildKey(normalizedLimit, normalizedOffset);
+    const key = this.buildKey(normalizedLimit, normalizedOffset, tag);
 
     const cached = this.pageCache.get(key);
     if (cached) {
@@ -45,7 +46,7 @@ export class FeedPaginationQueueService {
 
     if (!this.inFlightKeys.has(key)) {
       this.inFlightKeys.add(key);
-      this.requestQueue.next({ limit: normalizedLimit, offset: normalizedOffset, key });
+      this.requestQueue.next({ limit: normalizedLimit, offset: normalizedOffset, key, tag: tag });
     }
 
     return response$.asObservable();
@@ -53,6 +54,13 @@ export class FeedPaginationQueueService {
 
   private processRequest(request: PageRequest): Observable<Post[]> {
     return this.feedService.getPosts(request.limit, request.offset).pipe(
+      map((posts) => {
+        if (request.tag) {
+          const tagLower = request.tag.toLowerCase();
+          return posts.filter((p) => (p.tags ?? []).some((t) => t.toLowerCase() === tagLower));
+        }
+        return posts;
+      }),
       tap((posts) => {
         const snapshot = posts.map((post) => ({
           ...post,
@@ -79,7 +87,7 @@ export class FeedPaginationQueueService {
     );
   }
 
-  private buildKey(limit: number, offset: number): string {
-    return `${limit}:${offset}`;
+  private buildKey(limit: number, offset: number, tag?: string | undefined): string {
+    return tag ? `${limit}:${offset}:tag=${encodeURIComponent(tag)}` : `${limit}:${offset}`;
   }
 }

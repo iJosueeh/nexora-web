@@ -39,7 +39,7 @@ interface ProfilePostsQueryResponse {
   providedIn: 'root'
 })
 export class FeedService {
-  private readonly apollo = inject(Apollo);
+  constructor(private readonly apollo: Apollo) {}
 
   getPosts(limit = 5, offset = 0): Observable<Post[]> {
     return this.apollo

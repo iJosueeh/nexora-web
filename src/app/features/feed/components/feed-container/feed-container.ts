@@ -8,6 +8,7 @@ import {
 	signal,
 	viewChild
 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Post } from '../../../../interfaces/feed';
 import { FeedPublicationQueueService } from '../../services/feed-publication-queue.service';
@@ -32,6 +33,7 @@ export class FeedContainerComponent implements AfterViewInit {
 	readonly visiblePosts = signal<Post[]>([]);
 	readonly isInitialLoading = signal(true);
 	readonly isLoadingMore = signal(false);
+		readonly currentTag = signal<string | undefined>(undefined);
 
 	readonly blockSize = 5;
 	readonly skeletonRows = [1, 2, 3];
@@ -41,6 +43,18 @@ export class FeedContainerComponent implements AfterViewInit {
 	private pageRequestVersion = 0;
 
 	constructor() {
+		const route = inject(ActivatedRoute);
+		route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((qp) => {
+			const tag = qp['tag'] ? String(qp['tag']).trim() : undefined;
+			if (tag !== this.currentTag()) {
+				this.currentTag.set(tag);
+				// reset pagination when tag changes
+				this.offset = 0;
+				this.reachedEnd = false;
+				this.visiblePosts.set([]);
+				this.loadNextBlock();
+			}
+		});
 		const queuedPost = this.publicationQueue.consume();
 		if (queuedPost) {
 			this.visiblePosts.set([queuedPost]);
@@ -85,7 +99,7 @@ export class FeedContainerComponent implements AfterViewInit {
 		}
 
 		const requestVersion = ++this.pageRequestVersion;
-		this.paginationQueue.enqueue(this.blockSize, this.offset)
+		this.paginationQueue.enqueue(this.blockSize, this.offset, this.currentTag())
 			.pipe(takeUntilDestroyed(this.destroyRef))
 			.subscribe({
 				next: (posts) => {

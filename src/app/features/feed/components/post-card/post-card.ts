@@ -9,6 +9,9 @@ import { FeedInteractionService } from '../../services/feed-interaction.service'
 import { CommentService } from '../../services/comment.service';
 import { CommentThreadListComponent } from '../comment-thread-list/comment-thread-list';
 import { CommentThread } from '../../../../interfaces/feed';
+import { ToastService } from '../../../../core/services/toast.service';
+import { AuthSession } from '../../../../core/services/auth-session';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'app-post-card',
@@ -22,10 +25,15 @@ import { CommentThread } from '../../../../interfaces/feed';
 	styleUrl: './post-card.css'
 })
 export class PostCardComponent implements OnInit {
-	private readonly apollo = inject(Apollo);
-	private readonly interactionService = inject(FeedInteractionService);
-	private readonly destroyRef = inject(DestroyRef);
-	private readonly commentService = inject(CommentService);
+	constructor(
+		private readonly apollo: Apollo,
+		private readonly interactionService: FeedInteractionService,
+		private readonly destroyRef: DestroyRef,
+		private readonly commentService: CommentService,
+		private readonly toastService: ToastService,
+		readonly authSession: AuthSession,
+		readonly router: Router
+	) {}
 
 	readonly post = input.required<Post>();
 
@@ -35,10 +43,34 @@ export class PostCardComponent implements OnInit {
 	readonly showComments = signal(false);
 	readonly isLoadingComments = signal(false);
 	readonly comments = signal<CommentThread[]>([]);
+	readonly commentsCount = signal(0);
+
+	readonly newComment = signal('');
+	readonly isSubmittingComment = signal(false);
+
+	// constructor-injected dependencies above
+
+	openComments(event?: MouseEvent): void {
+		if (event) {
+			// if click came from a link or button, ignore
+			const target = event.target as HTMLElement | null;
+			if (target && target.closest('a,button')) {
+				return;
+			}
+		}
+
+		if (this.showComments()) {
+			this.showComments.set(false);
+			return;
+		}
+
+		this.loadComments();
+	}
 
 	ngOnInit(): void {
 		this.isLiked.set(this.post().isLiked ?? false);
 		this.likesCount.set(this.post().likesCount);
+		this.commentsCount.set(this.post().commentsCount ?? 0);
 
 		// Escuchar actualizaciones globales de likes
 		this.interactionService.likeUpdates$
@@ -107,6 +139,10 @@ export class PostCardComponent implements OnInit {
 			return;
 		}
 
+		this.loadComments();
+	}
+
+	loadComments(): void {
 		this.isLoadingComments.set(true);
 		this.commentService.getThreads(this.post().id)
 			.pipe(takeUntilDestroyed(this.destroyRef))
@@ -115,9 +151,71 @@ export class PostCardComponent implements OnInit {
 					this.comments.set(threads);
 					this.isLoadingComments.set(false);
 					this.showComments.set(true);
+					// focus composer textarea after it's rendered
+					setTimeout(() => {
+						try {
+							const selector = `[data-post-comment-textarea="${this.post().id}"]`;
+							const el = document.querySelector(selector) as HTMLTextAreaElement | null;
+							if (el) el.focus();
+						} catch (e) {}
+					}, 50);
 				},
 				error: () => {
 					this.isLoadingComments.set(false);
+				}
+			});
+	}
+
+	submitComment(): void {
+		const content = this.newComment().trim();
+		if (!content) return;
+		if (!this.authSession.isAuthenticated()) {
+			this.toastService.show('Inicia sesión para comentar', 'warning');
+			void this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+			return;
+		}
+		// Optimistic UI: insertar comentario temporal al inicio
+		const tempId = `temp-${Date.now()}`;
+		const user = this.authSession.getUser();
+		const tempAuthor = {
+			id: user?.id ?? tempId,
+			email: user?.email ?? 'you@local',
+			username: user?.username ?? (user?.email?.split('@')[0] ?? 'usuario'),
+			fullName: user?.fullName,
+			avatar: user?.avatarUrl ?? user?.avatarUrl ?? 'assets/images/default-avatar.webp'
+		};
+		const tempComment: CommentThread = {
+			id: tempId,
+			author: tempAuthor as any,
+			content,
+			createdAt: new Date(),
+			likesCount: 0,
+			replies: []
+		};
+
+		// insert optimistic
+		this.comments.update(arr => [tempComment, ...arr]);
+		this.commentsCount.update(c => c + 1);
+		this.newComment.set('');
+		this.isSubmittingComment.set(true);
+
+		this.commentService.createComment(this.post().id, null, content)
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe({
+				next: (created) => {
+					// replace temp with server result
+					this.comments.update(arr => arr.map(c => c.id === tempId ? created : c));
+					this.isSubmittingComment.set(false);
+					this.toastService.show('Comentario publicado', 'success');
+				},
+				error: (err) => {
+					console.error('Error posting comment', err);
+					// revert optimistic
+					this.comments.update(arr => arr.filter(c => c.id !== tempId));
+					this.commentsCount.update(c => Math.max(0, c - 1));
+					this.isSubmittingComment.set(false);
+					const gqlMessage = err?.graphQLErrors?.[0]?.message || err?.message || 'Error al publicar comentario';
+					this.toastService.show(gqlMessage, 'error');
 				}
 			});
 	}

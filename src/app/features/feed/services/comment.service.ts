@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { map, Observable } from 'rxjs';
 import { COMMENT_THREADS_QUERY } from '../../../graphql/graphql.queries';
+import { CREATE_COMMENT_MUTATION } from '../../../graphql/graphql.queries';
 import { CommentThread } from '../../../interfaces/feed';
 
 interface CommentThreadDTO {
@@ -16,7 +17,7 @@ interface CommentThreadDTO {
 
 @Injectable({ providedIn: 'root' })
 export class CommentService {
-  private readonly apollo = inject(Apollo);
+  constructor(private readonly apollo: Apollo) {}
 
   getThreads(postId: string): Observable<CommentThread[]> {
     return this.apollo
@@ -27,6 +28,15 @@ export class CommentService {
       .pipe(
         map((res) => (res.data?.obtenerHilosComentarios ?? []).map(dtoToCommentThread))
       );
+  }
+
+  createComment(postId: string, parentId: string | null, content: string): Observable<CommentThread> {
+    return this.apollo
+      .mutate<{ crearComentario: CommentThreadDTO }>({
+        mutation: CREATE_COMMENT_MUTATION,
+        variables: { input: { postId, parentId, contenido: content } }
+      })
+      .pipe(map((res) => dtoToCommentThread(res.data!.crearComentario)));
   }
 }
 

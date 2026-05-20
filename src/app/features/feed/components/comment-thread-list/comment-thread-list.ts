@@ -18,5 +18,9 @@ export class CommentThreadListComponent {
 	readonly comments = input<readonly CommentThread[]>([]);
 	readonly emptyMessage = input('Aún no hay comentarios.');
 
+	// Optional inputs to allow nested components to post replies and refresh
+	readonly postId = input<string | undefined>(undefined);
+	readonly reloadComments = input<(() => void) | undefined>(undefined);
+
 	readonly hasComments = computed(() => this.comments().length > 0);
 }
