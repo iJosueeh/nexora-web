@@ -235,3 +235,17 @@ export const FOLLOWING_QUERY = gql`
     }
   }
 `;
+
+export const TRENDING_TOPICS_QUERY = gql`
+  query GetTrendingTopics($limit: Int) {
+    trendingTopics(limit: $limit) {
+      id
+      titulo
+      commentsCount
+      likesCount
+      interactionScore
+      tags
+    }
+  }
+`;
+
