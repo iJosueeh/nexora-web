@@ -1,28 +1,20 @@
-<app-shell-layout mode="feed">
-  <div shell-main>
-    <app-hero></app-hero>
-    <app-collaboration></app-collaboration>
+<app-hero></app-hero>
+<app-collaboration></app-collaboration>
 
-    @defer (on viewport) {
-      <app-stats></app-stats>
-    } @placeholder {
-      <div class="h-64 bg-[#0d0d0d]"></div>
-    }
+@defer (on viewport) {
+  <app-stats></app-stats>
+} @placeholder {
+  <div class="h-64 bg-[#0d0d0d]"></div>
+}
 
-    @defer (on viewport) {
-      <app-testimonials></app-testimonials>
-    } @placeholder {
-      <div class="h-96 bg-[#0d0d0d]"></div>
-    }
+@defer (on viewport) {
+  <app-testimonials></app-testimonials>
+} @placeholder {
+  <div class="h-96 bg-[#0d0d0d]"></div>
+}
 
-    @defer (on viewport) {
-      <app-cta-banner></app-cta-banner>
-    } @placeholder {
-      <div class="h-96 bg-[#0d0d0d]"></div>
-    }
-  </div>
-
-  <div shell-right>
-    <app-feed-trends></app-feed-trends>
-  </div>
-</app-shell-layout>
+@defer (on viewport) {
+  <app-cta-banner></app-cta-banner>
+} @placeholder {
+  <div class="h-96 bg-[#0d0d0d]"></div>
+}

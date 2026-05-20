@@ -1,8 +1,17 @@
-<div class="nexora-shell" [class.nexora-shell--feed]="mode === 'feed'" [class.nexora-shell--profile]="mode === 'profile'" [style.fontFamily]="fontFamily">
+<div
+  class="nexora-shell"
+  [class.nexora-shell--feed]="mode === 'feed'"
+  [class.nexora-shell--profile]="mode === 'profile'"
+  [class.nexora-shell--no-left]="!showLeft"
+  [class.nexora-shell--no-right]="!showRight"
+  [style.fontFamily]="fontFamily"
+>
   <div class="nexora-shell-grid">
-    <div class="nexora-shell-side hidden lg:block">
-      <ng-content select="[shell-left]"></ng-content>
-    </div>
+    @if (showLeft) {
+      <div class="nexora-shell-side hidden lg:block">
+        <ng-content select="[shell-left]"></ng-content>
+      </div>
+    }
 
     <div class="nexora-shell-content nexora-scrollbar-hidden">
       <ng-content select="[shell-main]"></ng-content>
