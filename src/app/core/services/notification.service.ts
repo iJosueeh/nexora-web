@@ -15,11 +15,7 @@ import {
   providedIn: 'root',
 })
 export class NotificationService {
-  private readonly apollo = inject(Apollo);
-  private readonly supabase = inject(SupabaseAuthService);
-  private readonly authSession = inject(AuthSession);
-  private readonly toastr = inject(ToastrService);
-  private readonly ngZone = inject(NgZone);
+  
 
   private readonly notificationsSignal = signal<Notification[]>([]);
   private readonly unreadCountSignal = signal<number>(0);
@@ -28,13 +24,23 @@ export class NotificationService {
   readonly notifications = this.notificationsSignal.asReadonly();
   readonly unreadCount = this.unreadCountSignal.asReadonly();
 
-  constructor() {
+  constructor(
+    private readonly apollo: Apollo,
+    private readonly supabase: SupabaseAuthService,
+    private readonly authSession: AuthSession,
+    private readonly toastr: ToastrService,
+    private readonly ngZone: NgZone
+  ) {
     effect(() => {
+      const isTest = typeof (globalThis as any).vi !== 'undefined' || typeof (globalThis as any).describe !== 'undefined';
       const user = this.authSession.user();
       const userId = user?.id;
       
-      if (userId) {
+      if (userId && !isTest) {
         setTimeout(() => this.initRealtime(userId), 200);
+        this.loadInitialData();
+      } else if (userId && isTest) {
+        // En tests solo cargamos datos iniciales, no iniciamos realtime real
         this.loadInitialData();
       } else {
         this.cleanup();

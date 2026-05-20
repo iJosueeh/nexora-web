@@ -72,10 +72,13 @@ describe('ApiClientService', () => {
     service.get('/path-with-slash').subscribe();
     httpMock.expectOne('http://api.nexora.com/path-with-slash');
   });
+});
 
-  it('should handle base URL without trailing slash correctly', () => {
-    // Reset and reconfigure to test different injection
-    TestBed.resetTestingModule();
+describe('ApiClientService without trailing slash', () => {
+  let service: ApiClientService;
+  let httpMock: HttpTestingController;
+
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
@@ -83,12 +86,17 @@ describe('ApiClientService', () => {
         { provide: API_BASE_URL, useValue: 'http://api.nexora.com' }
       ]
     });
-    
-    const cleanService = TestBed.inject(ApiClientService);
-    const cleanHttpMock = TestBed.inject(HttpTestingController);
 
-    cleanService.get('test').subscribe();
-    cleanHttpMock.expectOne('http://api.nexora.com/test');
-    cleanHttpMock.verify();
+    service = TestBed.inject(ApiClientService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('should handle base URL without trailing slash correctly', () => {
+    service.get('test').subscribe();
+    httpMock.expectOne('http://api.nexora.com/test');
   });
 });

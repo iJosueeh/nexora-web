@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 
 export interface LikeUpdate {
   postId: string;
+  userId: string;
   action: 'INSERT' | 'DELETE';
 }
 
@@ -38,8 +39,11 @@ export class FeedInteractionService {
           
           if (data && (data.post_id || data.postId)) {
             const cleanPostId = String(data.post_id || data.postId).toLowerCase().trim();
+            const userId = String(data.user_id || data.userId || '').toLowerCase().trim();
+            
             this.likeUpdatesSubject.next({
               postId: cleanPostId,
+              userId: userId,
               action: eventType as 'INSERT' | 'DELETE'
             });
           }

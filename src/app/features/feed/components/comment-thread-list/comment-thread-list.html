@@ -1,0 +1,11 @@
+<section class="space-y-4">
+	@if (hasComments()) {
+		@for (comment of comments(); track comment.id) {
+			<app-comment-thread [comment]="comment" [postId]="postId()" [reloadComments]="reloadComments" />
+		}
+	} @else {
+		<div class="rounded-2xl border border-dashed border-[var(--brand-border)] bg-[var(--brand-surface)] px-5 py-8 text-center text-sm text-[var(--brand-muted)]">
+			{{ emptyMessage() }}
+		</div>
+	}
+</section>

@@ -142,10 +142,66 @@ export const MARK_ALL_NOTIFICATIONS_AS_READ_MUTATION = gql`
 	}
 `;
 
+export const DELETE_POST_MUTATION = gql`
+	mutation DeletePost($postId: ID!) {
+		deletePost(postId: $postId)
+	}
+`;
+
 export const TOGGLE_LIKE_MUTATION = gql`
 	mutation ToggleLike($postId: ID!) {
 		toggleLike(postId: $postId)
 	}
+`;
+
+export const COMMENT_THREADS_QUERY = gql`
+		query CommentThreads($postId: ID!) {
+			comentariosPorPost(postId: $postId) {
+			id
+			postId
+			parentId
+			autorId
+			contenido
+			createdAt
+			respuestas {
+				id
+				postId
+				parentId
+				autorId
+				contenido
+				createdAt
+				respuestas {
+					id
+					postId
+					parentId
+					autorId
+					contenido
+					createdAt
+					respuestas {
+						id
+						postId
+						parentId
+						autorId
+						contenido
+						createdAt
+					}
+				}
+			}
+		}
+	}
+`;
+
+export const CREATE_COMMENT_MUTATION = gql`
+  mutation CreateComment($input: CreateCommentInput!) {
+    crearComentario(input: $input) {
+      id
+      postId
+      parentId
+      autorId
+      contenido
+      createdAt
+    }
+  }
 `;
 
 export const TOGGLE_FOLLOW_MUTATION = gql`
@@ -179,3 +235,17 @@ export const FOLLOWING_QUERY = gql`
     }
   }
 `;
+
+export const TRENDING_TOPICS_QUERY = gql`
+  query GetTrendingTopics($limit: Int) {
+    trendingTopics(limit: $limit) {
+      id
+      titulo
+      commentsCount
+      likesCount
+      interactionScore
+      tags
+    }
+  }
+`;
+

@@ -47,7 +47,7 @@ describe('FeedInteractionService', () => {
     // Simular llamada de Supabase Realtime
     const mockPayload = {
       eventType: 'INSERT',
-      new: { post_id: 'post-123' }
+      new: { post_id: 'post-123', user_id: 'user-456' }
     };
 
     // Obtener el callback registrado en el canal
@@ -61,6 +61,7 @@ describe('FeedInteractionService', () => {
 
     expect(receivedUpdate).toEqual({
       postId: 'post-123',
+      userId: 'user-456',
       action: 'INSERT'
     });
   });

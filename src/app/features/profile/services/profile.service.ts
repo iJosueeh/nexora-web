@@ -25,7 +25,7 @@ interface FollowingResponse {
   providedIn: 'root',
 })
 export class ProfileService {
-  private readonly apollo = inject(Apollo);
+  constructor(private readonly apollo: Apollo) {}
 
   getFollowers(userId: string): Observable<AuthUser[]> {
     return this.apollo

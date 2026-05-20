@@ -1,60 +1,57 @@
 <aside class="sticky top-0 flex h-full w-full flex-col overflow-hidden rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-black)]" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
   <div class="nexora-scrollbar-hidden flex-1 space-y-6 overflow-y-auto p-4">
     <div class="rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-4">
-      <h2 class="mb-5 text-[0.64rem] font-bold uppercase tracking-[0.18em] text-[var(--brand-muted)]">
-        Tendencias Actuales
-      </h2>
-      <ul class="space-y-5">
-        @for (trend of trends(); track trend.title) {
-          <li class="cursor-pointer group transition-colors duration-150">
-            <div class="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--brand-muted)] group-hover:text-[#a0a6b0]">
-              {{ trend.category }}
-            </div>
-            <div class="mt-1 text-[1rem] font-bold tracking-tight text-[var(--brand-text)] transition-colors group-hover:text-[var(--brand-red)]">
-              {{ trend.title }}
-            </div>
-            <div class="mt-1 text-[0.62rem] uppercase tracking-[0.08em] text-[#9ca3b0]">
-              {{ trend.conversations }} conversaciones
-            </div>
+      <h2 class="mb-5 text-[0.64rem] font-bold uppercase tracking-[0.18em] text-[var(--brand-muted)]">Tendencias Actuales</h2>
+
+      <ng-container *ngIf="loading(); else showTrends">
+        <ul class="space-y-5">
+          <li class="space-y-1">
+            <div class="h-3 w-2/3 rounded bg-[#1a1a1a] animate-pulse"></div>
+            <div class="h-4 w-3/4 rounded bg-[#111111] animate-pulse"></div>
+            <div class="h-3 w-1/2 rounded bg-[#0f0f0f] animate-pulse"></div>
           </li>
-        }
-      </ul>
+          <li class="space-y-1">
+            <div class="h-3 w-2/3 rounded bg-[#1a1a1a] animate-pulse"></div>
+            <div class="h-4 w-3/4 rounded bg-[#111111] animate-pulse"></div>
+            <div class="h-3 w-1/2 rounded bg-[#0f0f0f] animate-pulse"></div>
+          </li>
+          <li class="space-y-1">
+            <div class="h-3 w-2/3 rounded bg-[#1a1a1a] animate-pulse"></div>
+            <div class="h-4 w-3/4 rounded bg-[#111111] animate-pulse"></div>
+            <div class="h-3 w-1/2 rounded bg-[#0f0f0f] animate-pulse"></div>
+          </li>
+        </ul>
+      </ng-container>
+
+      <ng-template #showTrends>
+        <ul class="space-y-5">
+          <li *ngFor="let trend of trends()" class="cursor-pointer group transition-colors duration-150" (click)="openTrend(trend.title)">
+            <div class="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--brand-muted)] group-hover:text-[#a0a6b0]">{{ trend.category }}</div>
+            <div class="mt-1 text-[1rem] font-bold tracking-tight text-[var(--brand-text)] transition-colors group-hover:text-[var(--brand-red)]">{{ trend.title }}</div>
+            <div class="mt-1 text-[0.62rem] uppercase tracking-[0.08em] text-[#9ca3b0]">{{ trend.conversations }} conversaciones</div>
+          </li>
+          <li *ngIf="!loading() && trends().length === 0" class="text-[0.84rem] text-[#9ca3b0]">No hay tendencias disponibles. <a routerLink="/feed/explore" class="text-[var(--brand-red)]">Explorar</a></li>
+          <li *ngIf="error()" class="text-[0.84rem] text-[#f87171]">{{ error() }}</li>
+        </ul>
+      </ng-template>
     </div>
 
     <div class="rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-4">
-      <h2 class="mb-5 text-[0.64rem] font-bold uppercase tracking-[0.18em] text-[var(--brand-muted)]">
-        Sugerencias para Seguir
-      </h2>
+      <h2 class="mb-5 text-[0.64rem] font-bold uppercase tracking-[0.18em] text-[var(--brand-muted)]">Sugerencias para Seguir</h2>
+
       <ul class="space-y-3">
-        @for (user of suggestedUsers(); track user.id) {
-          <li class="flex items-center justify-between gap-3 rounded-xl bg-[var(--brand-surface-2)] p-3 transition-colors duration-150 hover:bg-[#21242c]">
-            <div class="flex min-w-0 flex-1 items-center gap-3">
-              <img
-                [src]="user.avatar"
-                [alt]="user.name"
-                class="h-9 w-9 shrink-0 rounded-full object-cover"
-              />
-              <div class="min-w-0">
-                <div class="truncate text-[0.72rem] font-bold text-[var(--brand-text)]">
-                  {{ user.name }}
-                </div>
-                <div class="truncate text-[0.62rem] text-[var(--brand-muted)]">
-                  {{ user.role }}
-                </div>
-              </div>
+        <li *ngFor="let user of suggestedUsers()" class="flex items-center justify-between gap-3 rounded-xl bg-[var(--brand-surface-2)] p-3 transition-colors duration-150 hover:bg-[#21242c]">
+          <div class="flex min-w-0 flex-1 items-center gap-3">
+            <img [src]="user.avatar" [alt]="user.name" class="h-9 w-9 shrink-0 rounded-full object-cover" />
+            <div class="min-w-0">
+              <div class="truncate text-[0.72rem] font-bold text-[var(--brand-text)]">{{ user.name }}</div>
+              <div class="truncate text-[0.62rem] text-[var(--brand-muted)]">{{ user.role }}</div>
             </div>
-            <button
-              class="
-                shrink-0 whitespace-nowrap rounded-full border border-[var(--brand-muted)]
-                px-3 py-1 text-[0.58rem] font-bold uppercase tracking-[0.12em] text-[var(--brand-muted)]
-                transition-all duration-150
-                hover:border-[var(--brand-red)] hover:bg-[color-mix(in_srgb,var(--brand-red)_14%,transparent)] hover:text-[var(--brand-red)]
-              "
-            >
-              Seguir
-            </button>
-          </li>
-        }
+          </div>
+          <button class="shrink-0 whitespace-nowrap rounded-full border border-[var(--brand-muted)] px-3 py-1 text-[0.58rem] font-bold uppercase tracking-[0.12em] transition-all duration-150" (click)="onToggleFollow(user, $event)">
+            {{ user.isFollowing ? 'Siguiendo' : 'Seguir' }}
+          </button>
+        </li>
       </ul>
     </div>
   </div>
