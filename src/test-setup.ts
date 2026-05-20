@@ -34,8 +34,8 @@ import { beforeEach, vi } from 'vitest';
 // We ensure that the global Event is the one from JSDOM when running in Vitest
 if (typeof (globalThis as any).Event === 'function') {
   try {
-    const { JSDOM } = require('jsdom');
-    const JSDOMEvent = new JSDOM('').window.Event;
+    const jsdom = require('jsdom');
+    const JSDOMEvent = new jsdom.JSDOM('').window.Event;
     if ((globalThis as any).Event !== JSDOMEvent) {
       (globalThis as any).Event = JSDOMEvent;
     }
