@@ -1,13 +1,39 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FeedTrends, Trend, SuggestedUser } from './feed-trends/feed-trends';
+import { FeedTrends } from './feed-trends/feed-trends';
+import { ApolloTestingModule } from 'apollo-angular/testing';
+import { Trend, SuggestedUser } from '../models/trend.model';
+import { of } from 'rxjs';
+import { FeedTagsService } from '../../services/feed-tags.service';
+import { FeedService } from '../../services/feed.service';
 
 describe('FeedTrends Component', () => {
   let component: FeedTrends;
   let fixture: ComponentFixture<FeedTrends>;
 
   beforeEach(async () => {
+    const mockFeedTags: Partial<FeedTagsService> = {
+      getTrends: (search = '', limit = 6) =>
+        of([
+          { category: 'TENDENCIAS EN CIENCIA', title: '#Test', conversations: '10K' }
+        ] as Trend[])
+    };
+
+    const mockFeedService: Partial<FeedService> = {
+      getPosts: (limit = 20, offset = 0) =>
+        of([
+          {
+            id: 'p1',
+            author: { id: 'u1', username: 'tester', fullName: 'Tester', avatar: null }
+          }
+        ])
+    } as Partial<FeedService>;
+
     await TestBed.configureTestingModule({
-      imports: [FeedTrends],
+      imports: [FeedTrends, ApolloTestingModule],
+      providers: [
+        { provide: FeedTagsService, useValue: mockFeedTags },
+        { provide: FeedService, useValue: mockFeedService }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(FeedTrends);

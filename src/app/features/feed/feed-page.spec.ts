@@ -1,20 +1,30 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FeedPage } from './pages/feed-page/feed-page';
-import { ApolloTestingModule } from 'apollo-angular/testing';
-import { API_BASE_URL, GRAPHQL_URL } from '@app/core/tokens/api-endpoints.token';
-import { ToastrModule } from 'ngx-toastr';
+import { Apollo } from 'apollo-angular';
+import { of } from 'rxjs';
+import { vi } from 'vitest';
+import { NotificationService } from '../../core/services/notification.service';
+import { signal } from '@angular/core';
 
 describe('FeedPage Component', () => {
   let component: FeedPage;
   let fixture: ComponentFixture<FeedPage>;
 
   beforeEach(async () => {
+    const mockApollo = { query: () => of({ data: {} }), mutate: () => of({ data: {} }) } as any;
+    const mockNotificationService = {
+      notifications: signal([]),
+      unreadCount: signal(0),
+      markAsRead: vi.fn(),
+      markAllAsRead: vi.fn()
+    } as any;
+
     await TestBed.configureTestingModule({
-      imports: [FeedPage, RouterTestingModule, ApolloTestingModule, ToastrModule.forRoot()],
+      imports: [FeedPage, RouterTestingModule],
       providers: [
-        { provide: API_BASE_URL, useValue: 'http://api.test' },
-        { provide: GRAPHQL_URL, useValue: 'http://graphql.test' }
+        { provide: Apollo, useValue: mockApollo },
+        { provide: NotificationService, useValue: mockNotificationService }
       ]
     }).compileComponents();
 
@@ -26,22 +36,17 @@ describe('FeedPage Component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have sidebars and main content area', () => {
+  it('should have 3-column layout with sidebars', () => {
     fixture.detectChanges();
-    const sidebar = fixture.nativeElement.querySelector('app-feed-sidebar');
-    const trends = fixture.nativeElement.querySelector('app-feed-trends');
-    const container = fixture.nativeElement.querySelector('app-feed-container');
-    
-    expect(sidebar).toBeTruthy();
-    expect(trends).toBeTruthy();
-    expect(container).toBeTruthy();
+    const main = fixture.nativeElement.querySelector('main') as HTMLElement;
+    expect(main.classList.contains('border')).toBe(true);
+    expect(main.classList.contains('border-[var(--brand-border)]')).toBe(true);
   });
 
-  it('should display feed elements', () => {
+  it('should display feed header', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Nexora');
-    expect(compiled.textContent).toContain('Inicio');
+    expect(compiled.textContent).toContain('Lo ultimo');
   });
 
   it('should render app-feed-sidebar component', () => {
@@ -60,5 +65,12 @@ describe('FeedPage Component', () => {
     fixture.detectChanges();
     const containerComponent = fixture.nativeElement.querySelector('app-feed-container');
     expect(containerComponent).toBeTruthy();
+  });
+
+  it('should have proper border classes in main content', () => {
+    fixture.detectChanges();
+    const main = fixture.nativeElement.querySelector('main') as HTMLElement;
+    expect(main.classList.contains('border')).toBe(true);
+    expect(main.classList.contains('border-[var(--brand-border)]')).toBe(true);
   });
 });
