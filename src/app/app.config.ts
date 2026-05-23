@@ -43,22 +43,11 @@ export const appConfig: ApplicationConfig = {
       const authSession = inject(AuthSession);
       const supabaseAuth = inject(SupabaseAuthService);
 
-      const authLink = setContext(async (operation, context) => {
-        const operationName = operation.operationName ?? '';
-        const isPublicOperation = operationName === 'FeedPosts' || operationName === 'AvailableTags';
-
-        if (isPublicOperation) {
-          return context;
-        }
-
+      const authLink = setContext(async (_, context) => {
         const liveTokens = await supabaseAuth.getValidTokens();
         const accessToken = liveTokens?.accessToken ?? authSession.getTokens()?.accessToken;
 
         if (!accessToken) {
-          if (authSession.isAuthenticated()) {
-            await supabaseAuth.expireSessionAndRedirect();
-          }
-
           return context;
         }
 

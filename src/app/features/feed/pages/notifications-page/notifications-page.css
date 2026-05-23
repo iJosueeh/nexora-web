@@ -1,0 +1,11 @@
+:host {
+  display: block;
+}
+
+.is-unread {
+  background: rgba(223, 52, 50, 0.03) !important;
+}
+
+.is-unread:hover {
+  background: rgba(223, 52, 50, 0.05) !important;
+}

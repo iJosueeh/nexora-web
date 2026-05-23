@@ -1,0 +1,103 @@
+<div class="relative">
+  <!-- Campana -->
+  <button
+    type="button"
+    class="relative flex h-9 w-9 items-center justify-center rounded-full border border-white/8 bg-white/5 text-[#9ca2af] transition-colors hover:text-[#e3e7ee]"
+    (click)="toggleDropdown()"
+    aria-label="Notificaciones"
+  >
+    <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5"></path>
+      <path d="M10 17a2 2 0 0 0 4 0"></path>
+    </svg>
+
+    <!-- Indicador de no leídos -->
+    @if (notificationService.unreadCount() > 0) {
+      <span class="absolute right-2 top-2 h-2 w-2 rounded-full bg-[#df3432] ring-2 ring-[#06080d]"></span>
+    }
+  </button>
+
+  <!-- Dropdown -->
+  @if (isOpen()) {
+    <div
+      class="absolute right-0 mt-3 w-80 origin-top-right overflow-hidden rounded-xl border border-[#1d2331] bg-[#0b0f19] shadow-2xl backdrop-blur-sm"
+    >
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-[#1d2331] bg-white/2 px-4 py-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-[#e3e7ee]">Notificaciones</h3>
+        @if (notificationService.unreadCount() > 0) {
+          <button
+            (click)="markAllAsRead()"
+            class="text-[0.65rem] font-medium text-[#707887] transition-colors hover:text-[#df3432]"
+          >
+            Marcar todo como leído
+          </button>
+        }
+      </div>
+
+      <!-- Lista -->
+      <div class="max-h-96 overflow-y-auto">
+        @for (notif of notificationService.notifications(); track notif.id) {
+          <div
+            class="group flex gap-3 border-b border-[#1d2331]/50 px-4 py-3 transition-colors hover:bg-white/2"
+            [class.bg-[#df3432]/5]="!notif.isRead"
+          >
+            <!-- Avatar del emisor -->
+            <div class="shrink-0">
+              <img
+                [src]="notif.sender.avatarUrl || 'assets/images/default-avatar.webp'"
+                class="h-9 w-9 rounded-full object-cover ring-1 ring-white/10"
+                alt="Avatar"
+              />
+            </div>
+
+            <!-- Contenido -->
+            <div class="flex-1 min-w-0">
+              <p class="text-[0.8rem] leading-relaxed text-[#d1d5db]">
+                <span class="font-semibold text-white">{{ notif.sender.username }}</span>
+                @switch (notif.type) {
+                  @case ('LIKE') { le dio me gusta a tu publicación }
+                  @case ('COMMENT') { comentó tu publicación }
+                  @case ('COMMENT_REPLY') { respondió a tu comentario }
+                  @case ('FOLLOW') { ha comenzado a seguirte }
+                  @default { interactuó contigo }
+                }
+              </p>
+              
+              @if (notif.content && notif.type !== 'FOLLOW') {
+                <p class="mt-1 line-clamp-2 text-[0.75rem] text-[#707887]">
+                  "{{ notif.content }}"
+                </p>
+              }
+
+              <span class="mt-1.5 block text-[0.65rem] text-[#4b5563]">
+                {{ notif.createdAt | date: 'short' }}
+              </span>
+            </div>
+
+            <!-- Punto de no leído -->
+            @if (!notif.isRead) {
+              <div class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#df3432]"></div>
+            }
+          </div>
+        } @empty {
+          <div class="flex flex-col items-center justify-center px-4 py-8 text-center">
+            <svg class="mb-2 h-10 w-10 text-[#2a3142]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5"></path>
+              <path d="M10 17a2 2 0 0 0 4 0"></path>
+            </svg>
+            <p class="text-[0.8rem] text-[#707887]">No tienes notificaciones por ahora</p>
+          </div>
+        }
+      </div>
+
+      <!-- Footer -->
+      <a
+        routerLink="/notificaciones"
+        class="block border-t border-[#1d2331] bg-white/2 px-4 py-2.5 text-center text-[0.7rem] font-bold uppercase tracking-widest text-[#9ca2af] transition-colors hover:text-white"
+      >
+        Ver todo el historial
+      </a>
+    </div>
+  }
+</div>

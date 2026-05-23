@@ -30,6 +30,7 @@ export interface ProfileViewModel extends AuthUser {
   joinedLabel: string;
   featuredInterests: string[];
   profileComplete?: boolean;
+  isFollowing?: boolean;
 }
 
 export function buildProfileViewModel(user: AuthUser | null | undefined): ProfileViewModel {
@@ -49,6 +50,7 @@ export function buildProfileViewModel(user: AuthUser | null | undefined): Profil
     followersCount: user?.followersCount ?? 0,
     followingCount: user?.followingCount ?? 0,
     postsCount: 0,
+    isFollowing: user?.isFollowing ?? false,
     joinedLabel: 'Se unió recientemente',
     featuredInterests: (user?.academicInterests ?? []).slice(0, 4).length > 0
       ? (user?.academicInterests ?? []).slice(0, 4)
@@ -71,8 +73,8 @@ export function mapFeedPostsToProfileCards(posts: Post[]): ProfileCard[] {
       badge: formatRelativeTime(post.createdAt),
       description: content || post.title?.trim() || 'Sin contenido',
       variant: post.imageUrl ? 'image' : 'text',
-      likes: `${Math.max(0, post.likes ?? 0)}`,
-      comments: `${Math.max(0, post.comments ?? 0)}`,
+      likes: `${Math.max(0, post.likesCount ?? 0)}`,
+      comments: `${Math.max(0, post.commentsCount ?? 0)}`,
     };
   });
 }

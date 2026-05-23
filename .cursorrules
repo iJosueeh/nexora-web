@@ -9,3 +9,9 @@ Reglas críticas:
 4. Tríada de archivos (.ts, .html, .css) obligatoria por componente.
 5. Todo CSS debe iniciar con :host { display: block; }.
 6. Dividir componentes grandes en subcomponentes en la carpeta /components.
+
+Estándares UI/UX:
+- Enfoque Mobile-First: Diseñar primero para móvil, escalar a desktop con breakpoints.
+- Objetivos Táctiles: Botones y enlaces con área mínima de 44x44px en móviles.
+- Micro-interacciones: Aplicar transiciones suaves y feedback visual inmediato (hover/active/entrance).
+- Estilo: Mantener "Editorial Dark Mode" (fondos oscuros, acento #df3432).

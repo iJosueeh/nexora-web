@@ -1,0 +1,205 @@
+.management-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  height: 100vh;
+  background-color: var(--brand-black);
+  color: var(--brand-text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.management-sidebar {
+  background: linear-gradient(180deg, var(--brand-surface) 0%, var(--brand-black) 100%);
+  border-right: 1px solid var(--brand-border);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.sidebar-header {
+  padding: 2.5rem 1.5rem;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-icon {
+  font-size: 2.5rem;
+  color: var(--brand-red);
+  text-shadow: 0 0 20px rgba(227, 38, 46, 0.4);
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-text span:first-child {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 0 1.25rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  color: var(--brand-muted);
+  text-decoration: none;
+  border-radius: 0.75rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--brand-text);
+  transform: translateX(4px);
+}
+
+.nav-item.active {
+  background: linear-gradient(90deg, rgba(227, 38, 46, 0.1) 0%, rgba(227, 38, 46, 0.05) 100%);
+  color: var(--brand-red);
+  font-weight: 700;
+  border: 1px solid rgba(227, 38, 46, 0.2);
+}
+
+.nav-item.active .nav-icon {
+  color: var(--brand-red);
+  text-shadow: 0 0 15px rgba(227, 38, 46, 0.5);
+}
+
+.sidebar-footer {
+  padding: 2rem 1.5rem;
+  border-top: 1px solid var(--brand-border);
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--brand-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.back-link:hover {
+  color: var(--brand-text);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.management-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: radial-gradient(circle at top right, rgba(227, 38, 46, 0.03), transparent 400px);
+}
+
+.content-header {
+  height: 80px;
+  padding: 0 2.5rem;
+  background-color: rgba(13, 17, 25, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--brand-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--brand-muted);
+}
+
+.header-breadcrumb .separator {
+  opacity: 0.3;
+}
+
+.header-breadcrumb .current {
+  color: var(--brand-text);
+  font-weight: 700;
+  background-color: var(--brand-border);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.user-name {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--brand-text);
+}
+
+.user-role {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--brand-red);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand-red), #991b1b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: white;
+  border: 2px solid var(--brand-border);
+}
+
+.content-body {
+  flex: 1;
+  padding: 2.5rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--brand-border) transparent;
+}
+
+.content-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content-body::-webkit-scrollbar-thumb {
+  background-color: var(--brand-border);
+  border-radius: 10px;
+}
+
+@media (max-width: 1024px) {
+  .management-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .management-sidebar {
+    display: none;
+  }
+}

@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, computed, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ResearchCard } from './components/research-card/research-card';
 import { ResearchPaper } from './interfaces/research-paper.model';
-import { RESEARCH_PAPERS_MOCK } from './mocks/explorar.mock';
+import { ResearchService } from './services/research.service';
 
 @Component({
   selector: 'app-explorar',
@@ -13,16 +13,33 @@ import { RESEARCH_PAPERS_MOCK } from './mocks/explorar.mock';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExplorarPage {
+  private readonly researchService = inject(ResearchService);
+
   readonly categories = signal(['Todos', 'Sistemas', 'Software', 'Industrial', 'Arquitectura', 'Administración', 'Marketing']);
   readonly selectedCategory = signal('Todos');
+  readonly papers = signal<ResearchPaper[]>([]);
+  readonly isLoading = signal(false);
 
-  readonly papers = signal<ResearchPaper[]>(RESEARCH_PAPERS_MOCK);
+  constructor() {
+    // Recargar datos cuando cambie la categoría
+    effect(() => {
+      this.loadPapers();
+    }, { allowSignalWrites: true });
+  }
 
-  readonly filteredPapers = computed(() => {
-    const cat = this.selectedCategory();
-    if (cat === 'Todos') return this.papers();
-    return this.papers().filter(p => p.faculty === cat);
-  });
+  loadPapers(): void {
+    const category = this.selectedCategory();
+    const facultyFilter = category === 'Todos' ? undefined : category;
+    
+    this.isLoading.set(true);
+    this.researchService.getResearchPapers(20, 0, facultyFilter).subscribe({
+      next: (data) => {
+        this.papers.set(data);
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false)
+    });
+  }
 
   selectCategory(category: string): void {
     this.selectedCategory.set(category);

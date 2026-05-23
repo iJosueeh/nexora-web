@@ -8,8 +8,10 @@ export interface Post {
 	content: string;
 	imageUrl?: string;
 	createdAt: Date;
-	likes: number;
-	comments: number;
+	likesCount: number;
+	commentsCount: number;
+	likes?: number;
+	comments?: number;
 	shares: number;
 	isLiked?: boolean;
 	tags?: string[];

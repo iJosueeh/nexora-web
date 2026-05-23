@@ -1,16 +1,17 @@
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, HostListener, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AuthSession } from '../../../core/services/auth-session';
+import { NotificationCenterComponent } from '../notifications/notification-center';
 
 type NavbarMode = 'public' | 'authenticated' | 'feed';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, NotificationCenterComponent],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
@@ -20,6 +21,7 @@ export class Navbar {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly menuOpen = signal(false);
+  readonly profileDropdownOpen = signal(false);
   readonly currentPath = signal(this.router.url);
 
   readonly isAuthenticated = computed(() => !!this.authSession.session()?.user?.email);
@@ -46,6 +48,10 @@ export class Navbar {
     const user = this.authSession.getUser();
     return user?.fullName?.trim() || user?.username?.trim() || user?.email?.split('@')[0] || 'Usuario';
   });
+  readonly userHandle = computed(() => {
+    const user = this.authSession.getUser();
+    return user?.username ? `@${user.username}` : user?.email?.split('@')[0] || '';
+  });
   readonly userInitials = computed(() => {
     const name = this.displayName();
     return name
@@ -55,6 +61,7 @@ export class Navbar {
       .join('')
       .toUpperCase();
   });
+  readonly avatarUrl = computed(() => this.authSession.getUser()?.avatarUrl);
 
   constructor() {
     this.router.events
@@ -73,6 +80,16 @@ export class Navbar {
 
   closeMenu(): void {
     this.menuOpen.set(false);
+  }
+
+  toggleProfileDropdown(event: MouseEvent): void {
+    event.stopPropagation();
+    this.profileDropdownOpen.update(v => !v);
+  }
+
+  @HostListener('document:click')
+  closeProfileDropdown(): void {
+    this.profileDropdownOpen.set(false);
   }
 
   signOut(): void {

@@ -1,0 +1,40 @@
+<div class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+  <!-- Backdrop con desenfoque -->
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="onCancel()"></div>
+  
+  <!-- Modal -->
+  <div class="relative w-full max-w-sm overflow-hidden rounded-2xl border border-white/10 bg-[#161b26] p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#df3432]/10 text-[#df3432]">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 6h18"></path>
+        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+      </svg>
+    </div>
+    
+    <h3 class="mb-2 text-xl font-bold text-white">{{ title() }}</h3>
+    <p class="mb-6 text-sm text-[#9aa3b2]">{{ message() }}</p>
+    
+    <div class="flex gap-3">
+      <button 
+        (click)="onCancel()"
+        [disabled]="isLoading()"
+        class="flex-1 rounded-xl bg-white/5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10 disabled:opacity-50"
+      >
+        Cancelar
+      </button>
+      <button 
+        (click)="onConfirm()"
+        [disabled]="isLoading()"
+        class="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#df3432] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#f02d36] disabled:opacity-50"
+      >
+        @if (isLoading()) {
+          <div class="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></div>
+          Procesando...
+        } @else {
+          Eliminar
+        }
+      </button>
+    </div>
+  </div>
+</div>

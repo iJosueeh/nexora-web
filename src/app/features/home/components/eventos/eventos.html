@@ -17,13 +17,28 @@
     }
   </div>
 
-  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-    @for (event of filteredEvents(); track event.id) {
-      <app-event-card [event]="event"></app-event-card>
-    } @empty {
-      <div class="col-span-full py-20 text-center">
-        <p class="text-lg text-zinc-500">No hay eventos programados en esta categoría.</p>
-      </div>
-    }
-  </div>
+  <!-- Grid de Eventos -->
+  @if (isLoading()) {
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      @for (i of [1,2,3,4,5,6,7,8]; track i) {
+        <div class="h-80 rounded-2xl bg-white/5 animate-pulse border border-white/5"></div>
+      }
+    </div>
+  } @else {
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      @for (event of events(); track event.id) {
+        <app-event-card [event]="event"></app-event-card>
+      } @empty {
+        <div class="col-span-full flex flex-col items-center justify-center py-20 text-center">
+            <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 text-[#979dab]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-white">No hay eventos programados</h3>
+            <p class="text-[#979dab] mt-2">Prueba seleccionando otra categoría próximamente.</p>
+        </div>
+      }
+    </div>
+  }
 </div>

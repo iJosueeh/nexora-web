@@ -26,7 +26,7 @@
     </div>
 
     <!-- Card -->
-      <app-loading mode="spinner" [fullscreen]="true" [message]="loadingMessage" [hidden]="!isLoading"></app-loading>
+      <app-loading mode="spinner" [fullscreen]="true" [message]="loadingMessage" [hidden]="!isLoading()"></app-loading>
 
     <div class="relative z-10 w-full flex flex-col gap-6 md:gap-7">
 
@@ -153,14 +153,14 @@
         type="button"
         class="w-full flex items-center justify-center gap-2 bg-[#df3432] hover:bg-[#ee4542] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs md:text-sm tracking-[0.12em] uppercase py-3.5 md:py-4 rounded-xl transition-colors duration-200 mt-1"
       >
-        <span [hidden]="!isLoading" class="inline-flex items-center gap-2">
+        <span [hidden]="!isLoading()" class="inline-flex items-center gap-2">
           <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
           </svg>
           Entrando...
         </span>
-        <span [hidden]="isLoading" class="inline-flex items-center gap-2">
+        <span [hidden]="isLoading()" class="inline-flex items-center gap-2">
           Entrar al portal
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />

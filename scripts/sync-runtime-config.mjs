@@ -57,13 +57,21 @@ function looksLikeSecretKey(value) {
 }
 
 function buildEnvironment(envEntries) {
-  const supabaseAnonKey = envEntries.SUPABASE_ANON_KEY || hardcodedDefaults.supabaseAnonKey;
-  const supabaseUrl = envEntries.SUPABASE_URL || hardcodedDefaults.supabaseUrl;
+  const isCI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true';
+  
+  let supabaseUrl = envEntries.SUPABASE_URL || hardcodedDefaults.supabaseUrl;
+  let supabaseAnonKey = envEntries.SUPABASE_ANON_KEY || hardcodedDefaults.supabaseAnonKey;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error(
-      'Faltan variables requeridas para Supabase. Define SUPABASE_URL y SUPABASE_ANON_KEY en nexora-app/.env o como variables de entorno antes de ejecutar start/build.'
-    );
+    if (isCI) {
+      console.warn('[sync-environment] Entorno CI detectado: Usando valores dummy para Supabase.');
+      supabaseUrl = supabaseUrl || 'https://dummy-project.supabase.co';
+      supabaseAnonKey = supabaseAnonKey || 'dummy-anon-key';
+    } else {
+      throw new Error(
+        'Faltan variables requeridas para Supabase. Define SUPABASE_URL y SUPABASE_ANON_KEY en nexora-app/.env o como variables de entorno antes de ejecutar start/build.'
+      );
+    }
   }
 
   if (looksLikeSecretKey(supabaseAnonKey)) {

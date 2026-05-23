@@ -57,6 +57,7 @@ function resolveUser(payload: Record<string, unknown>, fallbackEmail: string): L
   const bannerUrl = getString(nestedUser, 'bannerUrl') || getString(payload, 'bannerUrl');
   const followersCount = getNumber(nestedUser, 'followersCount') ?? getNumber(payload, 'followersCount');
   const followingCount = getNumber(nestedUser, 'followingCount') ?? getNumber(payload, 'followingCount');
+  const isFollowing = getBoolean(nestedUser, 'isFollowing') ?? getBoolean(payload, 'isFollowing');
   const academicInterests = getStringArray(nestedUser, 'academicInterests').length > 0
     ? getStringArray(nestedUser, 'academicInterests')
     : getStringArray(payload, 'academicInterests');
@@ -72,6 +73,7 @@ function resolveUser(payload: Record<string, unknown>, fallbackEmail: string): L
     bannerUrl: bannerUrl || undefined,
     followersCount: followersCount ?? undefined,
     followingCount: followingCount ?? undefined,
+    isFollowing: isFollowing ?? undefined,
     academicInterests: academicInterests.length > 0 ? academicInterests : undefined,
     roles,
     profileComplete,
@@ -132,11 +134,11 @@ function resolveRoles(payload: Record<string, unknown>, nestedUser: Record<strin
   if (Array.isArray(roles)) {
     return roles
       .filter((role): role is string => typeof role === 'string' && !!role.trim())
-      .map((role) => normalizeRoleLabel(role));
+      .map((role) => role.trim().toUpperCase());
   }
 
   const role = getString(payload, 'role') || getString(nestedUser, 'role');
-  return role ? [normalizeRoleLabel(role)] : undefined;
+  return role ? [role.trim().toUpperCase()] : undefined;
 }
 
 function normalizeRoleLabel(role: string): string {

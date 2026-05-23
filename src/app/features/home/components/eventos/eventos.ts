@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventCard } from './components/event-card/event-card';
 import { UniversityEvent } from './interfaces/event.model';
-
-import { EVENTS_MOCK } from './mocks/eventos.mock';
+import { EventService } from './services/event.service';
 
 @Component({
   selector: 'app-eventos',
@@ -14,14 +13,34 @@ import { EVENTS_MOCK } from './mocks/eventos.mock';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventosPage {
+  private readonly eventService = inject(EventService);
+
   readonly categories = signal(['Todos', 'Debate', 'Taller', 'Feria', 'Conferencia']);
   readonly selectedCategory = signal('Todos');
+  readonly events = signal<UniversityEvent[]>([]);
+  readonly isLoading = signal(true);
 
-  readonly events = signal<UniversityEvent[]>(EVENTS_MOCK);
+  constructor() {
+    effect(() => {
+      this.loadEvents();
+    }, { allowSignalWrites: true });
+  }
 
-  readonly filteredEvents = computed(() => {
-    const cat = this.selectedCategory();
-    if (cat === 'Todos') return this.events();
-    return this.events().filter(e => e.category === cat);
-  });
+  loadEvents(): void {
+    const category = this.selectedCategory();
+    const categoryFilter = category === 'Todos' ? undefined : category;
+
+    this.isLoading.set(true);
+    this.eventService.getEvents(20, 0, categoryFilter).subscribe({
+      next: (data) => {
+        this.events.set(data);
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false)
+    });
+  }
+
+  selectCategory(category: string): void {
+    this.selectedCategory.set(category);
+  }
 }

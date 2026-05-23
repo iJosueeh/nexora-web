@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
@@ -10,6 +10,7 @@ import { Loading } from '../../../shared/components/loading/loading';
 import { LOADING_MESSAGES } from '../../../shared/constants/loading-messages';
 import { AuthApiService } from '../services/auth-api.service';
 import { normalizeEmail } from '../../../utils/email-normalization.util';
+import { PermissionService } from '../../../core/services/permission.service';
 
 @Component({
   selector: 'app-login',
@@ -22,25 +23,26 @@ export class Login {
   private static readonly LOGIN_TIMEOUT_MS = 12_000;
   private static readonly LOADING_FAILSAFE_MS = 20_000;
 
+  private readonly router = inject(Router);
+  private readonly authApi = inject(AuthApiService);
+  private readonly supabaseAuth = inject(SupabaseAuthService);
+  private readonly toastr = inject(ToastrService);
+  private readonly authSession = inject(AuthSession);
+  private readonly permissionService = inject(PermissionService);
+
   activeTab: 'login' | 'signup' = 'login';
 
   email = '';
   password = '';
   rememberMe = false;
   showPassword = false;
-  isLoading = false;
+  isLoading = signal(false);
   isSubmitting = false;
   readonly loadingMessage = LOADING_MESSAGES.AUTH.LOGIN_VALIDATING;
 
   private loadingFailsafeId: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(
-    private router: Router,
-    private readonly authApi: AuthApiService,
-    private readonly supabaseAuth: SupabaseAuthService,
-    private readonly toastr: ToastrService,
-    private readonly authSession: AuthSession
-  ) { }
+  constructor() { }
 
   goToSignUp(): void {
     if (this.isSubmitting) return;
@@ -120,43 +122,42 @@ export class Login {
         this.rememberMe
       );
 
-      if (response.user?.profileComplete === false) {
+      const isManagementUser = this.permissionService.isOfficialOrAdmin();
+
+      if (response.user?.profileComplete === false && !isManagementUser) {
         this.toastr.info('Completa tu perfil academico para continuar.', 'Perfil incompleto');
         this.router.navigate(['/register']);
         return;
       }
 
       this.toastr.success('Inicio de sesión exitoso.', 'Bienvenido');
-      this.router.navigate(['/feed']);
+      
+      // Prioritize management dashboard for admins and officials
+      if (isManagementUser) {
+        this.router.navigate(['/management']);
+      } else {
+        this.router.navigate(['/feed']);
+      }
     } catch (error: any) {
       if (sessionStarted) {
         this.authSession.clear();
+        await this.supabaseAuth.signOut().catch(() => undefined);
       }
 
-      const isTimeoutError = error instanceof Error && error.message === 'LOGIN_TIMEOUT';
-      
-      // Detailed error logging for debugging
-      console.error('Login error:', error);
+      const humanMessage = this.supabaseAuth.toHumanErrorMessage(error);
+      this.toastr.error(humanMessage, 'Error de acceso');
 
-      let message = this.supabaseAuth.toHumanErrorMessage(error);
-      
-      if (isTimeoutError) {
-        message = 'La validacion tardo demasiado. Revisa tu conexion e intenta nuevamente.';
-      } else if (this.supabaseAuth.isEmailNotConfirmedError(error)) {
-        message = 'Debes confirmar tu correo institucional antes de iniciar sesión.';
-      } else if (error?.status === 400 || error?.message?.includes('Invalid login credentials')) {
-        message = 'Correo o contraseña incorrectos. Verifica tus datos.';
+      if (this.supabaseAuth.isEmailNotConfirmedError(error)) {
+        this.toastr.info('Por favor, revisa tu correo para confirmar tu cuenta.', 'Correo no confirmado');
       }
-
-      this.toastr.error(message, 'Error de acceso');
     } finally {
-      this.setLoading(false);
       this.isSubmitting = false;
+      this.setLoading(false);
     }
   }
 
   private setLoading(value: boolean): void {
-    this.isLoading = value;
+    this.isLoading.set(value);
 
     if (this.loadingFailsafeId) {
       clearTimeout(this.loadingFailsafeId);
@@ -165,14 +166,21 @@ export class Login {
 
     if (value) {
       this.loadingFailsafeId = setTimeout(() => {
-        this.isLoading = false;
+        this.isLoading.set(false);
+        this.isSubmitting = false;
       }, Login.LOADING_FAILSAFE_MS);
     }
   }
 
-  private withTimeout<T>(promise: Promise<T>, timeoutMs: number, errorCode: string): Promise<T> {
-    return new Promise<T>((resolve, reject) => {
-      const timeoutId = setTimeout(() => reject(new Error(errorCode)), timeoutMs);
+  private withTimeout<T>(
+    promise: Promise<T>,
+    timeoutMs: number,
+    errorCode: string
+  ): Promise<T> {
+    return new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => {
+        reject(new Error(errorCode));
+      }, timeoutMs);
 
       promise
         .then((value) => {

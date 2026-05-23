@@ -2,6 +2,9 @@
 
 Este documento es la fuente de verdad para cualquier IA o desarrollador que trabaje en `nexora-app`. Estas reglas garantizan un código limpio, moderno y escalable.
 
+## 0. Sincronización Obligatoria
+- **Antes de iniciar cualquier tarea:** Es mandatorio ejecutar `git pull origin dev` para asegurar que se está trabajando sobre la versión más reciente del código y evitar conflictos de fusión (merge conflicts).
+
 ## 1. Estructura y Organización
 - **Tríada Obligatoria:** Todo componente debe tener sus 3 archivos (.ts, .html, .css) en su propio directorio.
 - **Escalabilidad:** Si un componente padre crece en complejidad, debe dividir sus partes en la carpeta `components/` interna.

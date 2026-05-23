@@ -20,7 +20,7 @@
   } @else {
     @for (post of visiblePosts(); track post.id) {
       @defer (on viewport) {
-        <app-post-card [post]="post" />
+        <app-post-card [post]="post" (deleted)="removePost($event)" />
       } @placeholder {
         <article class="rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-5">
           <div class="h-20 animate-pulse rounded bg-[var(--brand-border)]"></div>

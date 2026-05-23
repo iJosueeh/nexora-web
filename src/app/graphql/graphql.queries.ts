@@ -11,6 +11,8 @@ export const FEED_POSTS_QUERY = gql`
 			isOfficial
 			createdAt
 			commentsCount
+			likesCount
+			isLiked
 			imageUrl
 			autor {
 				id
@@ -33,6 +35,8 @@ export const PROFILE_POSTS_QUERY = gql`
 			isOfficial
 			createdAt
 			commentsCount
+			likesCount
+			isLiked
 			imageUrl
 			autor {
 				id
@@ -55,6 +59,8 @@ export const CREATE_PUBLICATION_MUTATION = gql`
 			isOfficial
 			createdAt
 			commentsCount
+			likesCount
+			isLiked
 			imageUrl
 			autor {
 				id
@@ -94,3 +100,152 @@ export const AVAILABLE_TAGS_QUERY = gql`
 		}
 	}
 `;
+
+export const NOTIFICATION_HISTORY_QUERY = gql`
+	query NotificationHistory($limit: Int!, $offset: Int!) {
+		notificationHistory(limit: $limit, offset: $offset) {
+			id
+			type
+			content
+			isRead
+			createdAt
+			sender {
+				id
+				username
+				fullName
+				avatarUrl
+			}
+			post {
+				id
+				titulo
+				imageUrl
+			}
+		}
+	}
+`;
+
+export const UNREAD_NOTIFICATIONS_COUNT_QUERY = gql`
+	query UnreadNotificationsCount {
+		unreadNotificationsCount
+	}
+`;
+
+export const MARK_NOTIFICATION_AS_READ_MUTATION = gql`
+	mutation MarkNotificationAsRead($notificationId: ID!) {
+		markNotificationAsRead(notificationId: $notificationId)
+	}
+`;
+
+export const MARK_ALL_NOTIFICATIONS_AS_READ_MUTATION = gql`
+	mutation MarkAllNotificationsAsRead {
+		markAllNotificationsAsRead
+	}
+`;
+
+export const DELETE_POST_MUTATION = gql`
+	mutation DeletePost($postId: ID!) {
+		deletePost(postId: $postId)
+	}
+`;
+
+export const TOGGLE_LIKE_MUTATION = gql`
+	mutation ToggleLike($postId: ID!) {
+		toggleLike(postId: $postId)
+	}
+`;
+
+export const COMMENT_THREADS_QUERY = gql`
+		query CommentThreads($postId: ID!) {
+			comentariosPorPost(postId: $postId) {
+			id
+			postId
+			parentId
+			autorId
+			contenido
+			createdAt
+			respuestas {
+				id
+				postId
+				parentId
+				autorId
+				contenido
+				createdAt
+				respuestas {
+					id
+					postId
+					parentId
+					autorId
+					contenido
+					createdAt
+					respuestas {
+						id
+						postId
+						parentId
+						autorId
+						contenido
+						createdAt
+					}
+				}
+			}
+		}
+	}
+`;
+
+export const CREATE_COMMENT_MUTATION = gql`
+  mutation CreateComment($input: CreateCommentInput!) {
+    crearComentario(input: $input) {
+      id
+      postId
+      parentId
+      autorId
+      contenido
+      createdAt
+    }
+  }
+`;
+
+export const TOGGLE_FOLLOW_MUTATION = gql`
+	mutation ToggleFollow($targetUserId: ID!) {
+		toggleFollow(targetUserId: $targetUserId)
+	}
+`;
+
+export const FOLLOWERS_QUERY = gql`
+  query Followers($userId: ID!) {
+    followers(userId: $userId) {
+      id
+      username
+      fullName
+      avatarUrl
+      isFollowing
+      bio
+    }
+  }
+`;
+
+export const FOLLOWING_QUERY = gql`
+  query Following($userId: ID!) {
+    following(userId: $userId) {
+      id
+      username
+      fullName
+      avatarUrl
+      isFollowing
+      bio
+    }
+  }
+`;
+
+export const TRENDING_TOPICS_QUERY = gql`
+  query GetTrendingTopics($limit: Int) {
+    trendingTopics(limit: $limit) {
+      id
+      titulo
+      commentsCount
+      likesCount
+      interactionScore
+      tags
+    }
+  }
+`;
+

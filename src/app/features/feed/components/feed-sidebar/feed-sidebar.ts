@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 import { AuthSession } from '../../../../core/services/auth-session';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-feed-sidebar',
@@ -13,9 +14,10 @@ import { AuthSession } from '../../../../core/services/auth-session';
 })
 export class FeedSidebar {
   private readonly authSession = inject(AuthSession);
+  private readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
 
-  notificationBadge = signal(5);
+  unreadCount = this.notificationService.unreadCount;
   profileLink = computed(() => {
     const username = this.authSession.getUser()?.username?.trim();
     return username ? ['/u', username] : ['/profile'];

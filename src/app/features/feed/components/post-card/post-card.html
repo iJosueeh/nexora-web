@@ -1,23 +1,28 @@
-<article class="rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-5 transition-colors duration-200 hover:bg-[var(--brand-surface-2)]">
-  <header class="mb-3 flex items-start justify-between gap-3">
+<article class="group rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-5 transition-all duration-300 hover:border-[#df3432]/30 hover:bg-[var(--brand-surface-2)]" (click)="openComments($event)">
+  <header class="mb-4 flex items-start justify-between gap-3">
     <div class="flex min-w-0 flex-1 items-center gap-3">
-      <img
-        [src]="post().author.avatar"
-        [alt]="post().author.fullName || post().author.username"
-        class="h-11 w-11 rounded-full object-cover"
-      />
+      <a [routerLink]="['/u', post().author.username]" class="author-avatar-link relative">
+        <img
+          [src]="post().author.avatar || 'assets/images/default-avatar.webp'"
+          [alt]="post().author.fullName || post().author.username"
+          class="h-11 w-11 rounded-full object-cover ring-2 ring-white/5"
+        />
+        @if (isOfficial()) {
+          <div class="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--brand-red)] text-white ring-2 ring-[var(--brand-surface)]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+          </div>
+        }
+      </a>
       <div class="min-w-0">
         <div class="flex items-center gap-2">
-          <p class="truncate text-sm font-semibold text-[var(--brand-text)]">
+          <a
+            [routerLink]="['/u', post().author.username]"
+            class="author-name-link author-link truncate text-[0.9rem] font-bold text-[var(--brand-text)]"
+          >
             {{ post().author.fullName || post().author.username }}
-          </p>
-          @if (isOfficial()) {
-            <span class="rounded-full bg-[color-mix(in_srgb,var(--brand-red)_20%,transparent)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--brand-red)]">
-              University Official
-            </span>
-          }
+          </a>
         </div>
-        <p class="truncate text-xs text-[var(--brand-muted)]">
+        <p class="truncate text-[0.7rem] uppercase tracking-wider text-[var(--brand-muted)]">
           {{ post().author.role }}
           @if (relativeDate()) {
             · {{ relativeDate() }}
@@ -25,37 +30,149 @@
         </p>
       </div>
     </div>
+
+    @if (canDelete()) {
+      <button 
+        (click)="deletePost($event)"
+        class="flex h-8 w-8 items-center justify-center rounded-full text-[var(--brand-muted)] transition-all hover:bg-[#df3432]/10 hover:text-[var(--brand-red)]"
+        title="Eliminar publicación"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18"></path>
+          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </button>
+    }
   </header>
 
-  @if (post().title) {
-    <h3 class="mb-2 text-base font-semibold leading-snug text-[var(--brand-text)]">
-      {{ post().title }}
-    </h3>
-  }
+  <div class="space-y-3">
+    @if (post().title) {
+      <h3 class="text-lg font-bold leading-tight text-[var(--brand-text)] group-hover:text-white transition-colors">
+        {{ post().title }}
+      </h3>
+    }
 
-  <p class="mb-3 text-sm leading-relaxed text-[var(--brand-text)]">{{ post().content }}</p>
+    <p class="text-[0.92rem] leading-relaxed text-[var(--brand-text)]/90">{{ post().content }}</p>
 
-  @if (post().tags?.length) {
-    <div class="mb-3 flex flex-wrap gap-2">
-      @for (tag of post().tags ?? []; track tag) {
-        <span class="text-xs font-medium text-[var(--brand-red)]">{{ tag }}</span>
-      }
+    @if (post().tags?.length) {
+      <div class="flex flex-wrap gap-2 pt-1">
+        @for (tag of post().tags ?? []; track tag) {
+          <span class="rounded-md bg-[#df3432]/10 px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-widest text-[var(--brand-red)]">
+            #{{ tag }}
+          </span>
+        }
+      </div>
+    }
+
+    @if (post().imageUrl) {
+      <div class="mt-4 overflow-hidden rounded-2xl border border-white/5 bg-black/20 shadow-inner">
+        <img
+          [src]="post().imageUrl"
+          [alt]="'Multimedia del post ' + post().id"
+          class="aspect-[16/10] w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+        />
+      </div>
+    }
+  </div>
+
+  <footer class="mt-6 flex items-center justify-between border-t border-white/5 pt-4">
+    <div class="flex items-center gap-4">
+      <!-- Botón Like -->
+      <button
+        type="button"
+        (click)="toggleLike($event)"
+        class="flex items-center gap-2 rounded-full px-3 py-1.5 transition-all duration-200"
+        [class.text-[var(--brand-red)]]="isLiked()"
+        [class.bg-[#df3432]/10]="isLiked()"
+        [class.text-[var(--brand-muted)]]="!isLiked()"
+        [class.hover:bg-white/5]="!isLiked()"
+      >
+        <svg
+          class="h-5 w-5 transition-transform duration-200 active:scale-125"
+          [class.fill-current]="isLiked()"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+        </svg>
+        <span class="text-[0.75rem] font-bold">{{ likesCount() }}</span>
+      </button>
+
+      <!-- Botón Comentarios -->
+      <button
+        type="button"
+        (click)="toggleComments($event)"
+        class="flex items-center gap-2 rounded-full px-3 py-1.5 text-[var(--brand-muted)] transition-all duration-200 hover:bg-white/5 hover:text-white"
+        aria-expanded="{{ showComments() }}"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span class="text-[0.75rem] font-bold">{{ commentsCount() }}</span>
+      </button>
     </div>
-  }
 
-  @if (post().imageUrl) {
-    <div class="overflow-hidden rounded-2xl border border-[var(--brand-border)] bg-black/20">
-      <img
-        [src]="post().imageUrl"
-        [alt]="'Multimedia del post ' + post().id"
-        class="aspect-[16/10] w-full object-cover"
-      />
-    </div>
-  }
-
-  <footer class="mt-4 flex items-center gap-5 text-xs text-[var(--brand-muted)]">
-    <span class="font-medium">{{ post().likes }} Me gusta</span>
-    <span class="font-medium">{{ post().comments }} Comentarios</span>
-    <span class="font-medium">{{ post().shares }} Compartidos</span>
+    <!-- Botón Compartir -->
+    <button
+      type="button"
+      class="flex items-center gap-2 rounded-full px-3 py-1.5 text-[var(--brand-muted)] transition-all duration-200 hover:bg-white/5 hover:text-white"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+      <span class="text-[0.75rem] font-bold">{{ post().shares }}</span>
+    </button>
   </footer>
+
+  <!-- Modal de Confirmación para eliminar -->
+  @if (showConfirmModal()) {
+    <app-confirm-modal
+      title="¿Eliminar publicación?"
+      message="Esta acción no se puede deshacer. Tu publicación desaparecerá del feed de Nexora."
+      [isLoading]="isDeleting()"
+      (confirm)="onConfirmDelete()"
+      (cancel)="onCancelDelete()"
+    ></app-confirm-modal>
+  }
 </article>
+
+  <!-- Quick composer trigger: always visible to open comentarios -->
+  <div *ngIf="authSession.isAuthenticated() && !showComments()" class="mt-3 px-1">
+    <button type="button" class="w-full rounded-xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-3 text-left text-sm text-[var(--brand-muted)]" (click)="loadComments()">
+      Añade un comentario...
+    </button>
+  </div>
+
+  <div *ngIf="!authSession.isAuthenticated() && !showComments()" class="mt-3 px-1">
+    <button type="button" class="w-full rounded-xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-3 text-left text-sm text-[var(--brand-muted)]" (click)="router.navigate(['/login'], { queryParams: { returnUrl: router.url } })">
+      Inicia sesión para comentar
+    </button>
+  </div>
+
+  @if (showComments()) {
+  <section class="mt-4 px-1">
+    <app-comment-thread-list [comments]="comments()" [postId]="post().id" [reloadComments]="loadComments" />
+
+    <div class="mt-4 rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-4">
+      <label class="block text-sm font-semibold text-[var(--brand-muted)]">Escribe un comentario</label>
+      <textarea
+        class="mt-2 w-full rounded-md bg-transparent border border-white/5 p-3 text-sm text-[var(--brand-text)]"
+        rows="3"
+        [value]="newComment()"
+        (input)="newComment.set($any($event.target).value)"
+        [attr.data-post-comment-textarea]="post().id"
+        placeholder="Comparte tu comentario..."
+      ></textarea>
+
+      <div class="mt-3 flex items-center justify-end gap-2">
+        <button type="button" class="rounded-full px-4 py-2 text-sm font-semibold" (click)="newComment.set('')">Cancelar</button>
+        <button type="button" class="rounded-full bg-[var(--brand-red)] px-4 py-2 text-sm font-bold text-white" (click)="submitComment()" [disabled]="isSubmittingComment()">
+          @if (isSubmittingComment()) { Publicando... } @else { Publicar }
+        </button>
+      </div>
+    </div>
+  </section>
+}

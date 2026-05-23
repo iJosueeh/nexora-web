@@ -34,9 +34,11 @@ interface CreatePublicationMutationResponse {
   providedIn: 'root'
 })
 export class FeedPublicationService {
-  private readonly apollo = inject(Apollo);
-  private readonly authSession = inject(AuthSession);
-  private readonly storageService = inject(SupabaseStorageService);
+  constructor(
+    private readonly apollo: Apollo,
+    private readonly authSession: AuthSession,
+    private readonly storageService: SupabaseStorageService
+  ) {}
 
   publish(draft: PublicationDraft): Observable<Post> {
     console.log('[FeedPublicationService] Iniciando publicación...', draft);
@@ -118,11 +120,11 @@ export class FeedPublicationService {
       location: draft.location?.trim() || undefined,
       imageUrl: previewImageUrl,
       createdAt: new Date(),
-      likes: 0,
-      comments: 0,
+      likesCount: 0,
+      commentsCount: 0,
+      isLiked: false,
       shares: 0,
-      tags: draft.tags && draft.tags.length > 0 ? draft.tags.map((tag) => this.normalizeTag(tag)) : this.extractTags(content),
-      isLiked: false
+      tags: draft.tags && draft.tags.length > 0 ? draft.tags.map((tag) => this.normalizeTag(tag)) : this.extractTags(content)
     };
   }
 
@@ -152,8 +154,8 @@ export class FeedPublicationService {
       location: payload.location?.trim() || draft.location?.trim() || undefined,
       imageUrl: payload.imageUrl || this.resolvePreviewImageUrl(draft.attachments),
       createdAt: payload.createdAt ? new Date(payload.createdAt) : new Date(),
-      likes: 0,
-      comments: payload.commentsCount,
+      likesCount: 0,
+      commentsCount: payload.commentsCount,
       shares: 0,
       tags: payload.tags && payload.tags.length > 0
         ? payload.tags.map((tag) => this.normalizeTag(tag))

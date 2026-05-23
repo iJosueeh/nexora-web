@@ -34,13 +34,27 @@
   </div>
 
   <!-- Grid de Resultados -->
-  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-    @for (paper of filteredPapers(); track paper.id) {
-      <app-research-card [paper]="paper"></app-research-card>
-    } @empty {
-      <div class="col-span-full py-20 text-center">
-        <p class="text-lg text-zinc-500">No se encontraron investigaciones en esta categoría.</p>
-      </div>
-    }
-  </div>
+  @if (isLoading()) {
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      @for (i of [1,2,3,4,5,6,7,8]; track i) {
+        <div class="h-64 rounded-2xl bg-white/5 animate-pulse border border-white/5"></div>
+      }
+    </div>
+  } @else {
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      @for (paper of papers(); track paper.id) {
+        <app-research-card [paper]="paper"></app-research-card>
+      } @empty {
+        <div class="col-span-full flex flex-col items-center justify-center py-20 text-center">
+          <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 text-[#979dab]">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+          </div>
+          <h3 class="text-xl font-bold text-white">No se encontraron investigaciones</h3>
+          <p class="text-[#979dab] mt-2">Intenta seleccionando otra categoría o facultad.</p>
+        </div>
+      }
+    </div>
+  }
 </div>
