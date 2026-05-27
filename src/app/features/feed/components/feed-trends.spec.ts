@@ -1,10 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 import { FeedTrends } from './feed-trends/feed-trends';
 import { ApolloTestingModule } from 'apollo-angular/testing';
 import { Trend, SuggestedUser } from '../models/trend.model';
 import { of } from 'rxjs';
 import { FeedTagsService } from '../services/feed-tags.service';
 import { FeedService } from '../services/feed.service';
+
+import { AuthSession } from '../../../core/services/auth-session';
+import { ProfileService } from '../../profile/services/profile.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 describe('FeedTrends Component', () => {
   let component: FeedTrends;
@@ -34,11 +39,27 @@ describe('FeedTrends Component', () => {
         ])
     };
 
+    const mockAuthSession: Partial<AuthSession> = {
+      getUser: () => ({ id: 'current-user' } as any),
+      user: signal({ id: 'current-user' } as any)
+    };
+
+    const mockProfileService: Partial<ProfileService> = {
+      getFollowing: () => of([])
+    };
+
+    const mockToastService: Partial<ToastService> = {
+      show: vi.fn()
+    };
+
     await TestBed.configureTestingModule({
       imports: [FeedTrends, ApolloTestingModule],
       providers: [
         { provide: FeedTagsService, useValue: mockFeedTags },
-        { provide: FeedService, useValue: mockFeedService }
+        { provide: FeedService, useValue: mockFeedService },
+        { provide: AuthSession, useValue: mockAuthSession },
+        { provide: ProfileService, useValue: mockProfileService },
+        { provide: ToastService, useValue: mockToastService }
       ]
     }).compileComponents();
 

@@ -8,8 +8,18 @@ describe('CommentService', () => {
   let service: CommentService;
 
   beforeEach(() => {
-    const mockApollo = { query: () => of({ data: { obtenerHilosComentarios: [
-      { id: '1', postId: 'p1', parentId: null, autorId: 'u1', contenido: 'c1', createdAt: new Date().toISOString(), respuestas: [] }
+    const mockApollo = { query: () => of({ data: { comentariosPorPost: [
+      { 
+        id: '1', 
+        postId: 'p1', 
+        parentId: null, 
+        autor: { id: 'u1', username: 'u1', fullName: 'User 1', avatarUrl: null }, 
+        contenido: 'c1', 
+        createdAt: new Date().toISOString(), 
+        likesCount: 0,
+        isLiked: false,
+        respuestas: [] 
+      }
     ] } }) } as any;
 
     TestBed.configureTestingModule({ providers: [{ provide: Apollo, useValue: mockApollo }, CommentService] });

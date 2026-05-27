@@ -15,8 +15,8 @@ import type { CommentThread } from '../../../../interfaces/feed/comment.model';
 })
 class HostComponent {
   comments = signal<CommentThread[]>([
-    { id: 'c1', author: { username: 'a' } as any, content: 'one', createdAt: new Date(), replies: [] },
-    { id: 'c2', author: { username: 'b' } as any, content: 'two', createdAt: new Date(), replies: [] }
+    { id: 'c1', author: { username: 'a' } as any, content: 'one', createdAt: new Date(), replies: [], likesCount: 0, isLiked: false },
+    { id: 'c2', author: { username: 'b' } as any, content: 'two', createdAt: new Date(), replies: [], likesCount: 0, isLiked: false }
   ]);
 }
 
@@ -32,6 +32,7 @@ describe('CommentThreadListComponent', () => {
         createdAt: new Date(),
         author: { username: 'test' } as any,
         likesCount: 0,
+        isLiked: false,
         replies: []
       })
     };
