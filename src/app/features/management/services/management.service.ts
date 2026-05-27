@@ -3,17 +3,25 @@ import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { GRAPHQL_URL } from '../../../core/tokens/api-endpoints.token';
 import { Post } from '../../../interfaces/feed/post.model';
+import { 
+  GET_ADMIN_STATS, 
+  GET_ALL_USERS, 
+  GET_ADMIN_POSTS, 
+  MARK_AS_OFFICIAL_MUTATION, 
+  DELETE_POST_ADMIN_MUTATION, 
+  UPDATE_USER_STATUS_MUTATION 
+} from '../graphql/management.queries';
 
 export interface AdminStats {
   totalUsers: number;
   totalPosts: number;
   activeEvents: number;
-  recentActivity: Array<{
+  recentActivity: {
     id: string;
     type: string;
     description: string;
     createdAt: string;
-  }>;
+  }[];
 }
 
 export interface UserProfile {
@@ -26,6 +34,8 @@ export interface UserProfile {
   profileComplete: boolean;
 }
 
+interface GqlRes<T> { data: T | null; errors?: { message: string }[]; }
+
 @Injectable({
   providedIn: 'root',
 })
@@ -33,137 +43,53 @@ export class ManagementService {
   private readonly http = inject(HttpClient);
   private readonly graphqlUrl = inject(GRAPHQL_URL);
   
-  // Signals para manejar el estado global de gestión
   readonly stats = signal<AdminStats | null>(null);
   readonly users = signal<UserProfile[]>([]);
   readonly posts = signal<Post[]>([]);
   readonly loading = signal<boolean>(false);
 
-  /**
-   * Carga las estadísticas del dashboard desde GraphQL.
-   */
   loadDashboardStats(): void {
     this.loading.set(true);
-    
-    const query = `
-      query GetAdminStats {
-        adminStats {
-          totalUsers
-          totalPosts
-          activeEvents
-          recentActivity {
-            id
-            type
-            description
-            createdAt
-          }
-        }
-      }
-    `;
-
-    this.http.post<{ data: { adminStats: AdminStats } | null, errors?: any[] }>(this.graphqlUrl, { query })
-      .pipe(map(response => {
-        if (!response.data) {
-          throw new Error(response.errors?.[0]?.message || 'Error en la respuesta de GraphQL');
-        }
-        return response.data.adminStats;
+    this.http.post<GqlRes<{ adminStats: AdminStats }>>(this.graphqlUrl, { query: GET_ADMIN_STATS })
+      .pipe(map(r => {
+        if (!r.data) throw new Error(r.errors?.[0]?.message || 'Error GQL');
+        return r.data.adminStats;
       }))
       .subscribe({
-        next: (data) => {
-          this.stats.set(data);
-          this.loading.set(false);
-        },
-        error: (err) => {
-          console.error('Error loading admin stats:', err);
-          this.stats.set(null); 
-          this.loading.set(false);
-        }
+        next: (data) => { this.stats.set(data); this.loading.set(false); },
+        error: (err) => { console.error(err); this.stats.set(null); this.loading.set(false); }
       });
   }
 
-  /**
-   * Carga la lista de usuarios para administración.
-   */
   loadUsers(limit = 20, offset = 0, append = false, search = ''): void {
     this.loading.set(true);
-    
-    const query = `
-      query GetAllUsers($limit: Int, $offset: Int, $search: String) {
-        allUsers(limit: $limit, offset: $offset, search: $search) {
-          id
-          email
-          username
-          fullName
-          career
-          avatarUrl
-          profileComplete
-        }
-      }
-    `;
-
-    this.http.post<{ data: { allUsers: UserProfile[] } | null, errors?: any[] }>(this.graphqlUrl, { 
-      query, 
+    this.http.post<GqlRes<{ allUsers: UserProfile[] }>>(this.graphqlUrl, { 
+      query: GET_ALL_USERS, 
       variables: { limit, offset, search } 
     })
-      .pipe(map(response => {
-        if (!response.data) {
-          throw new Error(response.errors?.[0]?.message || 'Error en la respuesta de GraphQL');
-        }
-        return response.data.allUsers;
+      .pipe(map(r => {
+        if (!r.data) throw new Error(r.errors?.[0]?.message || 'Error GQL');
+        return r.data.allUsers;
       }))
       .subscribe({
         next: (data) => {
-          if (append) {
-            this.users.update(current => [...current, ...data]);
-          } else {
-            this.users.set(data);
-          }
+          if (append) this.users.update(c => [...c, ...data]);
+          else this.users.set(data);
           this.loading.set(false);
         },
-        error: (err) => {
-          console.error('Error loading users:', err);
-          if (!append) this.users.set([]);
-          this.loading.set(false);
-        }
+        error: (err) => { console.error(err); if (!append) this.users.set([]); this.loading.set(false); }
       });
   }
 
-  /**
-   * Carga la lista de publicaciones para moderación.
-   */
   loadPosts(limit = 10, offset = 0, append = false): void {
     this.loading.set(true);
-    
-    const query = `
-      query GetAdminPosts($limit: Int, $offset: Int) {
-        obtenerFeedPrincipal(limit: $limit, offset: $offset) {
-          id
-          titulo
-          contenido
-          isOfficial
-          createdAt
-          imageUrl
-          location
-          tags
-          likesCount
-          commentsCount
-          autor {
-            id
-            username
-            fullName
-            avatarUrl
-          }
-        }
-      }
-    `;
-
-    this.http.post<{ data: { obtenerFeedPrincipal: any[] } | null, errors?: any[] }>(this.graphqlUrl, { 
-      query, 
+    this.http.post<GqlRes<{ obtenerFeedPrincipal: any[] }>>(this.graphqlUrl, { 
+      query: GET_ADMIN_POSTS, 
       variables: { limit, offset } 
     })
-      .pipe(map(response => {
-        if (!response.data) throw new Error('Error al cargar posts');
-        return response.data.obtenerFeedPrincipal.map(p => ({
+      .pipe(map(r => {
+        if (!r.data) throw new Error('Error GQL');
+        return r.data.obtenerFeedPrincipal.map(p => ({
           ...p,
           title: p.titulo,
           content: p.contenido,
@@ -173,78 +99,32 @@ export class ManagementService {
       }))
       .subscribe({
         next: (data) => {
-          if (append) {
-            this.posts.update(current => [...current, ...data]);
-          } else {
-            this.posts.set(data);
-          }
+          if (append) this.posts.update(c => [...c, ...data]);
+          else this.posts.set(data);
           this.loading.set(false);
         },
-        error: (err) => {
-          console.error('Error loading posts:', err);
-          this.loading.set(false);
-        }
+        error: (err) => { console.error(err); this.loading.set(false); }
       });
   }
 
-  /**
-   * Marca una publicación como oficial.
-   */
-  markAsOfficial(postId: string, isOfficial: boolean): Observable<any> {
-    const query = `
-      mutation MarkAsOfficial($postId: ID!, $isOfficial: Boolean!) {
-        markPostAsOfficial(postId: $postId, isOfficial: $isOfficial) {
-          id
-          isOfficial
-        }
-      }
-    `;
-    return this.http.post(this.graphqlUrl, { query, variables: { postId, isOfficial } });
+  markAsOfficial(postId: string, isOfficial: boolean): Observable<unknown> {
+    return this.http.post(this.graphqlUrl, { query: MARK_AS_OFFICIAL_MUTATION, variables: { postId, isOfficial } });
   }
 
-  /**
-   * Elimina una publicación de forma permanente.
-   */
-  deletePost(postId: string): Observable<any> {
-    const query = `
-      mutation DeletePost($postId: ID!) {
-        deletePost(postId: $postId)
-      }
-    `;
-    return this.http.post(this.graphqlUrl, { query, variables: { postId } });
+  deletePost(postId: string): Observable<unknown> {
+    return this.http.post(this.graphqlUrl, { query: DELETE_POST_ADMIN_MUTATION, variables: { postId } });
   }
 
-  /**
-   * Limpia la lista de usuarios.
-   */
-  resetUsers(): void {
-    this.users.set([]);
-  }
+  resetUsers(): void { this.users.set([]); }
+  resetPosts(): void { this.posts.set([]); }
 
-  /**
-   * Limpia la lista de publicaciones.
-   */
-  resetPosts(): void {
-    this.posts.set([]);
-  }
-
-  /**
-   * Cambia el estado de activación de un usuario.
-   */
   updateUserStatus(userId: string, isActive: boolean): Observable<UserProfile> {
-    const query = `
-      mutation UpdateUserStatus($userId: ID!, $isActive: Boolean!) {
-        updateUserStatus(userId: $userId, isActive: $isActive) {
-          id
-          email
-          profileComplete
-        }
-      }
-    `;
-
-    return this.http.post<{ data: { updateUserStatus: UserProfile } }>(this.graphqlUrl, {
-      query,
+    return this.http.post<GqlRes<{ updateUserStatus: UserProfile }>>(this.graphqlUrl, {
+      query: UPDATE_USER_STATUS_MUTATION,
       variables: { userId, isActive }
-    }).pipe(map(response => response.data.updateUserStatus));
+    }).pipe(map(r => {
+      if (!r.data) throw new Error('Error GQL');
+      return r.data.updateUserStatus;
+    }));
   }
 }

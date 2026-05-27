@@ -5,6 +5,8 @@ import { catchError, finalize, of, take } from 'rxjs';
 import { FeedPublicationService } from '../../services/feed-publication.service';
 import { Post } from '../../../../interfaces/feed';
 import { PublicationDraft } from '../../pages/new-publication/publication-draft.model';
+import { AuthSession } from '../../../../core/services/auth-session';
+import { buildAvatarUrl } from '../../../profile/profile-page/profile-page.helpers';
 
 @Component({
 	selector: 'app-post-creator',
@@ -16,6 +18,12 @@ import { PublicationDraft } from '../../pages/new-publication/publication-draft.
 export class PostCreatorComponent {
 	readonly created = output<Post>();
 	private readonly publicationService = inject(FeedPublicationService);
+	private readonly authSession = inject(AuthSession);
+
+	readonly userAvatar = computed(() => {
+		const user = this.authSession.user();
+		return user?.avatarUrl || buildAvatarUrl(user?.username || user?.email || 'nexora');
+	});
 
 	readonly tabs = ['Lo ultimo', 'Popular', 'Investigacion', 'Vida en el campus'];
 	readonly activeTab = signal(this.tabs[0]);

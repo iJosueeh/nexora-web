@@ -3,10 +3,11 @@ import { Router } from '@angular/router';
 import { authGuard } from './auth-guard';
 import { AuthSession } from '../services/auth-session';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { vi } from 'vitest';
 
 describe('authGuard', () => {
-  let authSessionSpy: any;
-  let routerSpy: any;
+  let authSessionSpy: { isAuthenticated: ReturnType<typeof vi.fn> };
+  let routerSpy: { createUrlTree: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     authSessionSpy = {
@@ -24,7 +25,10 @@ describe('authGuard', () => {
     });
   });
 
-  const executeGuard = (route: ActivatedRouteSnapshot = {} as any, state: RouterStateSnapshot = {} as any) => {
+  const executeGuard = (
+    route: ActivatedRouteSnapshot = {} as unknown as ActivatedRouteSnapshot, 
+    state: RouterStateSnapshot = {} as unknown as RouterStateSnapshot
+  ) => {
     return TestBed.runInInjectionContext(() => authGuard(route, state));
   };
 
@@ -48,3 +52,4 @@ describe('authGuard', () => {
     expect(routerSpy.createUrlTree).toHaveBeenCalledWith(['/login']);
   });
 });
+

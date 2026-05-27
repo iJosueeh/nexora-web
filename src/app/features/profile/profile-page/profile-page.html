@@ -10,7 +10,7 @@
 
     @if (showSkeleton()) {
       <main class="min-h-[calc(100vh-2rem)] overflow-hidden rounded-3xl border border-[var(--brand-border)] bg-[#0a0b10] p-6">
-        <div class="space-y-6" [class.animate-pulse]="!isGuest()">
+        <div class="space-y-6" [class.animate-pulse]="!state.isGuest()">
           <div class="h-64 rounded-3xl bg-white/6"></div>
           <div class="flex items-end gap-4">
             <div class="h-28 w-28 rounded-2xl bg-white/8"></div>
@@ -26,7 +26,7 @@
           </div>
         </div>
 
-        @if (isGuest()) {
+        @if (state.isGuest()) {
           <section class="mt-6 rounded-2xl border border-[#df3432]/25 bg-[#df3432]/10 p-5 sm:p-6">
             <h2 class="text-lg font-semibold tracking-tight text-[#f4f5f7] sm:text-xl">Debes iniciar sesión para ver tu perfil</h2>
             <p class="mt-2 max-w-2xl text-sm leading-6 text-[#d3d7e0]">
@@ -38,14 +38,14 @@
               <button
                 type="button"
                 class="rounded-full bg-[#df3432] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#ee4542]"
-                (click)="goToLogin()"
+                (click)="nav('/login')"
               >
                 Iniciar sesión
               </button>
               <button
                 type="button"
                 class="rounded-full border border-white/14 bg-white/6 px-5 py-2.5 text-sm font-semibold text-[#e8eaf0] transition-colors hover:bg-white/10"
-                (click)="goToRegister()"
+                (click)="nav('/register')"
               >
                 Crear cuenta
               </button>
@@ -53,7 +53,7 @@
           </section>
         }
       </main>
-    } @else if (isProfileNotFound()) {
+    } @else if (state.isProfileNotFound()) {
       <main class="min-h-[calc(100vh-2rem)] overflow-hidden rounded-3xl border border-[var(--brand-border)] bg-[#0a0b10] p-6 sm:p-8">
         <section class="rounded-2xl border border-[#df3432]/25 bg-[#df3432]/10 p-5 sm:p-6">
           <h2 class="text-lg font-semibold tracking-tight text-[#f4f5f7] sm:text-xl">Perfil no encontrado</h2>
@@ -65,14 +65,14 @@
             <button
               type="button"
               class="rounded-full bg-[#df3432] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#ee4542]"
-              (click)="goToLogin()"
+              (click)="nav('/login')"
             >
               Iniciar sesión
             </button>
             <button
               type="button"
               class="rounded-full border border-white/14 bg-white/6 px-5 py-2.5 text-sm font-semibold text-[#e8eaf0] transition-colors hover:bg-white/10"
-              (click)="goToRegister()"
+              (click)="nav('/register')"
             >
               Crear cuenta
             </button>
@@ -98,7 +98,7 @@
                   <div class="min-w-0 pb-1">
                     <div class="flex flex-wrap items-center gap-3">
                       <h1 class="text-4xl font-bold tracking-tight text-[#f4f5f7] sm:text-[2.75rem]">{{ displayName() }}</h1>
-                      @if (profile()?.profileComplete) {
+                      @if (state.profile()?.profileComplete) {
                         <span class="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-emerald-200">Perfil completo</span>
                       } @else {
                         <span class="rounded-full border border-[#df3432]/30 bg-[#df3432]/12 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#f1b0aa]">Perfil pendiente</span>
@@ -108,9 +108,9 @@
                     <p class="mt-4 max-w-4xl text-[1.03rem] leading-7 text-[#c8cbd3]">{{ bio() }}</p>
 
                     <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[#a0a6b1]">
-                      <span class="inline-flex items-center gap-2"><span class="text-[#f0b9b1]">✦</span>{{ profile()?.career }}</span>
-                      <span class="inline-flex items-center gap-2"><span class="text-[#f0b9b1]">◷</span>{{ profile()?.joinedLabel }}</span>
-                      <span class="inline-flex items-center gap-2"><span class="text-[#f0b9b1]">✉</span>{{ profile()?.email }}</span>
+                      <span class="inline-flex items-center gap-2"><span class="text-[#f0b9b1]">✦</span>{{ state.profile()?.career }}</span>
+                      <span class="inline-flex items-center gap-2"><span class="text-[#f0b9b1]">◷</span>{{ state.profile()?.joinedLabel }}</span>
+                      <span class="inline-flex items-center gap-2"><span class="text-[#f0b9b1]">✉</span>{{ state.profile()?.email }}</span>
                     </div>
                   </div>
                 </div>
@@ -125,10 +125,10 @@
                       {{ shareLabel() }}
                     </button>
                   }
-                  @if (isOwnProfile()) {
+                  @if (state.isOwnProfile()) {
                     <button
                       type="button"
-                      (click)="goToEditProfile($event)"
+                      (click)="nav('/settings', $event)"
                       class="rounded-full border border-white/12 bg-white/6 px-5 py-2.5 text-sm font-semibold text-[#e8eaf0] transition-colors hover:bg-white/10"
                     >
                       Editar perfil
@@ -137,22 +137,22 @@
                   @if (canFollow()) {
                     <button
                       type="button"
-                      (click)="toggleFollow()"
+                      (click)="state.toggleFollow()"
                       class="rounded-full px-5 py-2.5 text-sm font-semibold transition-colors"
-                      [class.bg-[#df3432]]="!isFollowing()"
-                      [class.text-white]="!isFollowing()"
-                      [class.hover:bg-[#ee4542]]="!isFollowing()"
-                      [class.border]="isFollowing()"
-                      [class.border-white/10]="isFollowing()"
-                      [class.bg-white/6]="isFollowing()"
-                      [class.text-[#e7e9ee]]="isFollowing()"
+                      [class.bg-[#df3432]]="!state.isFollowing()"
+                      [class.text-white]="!state.isFollowing()"
+                      [class.hover:bg-[#ee4542]]="!state.isFollowing()"
+                      [class.border]="state.isFollowing()"
+                      [class.border-white/10]="state.isFollowing()"
+                      [class.bg-white/6]="state.isFollowing()"
+                      [class.text-[#e7e9ee]]="state.isFollowing()"
                     >
-                      {{ isFollowing() ? 'Siguiendo' : 'Seguir' }}
+                      {{ state.isFollowing() ? 'Siguiendo' : 'Seguir' }}
                     </button>
-                  } @else if (isAnonymousPreview()) {
+                  } @else if (state.isAnonymousPreview()) {
                     <button
                       type="button"
-                      (click)="goToLogin()"
+                      (click)="nav('/login')"
                       class="rounded-full border border-[#df3432]/35 bg-[#df3432]/14 px-5 py-2.5 text-sm font-semibold text-[#f7d0cb] transition-colors hover:bg-[#df3432]/22"
                     >
                       Inicia sesión para seguir
@@ -160,10 +160,10 @@
                   }
                   <div class="relative z-40">
                     <app-profile-menu
-                      [isOwnProfile]="isOwnProfile()"
+                      [isOwnProfile]="state.isOwnProfile()"
                       [handle]="handle()"
                       (copyLink)="copyProfileLink()"
-                      (signOut)="signOutFromProfile()"
+                      (signOut)="signOut()"
                     ></app-profile-menu>
                   </div>
                 </div>
@@ -186,6 +186,11 @@
             @if (stat.label === 'Seguidores') {
               <article 
                 (click)="openFollowModal('followers', $event)"
+                (keydown.enter)="openFollowModal('followers', $event)"
+                (keydown.space)="openFollowModal('followers', $event)"
+                tabindex="0"
+                role="button"
+                aria-label="Ver seguidores"
                 class="rounded-xl border border-white/8 bg-white/[0.03] px-3 py-3 text-center sm:px-4 cursor-pointer hover:bg-white/8 transition-all hover:border-[#df3432]/30 group"
               >
                 <p class="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-[#7f8591] sm:text-[0.6rem] sm:tracking-[0.2em] group-hover:text-[#f0b9b1]">{{ stat.label }}</p>
@@ -194,6 +199,11 @@
             } @else if (stat.label === 'Seguidos') {
               <article 
                 (click)="openFollowModal('following', $event)"
+                (keydown.enter)="openFollowModal('following', $event)"
+                (keydown.space)="openFollowModal('following', $event)"
+                tabindex="0"
+                role="button"
+                aria-label="Ver seguidos"
                 class="rounded-xl border border-white/8 bg-white/[0.03] px-3 py-3 text-center sm:px-4 cursor-pointer hover:bg-white/8 transition-all hover:border-[#df3432]/30 group"
               >
                 <p class="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-[#7f8591] sm:text-[0.6rem] sm:tracking-[0.2em] group-hover:text-[#f0b9b1]">{{ stat.label }}</p>
@@ -208,11 +218,11 @@
           }
         </section>
 
-        @if (!isAnonymousPreview()) {
+        @if (!state.isAnonymousPreview()) {
           <section class="flex flex-wrap gap-2 border-b border-white/8 pb-4">
-            <button type="button" (click)="setTab('posts')" class="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors" [class.bg-white/8]="activeTab() === 'posts'" [class.text-white]="activeTab() === 'posts'" [class.text-[#a2a7b2]]="activeTab() !== 'posts'">Posts</button>
-            <button type="button" (click)="setTab('media')" class="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors" [class.bg-white/8]="activeTab() === 'media'" [class.text-white]="activeTab() === 'media'" [class.text-[#a2a7b2]]="activeTab() !== 'media'">Media</button>
-            <button type="button" (click)="setTab('likes')" class="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors" [class.bg-white/8]="activeTab() === 'likes'" [class.text-white]="activeTab() === 'likes'" [class.text-[#a2a7b2]]="activeTab() !== 'likes'">Likes</button>
+            <button type="button" (click)="state.setTab('posts')" class="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors" [class.bg-white/8]="state.activeTab() === 'posts'" [class.text-white]="state.activeTab() === 'posts'" [class.text-[#a2a7b2]]="state.activeTab() !== 'posts'">Posts</button>
+            <button type="button" (click)="state.setTab('media')" class="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors" [class.bg-white/8]="state.activeTab() === 'media'" [class.text-white]="state.activeTab() === 'media'" [class.text-[#a2a7b2]]="state.activeTab() !== 'media'">Media</button>
+            <button type="button" (click)="state.setTab('likes')" class="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors" [class.bg-white/8]="state.activeTab() === 'likes'" [class.text-white]="state.activeTab() === 'likes'" [class.text-[#a2a7b2]]="state.activeTab() !== 'likes'">Likes</button>
           </section>
         }
 
@@ -270,21 +280,21 @@
           }
         </section>
 
-        @if (!isAnonymousPreview() && hasMorePosts()) {
+        @if (!state.isAnonymousPreview() && state.hasMorePosts()) {
           <section class="flex justify-center pt-2">
             <button
               type="button"
-              (click)="loadMorePosts()"
-              [disabled]="isLoadingMorePosts()"
+              (click)="state.loadMorePosts()"
+              [disabled]="state.isLoadingMorePosts()"
               class="rounded-full border border-white/12 bg-white/6 px-5 py-2.5 text-sm font-semibold text-[#e8eaf0] transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {{ isLoadingMorePosts() ? 'Cargando...' : 'Cargar mas publicaciones' }}
+              {{ state.isLoadingMorePosts() ? 'Cargando...' : 'Cargar mas publicaciones' }}
             </button>
           </section>
         }
       </main>
 
-      @if (isAnonymousPreview() && showAnonymousLock()) {
+      @if (state.isAnonymousPreview() && showAnonymousLock()) {
         <div class="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-3 pb-4 sm:px-4 lg:px-5">
           <section class="pointer-events-auto relative w-full max-w-4xl overflow-hidden rounded-3xl border border-[#df3432]/22 bg-[#0c0e14]/96 p-6 shadow-[0_24px_60px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:p-7">
             <div class="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[#0a0b10]/0 via-[#0a0b10]/70 to-[#0c0e14]"></div>
@@ -297,14 +307,14 @@
               <div class="mt-5 flex flex-wrap gap-3">
                 <button
                   type="button"
-                  (click)="goToLogin()"
+                  (click)="nav('/login')"
                   class="rounded-full bg-[#df3432] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#ee4542]"
                 >
                   Iniciar sesión
                 </button>
                 <button
                   type="button"
-                  (click)="goToRegister()"
+                  (click)="nav('/register')"
                   class="rounded-full border border-white/14 bg-white/6 px-5 py-2.5 text-sm font-semibold text-[#e8eaf0] transition-colors hover:bg-white/10"
                 >
                   Crear cuenta
@@ -319,8 +329,8 @@
 </app-shell-layout>
 
 <app-follow-modal
-  [userId]="profile()?.id || ''"
+  [userId]="state.profile()?.id || ''"
   [type]="followModalType()"
   [isOpen]="isFollowModalOpen()"
-  (close)="closeFollowModal()"
+  (closeModal)="closeFollowModal()"
 ></app-follow-modal>

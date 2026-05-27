@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { signal, Component, NO_ERRORS_SCHEMA } from '@angular/core';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { signal, Component, NO_ERRORS_SCHEMA, WritableSignal } from '@angular/core';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { provideRouter, RouterOutlet } from '@angular/router';
 
 @Component({
@@ -32,6 +32,6 @@ describe('App', () => {
 
   it('should have the correct title', () => {
     const fixture = TestBed.createComponent(MockApp);
-    expect((fixture.componentInstance as any).title()).toBe('nexora-app');
+    expect((fixture.componentInstance as unknown as { title: () => string }).title()).toBe('nexora-app');
   });
 });

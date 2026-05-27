@@ -19,6 +19,8 @@ class HostComponent {
     author: { username: 'jdoe', fullName: 'John Doe' } as any,
     content: 'Hola mundo',
     createdAt: new Date(),
+    likesCount: 0,
+    isLiked: false,
     replies: []
   });
 }
@@ -34,6 +36,7 @@ describe('CommentThreadComponent', () => {
         createdAt: new Date(),
         author: { username: 'test' } as any,
         likesCount: 0,
+        isLiked: false,
         replies: []
       })
     };

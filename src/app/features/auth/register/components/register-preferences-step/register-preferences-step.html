@@ -1,6 +1,6 @@
 <section [formGroup]="form()" class="grid gap-5">
-  <div class="space-y-3">
-    <label class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Intereses académicos</label>
+  <fieldset class="space-y-3">
+    <legend class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Intereses académicos</legend>
     <div class="flex flex-wrap gap-2">
       @for (interest of interestOptions(); track interest) {
         <button
@@ -22,12 +22,13 @@
     @if (isInvalid(selectedInterestsControl)) {
       <p class="text-xs text-[#ff8a8a]">Selecciona al menos un interés académico.</p>
     }
-  </div>
+  </fieldset>
 
   <div class="space-y-2">
-    <label class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Bio</label>
+    <label for="bio" class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Bio</label>
     <div class="rounded-2xl border bg-[#111520] px-4 py-3 transition-all duration-200 focus-within:border-[#ff4d4d]" [class.border-[#ff4d4d]]="isInvalid(bioControl)" [class.border-white/10]="!isInvalid(bioControl)">
       <textarea
+        id="bio"
         formControlName="bio"
         rows="4"
         maxlength="280"

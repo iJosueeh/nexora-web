@@ -1,8 +1,9 @@
 <section [formGroup]="form()" class="grid gap-5 sm:grid-cols-2">
   <div class="space-y-2">
-    <label class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Nombre de Usuario</label>
+    <label for="username" class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Nombre de Usuario</label>
     <div class="rounded-2xl border bg-[#111520] px-4 py-3 transition-all duration-200 focus-within:border-[#ff4d4d]" [class.border-[#ff4d4d]]="isInvalid(usernameControl)" [class.border-white/10]="!isInvalid(usernameControl)">
       <input
+        id="username"
         formControlName="username"
         type="text"
         placeholder="ej: josue.tanta"
@@ -20,9 +21,10 @@
   </div>
 
   <div class="space-y-2">
-    <label class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Nombre Completo</label>
+    <label for="fullName" class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Nombre Completo</label>
     <div class="rounded-2xl border bg-[#111520] px-4 py-3 transition-all duration-200 focus-within:border-[#ff4d4d]" [class.border-[#ff4d4d]]="isInvalid(fullNameControl)" [class.border-white/10]="!isInvalid(fullNameControl)">
       <input
+        id="fullName"
         formControlName="fullName"
         type="text"
         placeholder="Tu nombre y apellidos"
@@ -36,9 +38,10 @@
   </div>
 
   <div class="sm:col-span-2 space-y-2">
-    <label class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Carrera</label>
+    <label for="career" class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Carrera</label>
     <div class="rounded-2xl border bg-[#111520] px-4 py-3 transition-all duration-200 focus-within:border-[#ff4d4d]" [class.border-[#ff4d4d]]="isInvalid(careerControl)" [class.border-white/10]="!isInvalid(careerControl)">
       <select
+        id="career"
         formControlName="career"
         class="w-full bg-transparent text-sm text-white outline-none [&>option]:bg-[#0f1218]"
         [attr.aria-invalid]="isInvalid(careerControl)"

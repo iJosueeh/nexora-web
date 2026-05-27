@@ -14,6 +14,6 @@ export class EntityFormShellComponent {
   saveLabel = input<string>('Guardar');
   cancelLabel = input<string>('Cancelar');
 
-  onSave = output<void>();
-  onCancel = output<void>();
+  save = output<void>();
+  dismiss = output<void>();
 }

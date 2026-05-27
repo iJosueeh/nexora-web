@@ -45,6 +45,10 @@ export const routes: Routes = [
                 // canActivate: [authGuard]  // Deshabilitado para testing
             },
             {
+                path: 'feed/post/:id',
+                loadComponent: () => import('./features/feed/pages/post-detail/post-detail').then(m => m.PostDetailPage)
+            },
+            {
                 path: 'publicar',
                 loadComponent: () => import('./features/feed/pages/new-publication/new-publication-page').then(m => m.NewPublicationPage)
             },

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { CommentThread } from '../../../../interfaces/feed';
 import { CommentThreadComponent } from '../comment-thread/comment-thread';
 
@@ -21,6 +21,8 @@ export class CommentThreadListComponent {
 	// Optional inputs to allow nested components to post replies and refresh
 	readonly postId = input<string | undefined>(undefined);
 	readonly reloadComments = input<(() => void) | undefined>(undefined);
+
+	readonly commentDeleted = output<string>();
 
 	readonly hasComments = computed(() => this.comments().length > 0);
 }

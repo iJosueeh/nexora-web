@@ -5,8 +5,8 @@ export interface CommentThread {
 	author: FeedUser;
 	content: string;
 	createdAt: Date | string;
-	likesCount?: number;
-	isLiked?: boolean;
+	likesCount: number;
+	isLiked: boolean;
 	parentId?: string | null;
 	replies?: CommentThread[];
 }

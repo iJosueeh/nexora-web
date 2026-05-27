@@ -11,8 +11,8 @@
       </tr>
     </thead>
     <tbody>
-      @for (item of data(); track item.id || $index) {
-        <tr (click)="onRowClick.emit(item)">
+      @for (item of data(); track item['id'] || $index) {
+        <tr (click)="rowClick.emit(item)">
           @for (col of columns(); track col.key) {
             <td>
               @switch (col.type) {

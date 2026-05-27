@@ -18,7 +18,7 @@ export class FollowModal implements OnChanges {
   @Input() userId!: string;
   @Input() type: 'followers' | 'following' = 'followers';
   @Input() isOpen = false;
-  @Output() close = new EventEmitter<void>();
+  @Output() dismiss = new EventEmitter<void>();
 
   users = signal<AuthUser[]>([]);
   isLoading = signal(true);
@@ -46,9 +46,9 @@ export class FollowModal implements OnChanges {
     });
   }
 
-  closeModal(): void {
+  dismissModal(): void {
     this.isOpen = false;
-    this.close.emit();
+    this.dismiss.emit();
   }
 
   toggleFollow(user: AuthUser, event: MouseEvent): void {
@@ -62,7 +62,8 @@ export class FollowModal implements OnChanges {
 
   goToProfile(username: string | undefined): void {
     if (!username) return;
-    this.closeModal();
+    this.dismissModal();
     void this.router.navigate(['/u', username.toLowerCase()]);
   }
 }
+

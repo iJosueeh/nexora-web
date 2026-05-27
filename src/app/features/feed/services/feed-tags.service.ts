@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Apollo } from 'apollo-angular';
-import { catchError, map, Observable, of } from 'rxjs';
+import { catchError, map, Observable, of, switchMap } from 'rxjs';
 
 import { AVAILABLE_TAGS_QUERY, TRENDING_TOPICS_QUERY } from '../../../graphql/graphql.queries';
 import { map as rxMap } from 'rxjs/operators';
@@ -36,7 +36,7 @@ interface TrendingTopicsQueryResponse {
   providedIn: 'root'
 })
 export class FeedTagsService {
-  constructor(private readonly apollo: Apollo) {}
+  private readonly apollo = inject(Apollo);
 
   private readonly suggestedTags = [
     'ReactJS',
@@ -80,11 +80,30 @@ export class FeedTagsService {
       fetchPolicy: 'network-only'
     }).pipe(
       map(result => result.data?.trendingTopics ?? []),
-      rxMap(topics => topics.map(topic => ({
-        category: topic.tags && topic.tags.length > 0 ? topic.tags[0].toUpperCase() : DEFAULT_TREND_CATEGORY,
-        title: topic.titulo || 'Publicación destacada',
-        conversations: this.formatInteractionCount(topic.interactionScore)
-      }))),
+      switchMap(topics => {
+        if (topics.length === 0) {
+          return this.getMockTrends(search, limit);
+        }
+        
+        return of(topics.map(topic => {
+          const tag = topic.tags?.[0]?.toLowerCase() || '';
+          let category = 'Tendencias en Nexora';
+          
+          if (['java', 'python', 'reactjs', 'angular', 'typescript'].includes(tag)) {
+            category = 'Tecnología y Código';
+          } else if (['ai', 'research', 'ia'].includes(tag)) {
+            category = 'Ciencia e Innovación';
+          } else if (['campus', 'event', 'utp'].includes(tag)) {
+            category = 'Vida Universitaria';
+          }
+
+          return {
+            category: category.toUpperCase(),
+            title: topic.titulo || `#${tag}`,
+            conversations: this.formatInteractionCount(topic.interactionScore)
+          };
+        }));
+      }),
       catchError(() => this.getMockTrends(search, limit))
     );
   }
@@ -92,11 +111,18 @@ export class FeedTagsService {
   private getMockTrends(search = '', limit = 6): Observable<Trend[]> {
     return this.getSuggestedTags(search, limit).pipe(
       rxMap((tags) =>
-        tags.map((t, i) => ({
-          category: i === 0 ? DEFAULT_TREND_CATEGORY : 'RESEARCH',
-          title: `#${t}`,
-          conversations: `${Math.floor(Math.random() * 90) + 10}K`
-        }))
+        tags.map((t, i) => {
+          let category = 'TENDENCIAS';
+          if (i % 3 === 0) category = 'CIENCIA Y CÓDIGO';
+          if (i % 3 === 1) category = 'VIDA UNIVERSITARIA';
+          
+          const count = Math.floor(Math.random() * 15) + 2;
+          return {
+            category,
+            title: `#${t}`,
+            conversations: `${count} debates`
+          };
+        })
       )
     );
   }
@@ -105,7 +131,7 @@ export class FeedTagsService {
     if (score >= 1000) {
       return (score / 1000).toFixed(1) + 'K';
     }
-    return score.toString();
+    return `${score} interacciones`;
   }
 
   /**

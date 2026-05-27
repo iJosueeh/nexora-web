@@ -1,19 +1,19 @@
-import { Component, Input, input, output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface TableColumn {
   key: string;
   label: string;
   type?: 'text' | 'date' | 'badge' | 'image';
-  transform?: (value: any) => string;
+  transform?: (value: unknown) => string;
 }
 
 export interface TableAction {
   label: string;
   icon?: string;
   class?: string;
-  callback: (item: any) => void;
-  show?: (item: any) => boolean;
+  callback: (item: Record<string, unknown>) => void;
+  show?: (item: Record<string, unknown>) => boolean;
 }
 
 @Component({
@@ -24,13 +24,14 @@ export interface TableAction {
   styleUrls: ['./table.css'],
 })
 export class NexoraTableComponent {
-  data = input<any[]>([]);
+  data = input<Record<string, unknown>[]>([]);
   columns = input<TableColumn[]>([]);
   actions = input<TableAction[]>([]);
   
-  onRowClick = output<any>();
+  rowClick = output<Record<string, unknown>>();
 
-  getProperty(item: any, key: string): any {
-    return key.split('.').reduce((obj, k) => obj?.[k], item);
+  getProperty(item: Record<string, unknown>, key: string): any {
+    return key.split('.').reduce((obj: any, k) => obj?.[k], item);
   }
 }
+

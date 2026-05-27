@@ -4,10 +4,9 @@
   <div class="mx-auto flex w-full max-w-352 items-center gap-4">
     <a
       routerLink="/"
-      class="shrink-0 text-[0.82rem] font-medium uppercase tracking-[0.08em] text-[#f0f2f7]"
-      style="font-family: 'Inter', sans-serif"
+      class="shrink-0 flex items-center"
     >
-      NEXORA
+      <img src="Nexora_Logo.png" alt="Nexora Logo" class="h-8 w-auto md:h-9" />
     </a>
 
     @switch (mode()) {
@@ -48,6 +47,9 @@
               <div 
                 class="absolute right-0 mt-2.5 w-56 origin-top-right rounded-2xl border border-[#1d2432] bg-[#0d1119] p-1.5 shadow-[0_10px_40px_rgba(0,0,0,0.5)] focus:outline-none z-[60]"
                 (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+                tabindex="-1"
+                role="presentation"
               >
                 <div class="px-3 py-2.5 mb-1.5 border-b border-white/5">
                   <p class="text-sm font-bold text-[#f4f5f7] truncate">{{ displayName() }}</p>
@@ -138,6 +140,9 @@
               <div 
                 class="absolute right-0 mt-2.5 w-56 origin-top-right rounded-2xl border border-[#1d2432] bg-[#0d1119] p-1.5 shadow-[0_10px_40px_rgba(0,0,0,0.5)] focus:outline-none z-[60]"
                 (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+                tabindex="-1"
+                role="presentation"
               >
                 <div class="px-3 py-2.5 mb-1.5 border-b border-white/5">
                   <p class="text-sm font-bold text-[#f4f5f7] truncate">{{ displayName() }}</p>

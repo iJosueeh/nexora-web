@@ -3,21 +3,21 @@ if (typeof globalThis.IntersectionObserver === 'undefined') {
   class MockIntersectionObserver implements IntersectionObserver {
     readonly root: Element | Document | null = null;
     readonly rootMargin = '0px';
-    readonly thresholds: ReadonlyArray<number> = [];
+    readonly thresholds: readonly number[] = [];
     readonly scrollMargin = '0px';
 
-    constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {}
+    constructor(_callback: IntersectionObserverCallback, _options?: IntersectionObserverInit) { /* No-op for test */ }
 
-    observe(target: Element): void {}
-    unobserve(target: Element): void {}
-    disconnect(): void {}
+    observe(_target: Element): void { /* No-op for test */ }
+    unobserve(_target: Element): void { /* No-op for test */ }
+    disconnect(): void { /* No-op for test */ }
     takeRecords(): IntersectionObserverEntry[] {
       return [];
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (globalThis as any).IntersectionObserver = MockIntersectionObserver;
-  globalThis.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
 }
 
 import 'zone.js';
@@ -32,20 +32,25 @@ import { beforeEach, vi } from 'vitest';
 // Fix for "event" argument must be an instance of Event
 // This happens when JSDOM's Event conflicts with Node's Event in some libraries like undici
 // We ensure that the global Event is the one from JSDOM when running in Vitest
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 if (typeof (globalThis as any).Event === 'function') {
   try {
-    const jsdom = require('jsdom');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const jsdom = (globalThis as any).require('jsdom');
     const JSDOMEvent = new jsdom.JSDOM('').window.Event;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((globalThis as any).Event !== JSDOMEvent) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (globalThis as any).Event = JSDOMEvent;
     }
-  } catch (e) {
+  } catch (_e) {
     // Ignore if jsdom is not available or other issues
   }
 }
 
 // Global WebSocket mock to prevent undici/Node from trying to use real WebSockets
 // which causes the "instance of Event" error when it receives a JSDOM event.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (globalThis as any).WebSocket = vi.fn(() => ({
   addEventListener: vi.fn(),
   removeEventListener: vi.fn(),
@@ -54,6 +59,7 @@ if (typeof (globalThis as any).Event === 'function') {
   dispatchEvent: vi.fn(),
   readyState: 0, // CONNECTING
 }));
+
 
 // Mock global de Supabase para evitar inicializaciones reales en tests
 vi.mock('@supabase/supabase-js', () => ({
