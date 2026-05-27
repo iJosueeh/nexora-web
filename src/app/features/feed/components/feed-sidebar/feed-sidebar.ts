@@ -4,6 +4,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 import { AuthSession } from '../../../../core/services/auth-session';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { buildAvatarUrl } from '../../../profile/profile-page/profile-page.helpers';
 
 @Component({
   selector: 'app-feed-sidebar',
@@ -18,6 +19,11 @@ export class FeedSidebar {
   private readonly router = inject(Router);
 
   unreadCount = this.notificationService.unreadCount;
+  userAvatar = computed(() => {
+    const user = this.authSession.user();
+    return user?.avatarUrl || buildAvatarUrl(user?.username || user?.email || 'nexora');
+  });
+
   profileLink = computed(() => {
     const username = this.authSession.getUser()?.username?.trim();
     return username ? ['/u', username] : ['/profile'];

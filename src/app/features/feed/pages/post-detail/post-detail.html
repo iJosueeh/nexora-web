@@ -1,0 +1,170 @@
+<app-shell-layout [showRight]="false">
+  <div shell-left>
+    <app-feed-sidebar></app-feed-sidebar>
+  </div>
+
+  <div shell-main>
+    <div class="post-detail-container max-w-4xl px-4 py-4 md:px-6">
+      <!-- Navigation Header -->
+      <div class="mb-6 flex items-center justify-between gap-4 border-b border-white/5 pb-4">
+        <div class="flex items-center gap-2">
+          <button (click)="goBack()" class="flex h-9 w-9 items-center justify-center rounded-full text-[var(--brand-muted)] transition-all hover:bg-white/5 hover:text-white" title="Volver">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          </button>
+          <app-breadcrumb [items]="breadcrumbItems()" />
+        </div>
+        <div class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-[var(--brand-muted)]">
+          Detalle del Post
+        </div>
+      </div>
+
+      @if (loading()) {
+        <div class="animate-pulse space-y-6">
+          <div class="flex items-center gap-4">
+            <div class="h-12 w-12 rounded-full bg-white/5"></div>
+            <div class="flex-1 space-y-2">
+              <div class="h-4 w-1/4 rounded bg-white/5"></div>
+              <div class="h-3 w-1/6 rounded bg-white/5"></div>
+            </div>
+          </div>
+          <div class="h-32 w-full rounded-2xl bg-white/5"></div>
+        </div>
+      } @else if (post(); as p) {
+        <!-- Main Post Expanded -->
+        <article class="post-expanded rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-6 md:p-8">
+          <header class="mb-6 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <img [src]="p.author.avatar" [alt]="p.author.fullName" class="h-12 w-12 rounded-full border border-white/10 ring-2 ring-white/5" />
+              <div>
+                <h1 class="text-base font-bold tracking-tight text-[#f4f5f7]">{{ p.author.fullName }}</h1>
+                <p class="text-xs font-medium text-[var(--brand-muted)]">@{{ p.author.username }}</p>
+              </div>
+            </div>
+            @if (p.is_official) {
+              <span class="rounded-full bg-[var(--brand-red)]/10 px-3 py-1 text-[0.6rem] font-bold uppercase tracking-widest text-[var(--brand-red)] border border-[var(--brand-red)]/20">
+                Oficial
+              </span>
+            }
+          </header>
+
+          <div class="space-y-5">
+            @if (p.title) {
+              <h2 class="text-xl font-bold leading-snug text-white md:text-2xl">{{ p.title }}</h2>
+            }
+            <p class="whitespace-pre-wrap text-base leading-relaxed text-[#c8cbd3] md:text-lg">
+              {{ p.content }}
+            </p>
+            
+            @if (p.imageUrl) {
+              <div class="mt-4 overflow-hidden rounded-xl border border-white/5 bg-black/20">
+                <img [src]="p.imageUrl" [alt]="p.title || 'Imagen del post'" class="w-full object-cover max-h-[500px]" />
+              </div>
+            }
+
+            <div class="flex flex-wrap gap-2 pt-1">
+              @for (tag of p.tags; track tag) {
+                <span class="text-sm font-semibold text-[var(--brand-red)]">#{{ tag }}</span>
+              }
+            </div>
+
+            <div class="text-[0.82rem] font-bold text-[var(--brand-muted)] py-4 border-t border-white/5 flex items-center gap-2">
+              <time>{{ p.createdAt | date:'HH:mm' }}</time>
+              <span class="opacity-30">·</span>
+              <time>{{ p.createdAt | date:'dd MMM. yyyy' }}</time>
+              <span class="opacity-30">·</span>
+              <span class="text-white">{{ p.location || 'UTP Campus' }}</span>
+            </div>
+
+            <div class="flex gap-6 py-2 text-xs border-t border-white/5 uppercase tracking-[0.12em] font-black">
+              <span class="flex items-center gap-1.5"><strong class="text-white text-sm">{{ p.likesCount || 0 }}</strong> <span class="text-[var(--brand-muted)]">Me gusta</span></span>
+              <span class="flex items-center gap-1.5"><strong class="text-white text-sm">{{ p.commentsCount || 0 }}</strong> <span class="text-[var(--brand-muted)]">Comentarios</span></span>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="action-bar border-t border-white/5 pt-3">
+              <div class="flex w-full justify-around items-center">
+                <button (click)="toggleLike($event)" class="group flex items-center gap-2 transition-colors active:scale-95" [class.text-[var(--brand-red)]]="p.isLiked" [class.text-[var(--brand-muted)]]="!p.isLiked">
+                  <div class="flex h-10 w-10 items-center justify-center rounded-full transition-colors group-hover:bg-[#df3432]/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" [attr.fill]="p.isLiked ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                  </div>
+                </button>
+                
+                <button class="group flex items-center gap-2 text-[var(--brand-muted)] transition-colors hover:text-[#50b7f5]">
+                  <div class="flex h-10 w-10 items-center justify-center rounded-full transition-colors group-hover:bg-[#50b7f5]/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-14.7 8.38 8.38 0 0 1 3.8.9L21 3z"></path></svg>
+                  </div>
+                </button>
+
+                <button (click)="sharePost($event)" class="group flex items-center gap-2 text-[var(--brand-muted)] transition-colors hover:text-[#00ba7c]">
+                  <div class="flex h-10 w-10 items-center justify-center rounded-full transition-colors group-hover:bg-[#00ba7c]/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- New Comment Area (Modern Social Design) -->
+        <section class="mb-10">
+          <div class="comment-input-standard">
+            <div class="flex gap-4">
+              <img [src]="currentUserAvatar()" alt="Mi perfil" class="h-10 w-10 rounded-full border border-white/10 shrink-0" />
+              <div class="textarea-wrapper">
+                <textarea 
+                  [(ngModel)]="newCommentText"
+                  placeholder="Escribe tu respuesta..." 
+                  class="standard-textarea"
+                  (input)="adjustHeight($event)"
+                ></textarea>
+
+                <div class="input-footer">
+                  <div class="input-tools">
+                    <button type="button" class="tool-btn" title="Añadir imagen">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    </button>
+                    <button type="button" class="tool-btn" title="Emojis">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                    </button>
+                  </div>
+
+                  <button 
+                    [disabled]="!newCommentText().trim() || isSubmitting()"
+                    (click)="submitComment()"
+                    class="submit-btn-modern"
+                  >
+                    @if (isSubmitting()) {
+                      <div class="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></div>
+                      Publicando
+                    } @else {
+                      Responder
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Comments List -->
+        <section class="comments-section pb-20">
+          <app-comment-thread-list 
+            [postId]="p.id"
+            [comments]="comments()"
+            (commentDeleted)="onCommentDeleted($event)"
+          />
+        </section>
+      } @else {
+        <div class="flex flex-col items-center justify-center py-32 text-center">
+          <div class="mb-4 rounded-full bg-white/5 p-4 text-[#5a6070]">
+             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          </div>
+          <p class="text-lg font-bold text-[#f4f5f7]">Publicación no encontrada</p>
+          <button (click)="goBack()" class="mt-6 rounded-full border border-white/10 bg-white/5 px-6 py-2 text-xs font-bold uppercase tracking-widest text-white transition-all hover:bg-white/10">
+            Regresar al inicio
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</app-shell-layout>

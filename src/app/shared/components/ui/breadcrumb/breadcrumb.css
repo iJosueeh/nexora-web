@@ -1,0 +1,52 @@
+:host {
+  display: block;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.breadcrumb-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--brand-surface);
+  border: 1px solid var(--brand-border);
+  border-radius: 1rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+.breadcrumb-container::-webkit-scrollbar {
+  display: none;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--brand-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.breadcrumb-item a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb-item a:hover {
+  color: #fff;
+}
+
+.breadcrumb-item.active {
+  color: #fff;
+  font-weight: 700;
+}
+
+.separator {
+  color: rgba(255, 255, 255, 0.15);
+  font-size: 0.7rem;
+}

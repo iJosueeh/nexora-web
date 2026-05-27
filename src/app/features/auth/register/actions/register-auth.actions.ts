@@ -1,7 +1,8 @@
 import { finalize, firstValueFrom } from 'rxjs';
 import { normalizeEmail } from '../../../../utils/email-normalization.util';
+import { RegisterContext } from '../../../../interfaces/auth';
 
-export async function submitAccountStep(ctx: any): Promise<void> {
+export async function submitAccountStep(ctx: RegisterContext): Promise<void> {
   if (ctx.accountForm.invalid) {
     ctx.markGroupTouched(ctx.accountForm);
     ctx.showStepValidationToast();
@@ -27,7 +28,7 @@ export async function submitAccountStep(ctx: any): Promise<void> {
   }
 }
 
-export async function onVerifyEmailCode(ctx: any, token = ctx.verificationCode()): Promise<void> {
+export async function onVerifyEmailCode(ctx: RegisterContext, token = ctx.verificationCode()): Promise<void> {
   const email = normalizeEmail(ctx.accountForm.controls.email.value);
   const cleanToken = token.replace(/\D/g, '').slice(0, 8);
 
@@ -80,7 +81,7 @@ export async function onVerifyEmailCode(ctx: any, token = ctx.verificationCode()
   }
 }
 
-export async function onResendValidationEmail(ctx: any): Promise<void> {
+export async function onResendValidationEmail(ctx: RegisterContext): Promise<void> {
   if (ctx.accountForm.invalid || ctx.isResendingEmail() || ctx.resendCooldownSeconds() > 0) return;
 
   const email = normalizeEmail(ctx.accountForm.controls.email.value);
@@ -109,7 +110,7 @@ export async function onResendValidationEmail(ctx: any): Promise<void> {
   }
 }
 
-export function submitIdentityStep(ctx: any): void {
+export function submitIdentityStep(ctx: RegisterContext): void {
   if (ctx.identityForm.invalid) {
     ctx.markGroupTouched(ctx.identityForm);
     ctx.showStepValidationToast();
@@ -131,3 +132,4 @@ export function submitIdentityStep(ctx: any): void {
       error: () => ctx.toastr.error('No se pudo guardar tu identidad. Intenta nuevamente.', 'Error'),
     });
 }
+

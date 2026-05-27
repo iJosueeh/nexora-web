@@ -90,7 +90,9 @@
           [class.bg-[#121212]]="routerLinkActive3.isActive"
           [class.text-[#ffffff]]="routerLinkActive3.isActive"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <div class="h-5 w-5 shrink-0 overflow-hidden rounded-full border border-white/10">
+            <img [src]="userAvatar()" alt="Mi perfil" class="h-full w-full object-cover" />
+          </div>
           <span class="flex-1">Perfil</span>
           @if (routerLinkActive3.isActive) {
             <div class="absolute right-2 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--brand-red)]"></div>

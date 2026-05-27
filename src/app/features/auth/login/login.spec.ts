@@ -13,12 +13,25 @@ import { PermissionService } from '../../../core/services/permission.service';
 describe('Login', () => {
   let component: Login;
   let fixture: ComponentFixture<Login>;
-  let supabaseAuthSpy: any;
-  let authApiSpy: any;
-  let authSessionSpy: any;
-  let permissionServiceSpy: any;
+  let supabaseAuthSpy: { 
+    signInWithEmail: ReturnType<typeof vi.fn>;
+    signOut: ReturnType<typeof vi.fn>;
+    toHumanErrorMessage: ReturnType<typeof vi.fn>;
+    isEmailNotConfirmedError: ReturnType<typeof vi.fn>;
+  };
+  let authApiSpy: { getSessionProfile: ReturnType<typeof vi.fn> };
+  let authSessionSpy: { 
+    start: ReturnType<typeof vi.fn>;
+    mergeUser: ReturnType<typeof vi.fn>;
+    clear: ReturnType<typeof vi.fn>;
+  };
+  let permissionServiceSpy: { isOfficialOrAdmin: ReturnType<typeof vi.fn> };
   let router: Router;
-  let toastrSpy: any;
+  let toastrSpy: { 
+    success: ReturnType<typeof vi.fn>;
+    error: ReturnType<typeof vi.fn>;
+    info: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(async () => {
     supabaseAuthSpy = {

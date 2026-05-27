@@ -2,11 +2,17 @@ import { TestBed } from '@angular/core/testing';
 import { SupabaseAuthService } from './supabase-auth.service';
 import { AuthSession } from './auth-session';
 import { Router } from '@angular/router';
+import { vi, Mock } from 'vitest';
 
 describe('SupabaseAuthService', () => {
   let service: SupabaseAuthService;
-  let authSessionSpy: any;
-  let routerSpy: any;
+  let authSessionSpy: { 
+    clear: ReturnType<typeof vi.fn>; 
+    getUser: ReturnType<typeof vi.fn>; 
+    start: ReturnType<typeof vi.fn>;
+    isAuthenticated: ReturnType<typeof vi.fn>;
+  };
+  let routerSpy: { navigateByUrl: ReturnType<typeof vi.fn>; url: string };
 
   const mockSupabaseClient = {
     auth: {
@@ -14,7 +20,11 @@ describe('SupabaseAuthService', () => {
       signInWithPassword: vi.fn(),
       resend: vi.fn(),
       getSession: vi.fn(),
-      signOut: vi.fn()
+      signOut: vi.fn(),
+      refreshSession: vi.fn(),
+      resetPasswordForEmail: vi.fn(),
+      updateUser: vi.fn(),
+      verifyOtp: vi.fn()
     }
   };
 
@@ -22,7 +32,8 @@ describe('SupabaseAuthService', () => {
     authSessionSpy = {
       clear: vi.fn(),
       getUser: vi.fn(),
-      start: vi.fn()
+      start: vi.fn(),
+      isAuthenticated: vi.fn(),
     };
     routerSpy = {
       navigateByUrl: vi.fn(),
@@ -39,7 +50,7 @@ describe('SupabaseAuthService', () => {
     service = TestBed.inject(SupabaseAuthService);
     
     // Override getClient to return our mock
-    vi.spyOn(service, 'getClient').mockReturnValue(mockSupabaseClient as any);
+    vi.spyOn(service, 'getClient').mockReturnValue(mockSupabaseClient as unknown as any);
   });
 
   it('should be created', () => {

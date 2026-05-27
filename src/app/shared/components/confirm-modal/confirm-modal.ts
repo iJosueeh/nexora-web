@@ -15,13 +15,13 @@ export class ConfirmModal {
   isLoading = input(false);
   
   @Output() confirm = new EventEmitter<void>();
-  @Output() cancel = new EventEmitter<void>();
+  @Output() dismiss = new EventEmitter<void>();
 
   onConfirm() {
     this.confirm.emit();
   }
 
   onCancel() {
-    this.cancel.emit();
+    this.dismiss.emit();
   }
 }

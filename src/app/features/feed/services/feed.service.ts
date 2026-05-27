@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { catchError, map, Observable, of } from 'rxjs';
 
-import { FEED_POSTS_QUERY, PROFILE_POSTS_QUERY } from '../../../graphql/graphql.queries';
+import { FEED_POSTS_QUERY, PROFILE_POSTS_QUERY, POST_BY_ID_QUERY } from '../../../graphql/graphql.queries';
 import { Post } from '../../../interfaces/feed';
 
 interface FeedAuthorQueryModel {
@@ -35,11 +35,15 @@ interface ProfilePostsQueryResponse {
   publicacionesPorUsuario: FeedPostQueryModel[];
 }
 
+interface PostByIdQueryResponse {
+  obtenerPublicacionPorId: FeedPostQueryModel;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class FeedService {
-  constructor(private readonly apollo: Apollo) {}
+  private readonly apollo = inject(Apollo);
 
   getPosts(limit = 5, offset = 0): Observable<Post[]> {
     return this.apollo
@@ -52,6 +56,21 @@ export class FeedService {
         fetchPolicy: 'network-only'
       })
       .pipe(map((result) => (result.data?.obtenerFeedPrincipal ?? []).map((post) => this.mapPost(post))));
+  }
+
+  getPostById(postId: string): Observable<Post | null> {
+    return this.apollo
+      .query<PostByIdQueryResponse>({
+        query: POST_BY_ID_QUERY,
+        variables: {
+          postId
+        },
+        fetchPolicy: 'network-only'
+      })
+      .pipe(
+        map((result) => result.data?.obtenerPublicacionPorId ? this.mapPost(result.data.obtenerPublicacionPorId) : null),
+        catchError(() => of(null))
+      );
   }
 
   getPostsByUsername(username: string, limit = 10, offset = 0): Observable<Post[]> {

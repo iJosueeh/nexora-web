@@ -1,12 +1,21 @@
 @if (isOpen) {
-  <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4" (click)="closeModal()">
-    <div class="w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0d0f14] shadow-2xl" (click)="$event.stopPropagation()">
+  <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4" 
+    (click)="dismissModal()"
+    (keydown.escape)="dismissModal()"
+    tabindex="-1"
+    role="presentation">
+    <div class="w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0d0f14] shadow-2xl" 
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+      tabindex="0"
+      role="dialog"
+      aria-modal="true">
       <!-- Header -->
       <div class="flex items-center justify-between border-b border-white/5 px-6 py-4">
         <h3 class="text-lg font-semibold text-[#f4f5f7]">
           {{ type === 'followers' ? 'Seguidores' : 'Siguiendo' }}
         </h3>
-        <button (click)="closeModal()" class="rounded-full p-2 text-[#9496a1] transition-colors hover:bg-white/5 hover:text-white">
+        <button (click)="dismissModal()" class="rounded-full p-2 text-[#9496a1] transition-colors hover:bg-white/5 hover:text-white" type="button" aria-label="Cerrar modal">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
@@ -31,12 +40,16 @@
               @for (user of users(); track user.id) {
                 <div 
                   (click)="goToProfile(user.username)"
-                  class="flex items-center gap-4 px-6 py-4 transition-colors hover:bg-white/5 cursor-pointer"
+                  (keydown.enter)="goToProfile(user.username)"
+                  (keydown.space)="goToProfile(user.username)"
+                  tabindex="0"
+                  role="link"
+                  class="flex items-center gap-4 px-6 py-4 transition-colors hover:bg-white/5 cursor-pointer outline-none focus:bg-white/5"
                 >
                   <img 
                     [src]="user.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.username" 
                     class="h-10 w-10 rounded-full border border-white/10"
-                    alt="Avatar"
+                    alt="Avatar de {{ user.fullName || user.username }}"
                   >
                   <div class="flex-1 min-w-0">
                     <p class="truncate text-sm font-semibold text-[#f4f5f7]">{{ user.fullName || user.username }}</p>
@@ -52,6 +65,7 @@
                     [class.border-white/10]="user.isFollowing"
                     [class.bg-white/6]="user.isFollowing"
                     [class.text-[#e7e9ee]]="user.isFollowing"
+                    type="button"
                   >
                     {{ user.isFollowing ? 'Siguiendo' : 'Seguir' }}
                   </button>
@@ -64,3 +78,4 @@
     </div>
   </div>
 }
+

@@ -9,7 +9,7 @@ import { UniversityEvent } from '../interfaces/event.model';
 export class EventService {
   private readonly api = inject(ApiClientService);
 
-  getEvents(limit: number = 20, offset: number = 0, category?: string): Observable<UniversityEvent[]> {
+  getEvents(limit = 20, offset = 0, category?: string): Observable<UniversityEvent[]> {
     const query = `
       query GetEvents($limit: Int, $offset: Int, $category: String) {
         universityEvents(limit: $limit, offset: $offset, category: $category) {
@@ -33,7 +33,7 @@ export class EventService {
     }).pipe(map(res => res.data.universityEvents));
   }
 
-  getEventBySlug(slug: String): Observable<UniversityEvent> {
+  getEventBySlug(slug: string): Observable<UniversityEvent> {
     const query = `
       query GetEventBySlug($slug: String!) {
         eventBySlug(slug: $slug) {

@@ -1,8 +1,9 @@
 <section [formGroup]="form()" class="grid gap-5 sm:grid-cols-2">
   <div class="sm:col-span-2 space-y-2">
-    <label class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Correo institucional</label>
+    <label for="email" class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Correo institucional</label>
     <div class="rounded-2xl border bg-[#111520] px-4 py-3 transition-all duration-200 focus-within:border-[#ff4d4d]" [class.border-[#ff4d4d]]="isInvalid(emailControl)" [class.border-white/10]="!isInvalid(emailControl)">
       <input
+        id="email"
         formControlName="email"
         type="email"
         placeholder="usuario@utp.edu.pe"
@@ -16,9 +17,10 @@
   </div>
 
   <div class="space-y-2">
-    <label class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Contraseña</label>
+    <label for="password" class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Contraseña</label>
     <div class="flex items-center gap-3 rounded-2xl border bg-[#111520] px-4 py-3 transition-all duration-200 focus-within:border-[#ff4d4d]" [class.border-[#ff4d4d]]="isInvalid(passwordControl)" [class.border-white/10]="!isInvalid(passwordControl)">
       <input
+        id="password"
         formControlName="password"
         [type]="showPassword() ? 'text' : 'password'"
         placeholder="Mínimo 8 caracteres"
@@ -35,9 +37,10 @@
   </div>
 
   <div class="space-y-2">
-    <label class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Confirmar contraseña</label>
+    <label for="confirmPassword" class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9ca3b5]">Confirmar contraseña</label>
     <div class="flex items-center gap-3 rounded-2xl border bg-[#111520] px-4 py-3 transition-all duration-200 focus-within:border-[#ff4d4d]" [class.border-[#ff4d4d]]="isInvalid(confirmPasswordControl) || passwordMismatch" [class.border-white/10]="!isInvalid(confirmPasswordControl) && !passwordMismatch">
       <input
+        id="confirmPassword"
         formControlName="confirmPassword"
         [type]="showConfirmPassword() ? 'text' : 'password'"
         placeholder="Repite tu contraseña"

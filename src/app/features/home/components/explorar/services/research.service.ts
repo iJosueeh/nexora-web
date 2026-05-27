@@ -9,7 +9,7 @@ import { ResearchPaper } from '../interfaces/research-paper.model';
 export class ResearchService {
   private readonly api = inject(ApiClientService);
 
-  getResearchPapers(limit: number = 20, offset: number = 0, faculty?: string): Observable<ResearchPaper[]> {
+  getResearchPapers(limit = 20, offset = 0, faculty?: string): Observable<ResearchPaper[]> {
     const query = `
       query GetResearchPapers($limit: Int, $offset: Int, $faculty: String) {
         researchPapers(limit: $limit, offset: $offset, faculty: $faculty) {
@@ -34,7 +34,7 @@ export class ResearchService {
     }).pipe(map(res => res.data.researchPapers));
   }
 
-  getResearchBySlug(slug: String): Observable<ResearchPaper> {
+  getResearchBySlug(slug: string): Observable<ResearchPaper> {
     const query = `
       query GetResearchBySlug($slug: String!) {
         researchBySlug(slug: $slug) {

@@ -11,33 +11,44 @@ import {
   MARK_ALL_NOTIFICATIONS_AS_READ_MUTATION 
 } from '../../graphql/graphql.queries';
 
+interface NotificationPayload {
+  new: {
+    id: string;
+    user_id?: string;
+    userId?: string;
+    type: string;
+    is_read: boolean;
+    sender_id?: string;
+    senderId?: string;
+  };
+  eventType: 'INSERT' | 'UPDATE' | 'DELETE';
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationService {
-  
+  private readonly apollo = inject(Apollo);
+  private readonly supabase = inject(SupabaseAuthService);
+  private readonly authSession = inject(AuthSession);
+  private readonly toastr = inject(ToastrService);
+  private readonly ngZone = inject(NgZone);
 
   private readonly notificationsSignal = signal<Notification[]>([]);
   private readonly unreadCountSignal = signal<number>(0);
-  private currentChannel: any = null;
+  private currentChannel: ReturnType<ReturnType<SupabaseAuthService['getClient']>['channel']> | null = null;
 
   readonly notifications = this.notificationsSignal.asReadonly();
   readonly unreadCount = this.unreadCountSignal.asReadonly();
 
-  constructor(
-    private readonly apollo: Apollo,
-    private readonly supabase: SupabaseAuthService,
-    private readonly authSession: AuthSession,
-    private readonly toastr: ToastrService,
-    private readonly ngZone: NgZone
-  ) {
+  constructor() {
     effect(() => {
-      const isTest = typeof (globalThis as any).vi !== 'undefined' || typeof (globalThis as any).describe !== 'undefined';
+      const isTest = typeof (globalThis as { vi?: unknown }).vi !== 'undefined' || typeof (globalThis as { describe?: unknown }).describe !== 'undefined';
       const user = this.authSession.user();
       const userId = user?.id;
       
       if (userId && !isTest) {
-        setTimeout(() => this.initRealtime(userId), 200);
+        setTimeout(() => void this.initRealtime(userId), 200);
         this.loadInitialData();
       } else if (userId && isTest) {
         // En tests solo cargamos datos iniciales, no iniciamos realtime real
@@ -50,7 +61,7 @@ export class NotificationService {
 
   private cleanup(): void {
     if (this.currentChannel) {
-      this.supabase.getClient().removeChannel(this.currentChannel);
+      void this.supabase.getClient().removeChannel(this.currentChannel);
       this.currentChannel = null;
     }
     this.notificationsSignal.set([]);
@@ -71,11 +82,11 @@ export class NotificationService {
 
     this.currentChannel = this.supabase.getClient()
       .channel(`notif-realtime-${cleanUserId}`)
-      .on('postgres_changes', { 
+      .on('postgres_changes' as any, { 
         event: '*', 
         schema: 'public', 
         table: 'notifications'
-      }, (payload: any) => {
+      }, (payload: NotificationPayload) => {
         this.ngZone.run(() => {
           const data = payload.new;
           if (data) {
@@ -88,15 +99,7 @@ export class NotificationService {
               this.fetchHistory(10, 0);
 
               if (payload.eventType === 'INSERT' && !data.is_read) {
-                const type = data.type;
-                const senderId = data.sender_id || data.senderId;
-
-                if (type === 'FOLLOW') {
-                  // Intentar obtener el username del sender desde la API si es posible, 
-                  // o mostrar un mensaje mejorado. 
-                  // Por ahora, usaremos el mensaje tipo @Username si el objeto ya viniera completo, 
-                  // pero como es Realtime de tabla pura, solo tenemos el ID.
-                  // Optaremos por un mensaje directo y recarga de datos.
+                if (data.type === 'FOLLOW') {
                   this.toastr.info('¡Tienes un nuevo seguidor!', 'Nexora Social', {
                     timeOut: 5000,
                     progressBar: true,

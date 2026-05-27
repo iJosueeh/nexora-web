@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -13,14 +13,12 @@ import { SupabaseAuthService } from '../../../core/services/supabase-auth.servic
   styleUrl: './forgot-password.css',
 })
 export class ForgotPassword {
+  private readonly router = inject(Router);
+  private readonly toastr = inject(ToastrService);
+  private readonly supabaseAuth = inject(SupabaseAuthService);
+
   email = '';
   isSubmitting = false;
-
-  constructor(
-    private readonly router: Router,
-    private readonly toastr: ToastrService,
-    private readonly supabaseAuth: SupabaseAuthService
-  ) {}
 
   async onSubmit(): Promise<void> {
     if (!this.email || this.isSubmitting) {

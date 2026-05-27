@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -13,6 +13,11 @@ import { SupabaseAuthService } from '../../../core/services/supabase-auth.servic
   styleUrl: './reset-password.css',
 })
 export class ResetPassword implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly toastr = inject(ToastrService);
+  private readonly supabaseAuth = inject(SupabaseAuthService);
+
   email = '';
   otpCode = '';
   password = '';
@@ -24,13 +29,6 @@ export class ResetPassword implements OnInit {
   canReset = false;
   private sentFromQuery = false;
   private verifyInProgress = false;
-
-  constructor(
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly toastr: ToastrService,
-    private readonly supabaseAuth: SupabaseAuthService
-  ) {}
 
   ngOnInit(): void {
     const emailFromQuery = this.route.snapshot.queryParamMap.get('email');

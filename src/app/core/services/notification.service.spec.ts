@@ -6,15 +6,15 @@ import { SupabaseAuthService } from './supabase-auth.service';
 import { AuthSession } from './auth-session';
 import { ToastrService } from 'ngx-toastr';
 import { NOTIFICATION_HISTORY_QUERY } from '../../graphql/graphql.queries';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { NgZone } from '@angular/core';
+import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
+import { NgZone, WritableSignal } from '@angular/core';
 
 describe('NotificationService', () => {
   let service: NotificationService;
-  let apolloSpy: any;
-  let supabaseSpy: any;
-  let authSessionSpy: any;
-  let toastrSpy: any;
+  let apolloSpy: { query: Mock; mutate: Mock };
+  let supabaseSpy: { getClient: Mock };
+  let authSessionSpy: { user: Mock; session: Mock };
+  let toastrSpy: { success: Mock; info: Mock; error: Mock };
 
   beforeEach(() => {
     apolloSpy = {
@@ -79,8 +79,12 @@ describe('NotificationService', () => {
     apolloSpy.mutate.mockReturnValue(of({ data: { markNotificationAsRead: true } }));
     
     // Acceso manual para simular estado previo
-    (service as any).notificationsSignal.set([{ id: '1', isRead: false }]);
-    (service as any).unreadCountSignal.set(1);
+    const serviceInternal = service as unknown as { 
+      notificationsSignal: WritableSignal<{ id: string; isRead: boolean }[]>;
+      unreadCountSignal: WritableSignal<number>;
+    };
+    serviceInternal.notificationsSignal.set([{ id: '1', isRead: false }]);
+    serviceInternal.unreadCountSignal.set(1);
 
     service.markAsRead('1');
 
@@ -91,7 +95,7 @@ describe('NotificationService', () => {
   it('should trigger info toast for FOLLOW notification type', () => {
     // Simulamos NgZone.run para que ejecute el callback inmediatamente
     const ngZone = TestBed.inject(NgZone);
-    vi.spyOn(ngZone, 'run').mockImplementation((fn: any) => fn());
+    vi.spyOn(ngZone, 'run').mockImplementation((fn: () => void) => fn());
 
     const followPayload = {
       eventType: 'INSERT',
@@ -109,7 +113,7 @@ describe('NotificationService', () => {
     
     // Como no podemos extraer el callback fácilmente sin refactorizar el servicio,
     // invocamos manualmente la lógica que debería ocurrir
-    (service as any).ngZone.run(() => {
+    (service as unknown as { ngZone: NgZone }).ngZone.run(() => {
       toastrSpy.info('¡Tienes un nuevo seguidor!', 'Nexora Social', expect.any(Object));
     });
 

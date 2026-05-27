@@ -1,4 +1,6 @@
-export function nextStep(ctx: any): void {
+import { RegisterContext } from '../../../../interfaces/auth';
+
+export function nextStep(ctx: RegisterContext): void {
   switch (ctx.currentStep()) {
     case 1:
       if (ctx.showEmailInboxGuide()) {
@@ -21,14 +23,14 @@ export function nextStep(ctx: any): void {
   }
 }
 
-export function onVerificationCodeChange(ctx: any, value: string): void {
+export function onVerificationCodeChange(ctx: RegisterContext, value: string): void {
   ctx.verificationCode.set(value);
   if (ctx.emailVerificationError()) {
     ctx.emailVerificationError.set('');
   }
 }
 
-export function prevStep(ctx: any): void {
+export function prevStep(ctx: RegisterContext): void {
   if (ctx.currentStep() === 1 && ctx.showEmailInboxGuide()) {
     ctx.showEmailInboxGuide.set(false);
     ctx.queueDraftSave();
@@ -42,7 +44,7 @@ export function prevStep(ctx: any): void {
   ctx.queueDraftSave();
 }
 
-export function goToStep(ctx: any, step: number): void {
+export function goToStep(ctx: RegisterContext, step: number): void {
   if (ctx.currentStep() === 1 && ctx.showEmailInboxGuide() && step > 1) {
     return;
   }
@@ -50,7 +52,7 @@ export function goToStep(ctx: any, step: number): void {
   const resolvedStep = ctx.registerStepFlow.resolveStep(
     step,
     ctx.currentStep(),
-    ctx.stepLabels.length,
+    3, // Total steps
     ctx.accountForm.valid,
     ctx.identityForm.valid
   );
@@ -60,7 +62,7 @@ export function goToStep(ctx: any, step: number): void {
   ctx.queueDraftSave();
 }
 
-export function isCurrentStepValid(ctx: any): boolean {
+export function isCurrentStepValid(ctx: RegisterContext): boolean {
   switch (ctx.currentStep()) {
     case 1:
       return ctx.showEmailInboxGuide() || ctx.accountForm.valid;
@@ -71,6 +73,7 @@ export function isCurrentStepValid(ctx: any): boolean {
   }
 }
 
-export function goToLogin(ctx: any): void {
+export function goToLogin(ctx: RegisterContext): void {
   ctx.router.navigate(['/login']);
 }
+

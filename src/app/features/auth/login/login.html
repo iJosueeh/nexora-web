@@ -69,7 +69,7 @@
 
       <!-- Email -->
       <div class="flex flex-col gap-2">
-        <label class="text-[0.6rem] md:text-[0.65rem] font-semibold tracking-[0.12em] uppercase text-[#8f95a3]">
+        <label for="email-input" class="text-[0.6rem] md:text-[0.65rem] font-semibold tracking-[0.12em] uppercase text-[#8f95a3]">
           Correo Electrónico
         </label>
         <div class="flex items-center gap-3 bg-[#0f1219] border border-white/10 rounded-xl px-3.5 py-2.5 md:py-3 focus-within:border-white/25 focus-within:bg-[#131820] transition-all duration-200">
@@ -77,6 +77,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
           </svg>
           <input
+            id="email-input"
             type="email"
             placeholder="usuario@utp.edu.pe"
             [(ngModel)]="email"
@@ -89,7 +90,7 @@
       <!-- Password -->
       <div class="flex flex-col gap-2">
         <div class="flex items-center justify-between">
-          <label class="text-[0.6rem] md:text-[0.65rem] font-semibold tracking-[0.12em] uppercase text-[#8f95a3]">
+          <label for="password-input" class="text-[0.6rem] md:text-[0.65rem] font-semibold tracking-[0.12em] uppercase text-[#8f95a3]">
             Contraseña
           </label>
           <a routerLink="/forgot-password"
@@ -102,6 +103,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
           </svg>
           <input
+            id="password-input"
             [type]="showPassword ? 'text' : 'password'"
             placeholder="········"
             [(ngModel)]="password"
@@ -124,9 +126,14 @@
       </div>
 
       <!-- Remember me -->
-      <label class="flex items-center gap-3 cursor-pointer group py-1">
+      <div class="flex items-center gap-3 group py-1">
         <div
-          class="w-5 h-5 rounded border flex items-center justify-center transition-all duration-200 shrink-0"
+          id="remember-me-checkbox"
+          role="checkbox"
+          tabindex="0"
+          aria-labelledby="remember-me-label"
+          [attr.aria-checked]="rememberMe"
+          class="w-5 h-5 rounded border flex items-center justify-center transition-all duration-200 shrink-0 focus:ring-2 focus:ring-[#df3432] outline-none cursor-pointer"
           [class.bg-[#df3432]]="rememberMe"
           [class.border-[#df3432]]="rememberMe"
           [class.border-white/25]="!rememberMe"
@@ -134,6 +141,8 @@
           [class.opacity-60]="isSubmitting"
           [class.cursor-not-allowed]="isSubmitting"
           (click)="toggleRememberMe()"
+          (keydown.enter)="$event.preventDefault(); toggleRememberMe()"
+          (keydown.space)="$event.preventDefault(); toggleRememberMe()"
         >
           @if (rememberMe) {
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class="w-3 h-3">
@@ -141,10 +150,10 @@
             </svg>
           }
         </div>
-        <span class="text-[0.75rem] md:text-[0.8rem] text-[#8f95a3] group-hover:text-[#a9afbc] transition-colors duration-200">
+        <label id="remember-me-label" for="remember-me-checkbox" class="text-[0.75rem] md:text-[0.8rem] text-[#8f95a3] group-hover:text-[#a9afbc] transition-colors duration-200 cursor-pointer">
           Mantén la sesión iniciada durante 30 días.
-        </span>
-      </label>
+        </label>
+      </div>
 
       <!-- Submit -->
       <button

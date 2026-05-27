@@ -8,6 +8,19 @@ export interface LikeUpdate {
   action: 'INSERT' | 'DELETE';
 }
 
+interface LikeRealtimeData {
+  post_id?: string;
+  postId?: string;
+  user_id?: string;
+  userId?: string;
+}
+
+interface RealtimePostgresPayload {
+  eventType: string;
+  new: LikeRealtimeData;
+  old: LikeRealtimeData;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -28,11 +41,11 @@ export class FeedInteractionService {
 
     this.supabase.getClient()
       .channel(channelId)
-      .on('postgres_changes', { 
+      .on('postgres_changes' as any, { 
         event: '*', 
         schema: 'public', 
         table: 'post_likes' 
-      }, (payload: any) => {
+      }, (payload: RealtimePostgresPayload) => {
         this.ngZone.run(() => {
           const eventType = payload.eventType;
           const data = eventType === 'DELETE' ? payload.old : payload.new;
@@ -52,3 +65,4 @@ export class FeedInteractionService {
       .subscribe();
   }
 }
+

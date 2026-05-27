@@ -42,8 +42,6 @@ export class Login {
 
   private loadingFailsafeId: ReturnType<typeof setTimeout> | null = null;
 
-  constructor() { }
-
   goToSignUp(): void {
     if (this.isSubmitting) return;
     this.router.navigate(['/register']);
