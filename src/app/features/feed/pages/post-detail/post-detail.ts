@@ -17,7 +17,9 @@ import { buildAvatarUrl } from '../../../profile/profile-page/profile-page.helpe
 import { TOGGLE_LIKE_MUTATION } from '../../../../graphql/graphql.queries';
 import { ToastService } from '../../../../core/services/toast.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../../shared/components/ui/breadcrumb/breadcrumb';
+import { Directive } from '@angular/core';
 
+@Directive()
 export abstract class PostDetailPageBase implements OnInit {
   protected readonly route = inject(ActivatedRoute);
   protected readonly router = inject(Router);

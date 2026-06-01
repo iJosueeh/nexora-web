@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit, DestroyRef } from '@angular/core';
+import { Component, signal, inject, OnInit, DestroyRef, Directive } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
@@ -14,6 +14,7 @@ import { FeedSidebar } from '../../components/feed-sidebar/feed-sidebar';
 import { AuthSession } from '../../../../core/services/auth-session';
 import { ProfileService } from '../../../profile/services/profile.service';
 
+@Directive()
 export abstract class ExplorePageBase implements OnInit {
   protected readonly feedTags = inject(FeedTagsService);
   protected readonly feedService = inject(FeedService);

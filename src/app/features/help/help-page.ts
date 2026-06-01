@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, Directive } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ShellLayout } from '../../shared/components/shell-layout/shell-layout';
 import { FeedSidebar } from '../feed/components/feed-sidebar/feed-sidebar';
 
+@Directive()
 export abstract class HelpPageBase {
   activeTab = signal<'faq' | 'soporte'>('faq');
   
