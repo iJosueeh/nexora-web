@@ -1,5 +1,5 @@
 import { FeedTrendsBase } from './feed-trends/feed-trends';
-import { Trend } from './models/trend.model';
+import { Trend } from '../models/trend.model';
 import { of } from 'rxjs';
 import { FeedTagsService } from '../services/feed-tags.service';
 import { FeedService } from '../services/feed.service';
