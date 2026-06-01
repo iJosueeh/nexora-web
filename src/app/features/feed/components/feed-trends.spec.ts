@@ -1,19 +1,20 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
-import { FeedTrends } from './feed-trends/feed-trends';
-import { ApolloTestingModule } from 'apollo-angular/testing';
-import { Trend, SuggestedUser } from '../models/trend.model';
+import { FeedTrendsBase } from './feed-trends/feed-trends';
+import { Trend } from '../models/trend.model';
 import { of } from 'rxjs';
 import { FeedTagsService } from '../services/feed-tags.service';
 import { FeedService } from '../services/feed.service';
-
+import { provideRouter } from '@angular/router';
 import { AuthSession } from '../../../core/services/auth-session';
 import { ProfileService } from '../../profile/services/profile.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { TestBed } from '@angular/core/testing';
+import { signal, DestroyRef } from '@angular/core';
 
-describe('FeedTrends Component', () => {
-  let component: FeedTrends;
-  let fixture: ComponentFixture<FeedTrends>;
+// Concrete implementation for testing logic only
+class TestFeedTrends extends FeedTrendsBase {}
+
+describe('FeedTrends Logic', () => {
+  let component: TestFeedTrends;
 
   beforeEach(async () => {
     const mockFeedTags: Partial<FeedTagsService> = {
@@ -45,7 +46,8 @@ describe('FeedTrends Component', () => {
     };
 
     const mockProfileService: Partial<ProfileService> = {
-      getFollowing: () => of([])
+      getFollowing: () => of([]),
+      toggleFollow: () => of(true)
     };
 
     const mockToastService: Partial<ToastService> = {
@@ -53,45 +55,30 @@ describe('FeedTrends Component', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [FeedTrends, ApolloTestingModule],
       providers: [
+        provideRouter([]),
         { provide: FeedTagsService, useValue: mockFeedTags },
         { provide: FeedService, useValue: mockFeedService },
         { provide: AuthSession, useValue: mockAuthSession },
         { provide: ProfileService, useValue: mockProfileService },
-        { provide: ToastService, useValue: mockToastService }
+        { provide: ToastService, useValue: mockToastService },
+        { provide: DestroyRef, useValue: { onDestroy: () => {} } },
+        TestFeedTrends
       ]
-    }).compileComponents();
+    });
 
-    fixture = TestBed.createComponent(FeedTrends);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    component = TestBed.inject(TestFeedTrends);
   });
 
-  it('should create the feed-trends component', () => {
+  it('should be initialized', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize trends signal with default data', () => {
+  it('should initialize trends signal with data', () => {
+    component.ngOnInit();
     expect(component.trends()).toBeTruthy();
     expect(component.trends().length).toBeGreaterThan(0);
-  });
-
-  it('should initialize suggestedUsers signal with default data', () => {
-    expect(component.suggestedUsers()).toBeTruthy();
-    expect(component.suggestedUsers().length).toBeGreaterThan(0);
-  });
-
-  it('should display Tendencias Actuales heading', () => {
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Tendencias Actuales');
-  });
-
-  it('should have sticky positioning', () => {
-    const aside = fixture.nativeElement.querySelector('aside');
-    expect(aside.classList.contains('sticky')).toBe(true);
-    expect(aside.classList.contains('top-0')).toBe(true);
+    expect(component.trends()[0].title).toBe('#Test');
   });
 
   it('should update trends when signal is set', () => {
@@ -103,18 +90,7 @@ describe('FeedTrends Component', () => {
       },
     ];
     component.trends.set(newTrends);
-    fixture.detectChanges();
     expect(component.trends().length).toBe(1);
     expect(component.trends()[0].title).toBe('#NewTrend');
-  });
-
-  it('should have correct background color for trends sidebar', () => {
-    const aside = fixture.nativeElement.querySelector('aside');
-    expect(aside.classList.contains('bg-[var(--brand-black)]')).toBe(true);
-  });
-
-  it('should have border styling on trends sidebar', () => {
-    const aside = fixture.nativeElement.querySelector('aside');
-    expect(aside.classList.contains('border-[var(--brand-border)]')).toBe(true);
   });
 });

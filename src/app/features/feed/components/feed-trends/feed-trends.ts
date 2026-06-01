@@ -1,5 +1,5 @@
-import { Component, signal, inject, OnInit, DestroyRef } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, signal, inject, OnInit, DestroyRef, Directive } from '@angular/core';
+import { RouterLink, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -9,23 +9,16 @@ import { Trend, SuggestedUser } from '../../models/trend.model';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AuthSession } from '../../../../core/services/auth-session';
-import { Router } from '@angular/router';
 
-@Component({
-  selector: 'app-feed-trends',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './feed-trends.html',
-  styleUrl: './feed-trends.css'
-})
-export class FeedTrends implements OnInit {
-  private readonly feedTags = inject(FeedTagsService);
-  private readonly router = inject(Router);
-  private readonly feedService = inject(FeedService);
-  private readonly profileService = inject(ProfileService);
-  private readonly toastService = inject(ToastService);
-  private readonly authSession = inject(AuthSession);
-  private readonly destroyRef = inject(DestroyRef);
+@Directive()
+export abstract class FeedTrendsBase implements OnInit {
+  protected readonly feedTags = inject(FeedTagsService);
+  protected readonly router = inject(Router);
+  protected readonly feedService = inject(FeedService);
+  protected readonly profileService = inject(ProfileService);
+  protected readonly toastService = inject(ToastService);
+  protected readonly authSession = inject(AuthSession);
+  protected readonly destroyRef = inject(DestroyRef);
 
   loading = signal(true);
   loadingSuggestions = signal(true);
@@ -39,7 +32,7 @@ export class FeedTrends implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (mapped) => {
-          this.trends.set(mapped.slice(0, 3));
+          this.trends.set(mapped.slice(0, 5));
           this.loading.set(false);
         },
         error: (err) => {
@@ -53,7 +46,7 @@ export class FeedTrends implements OnInit {
     this.loadSuggestions();
   }
 
-  private loadSuggestions(): void {
+  protected loadSuggestions(): void {
     const user = this.authSession.getUser();
     const currentUserId = user?.id;
 
@@ -146,3 +139,11 @@ export class FeedTrends implements OnInit {
   }
 }
 
+@Component({
+  selector: 'app-feed-trends',
+  standalone: true,
+  imports: [RouterLink],
+  templateUrl: './feed-trends.html',
+  styleUrl: './feed-trends.css'
+})
+export class FeedTrends extends FeedTrendsBase {}

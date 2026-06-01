@@ -12,7 +12,7 @@ import { FeedTagsService } from '../../../../services/feed-tags.service';
   template: `
     <div class="flex flex-col gap-2">
       <label for="tags-search" class="text-xs font-semibold uppercase tracking-[0.08em] text-[#8b7f8a]">
-        Tags
+        Etiquetas
       </label>
 
       <div class="relative">
@@ -23,7 +23,7 @@ import { FeedTagsService } from '../../../../services/feed-tags.service';
           (input)="onSearchChange($event)"
           (focus)="openDropdown()"
           (blur)="closeDropdown()"
-          placeholder="Search or add tags..."
+          placeholder="Busca o añade etiquetas..."
           class="w-full rounded-lg border border-[rgba(255,70,82,0.2)] bg-transparent px-3 py-2 text-sm text-[var(--brand-text)] placeholder:text-[#6e6270] focus:border-[#ff4652] focus:outline-none"
         />
 

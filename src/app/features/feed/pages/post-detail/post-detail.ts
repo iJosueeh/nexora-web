@@ -7,7 +7,6 @@ import { Apollo } from 'apollo-angular';
 
 import { ShellLayout } from '../../../../shared/components/shell-layout/shell-layout';
 import { FeedSidebar } from '../../components/feed-sidebar/feed-sidebar';
-import { FeedTrends } from '../../components/feed-trends/feed-trends';
 import { CommentThreadListComponent } from '../../components/comment-thread-list/comment-thread-list';
 import { FeedService } from '../../services/feed.service';
 import { CommentService } from '../../services/comment.service';
@@ -18,33 +17,19 @@ import { buildAvatarUrl } from '../../../profile/profile-page/profile-page.helpe
 import { TOGGLE_LIKE_MUTATION } from '../../../../graphql/graphql.queries';
 import { ToastService } from '../../../../core/services/toast.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../../shared/components/ui/breadcrumb/breadcrumb';
+import { Directive } from '@angular/core';
 
-@Component({
-  selector: 'app-post-detail',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ShellLayout,
-    FeedSidebar,
-    FeedTrends,
-    CommentThreadListComponent,
-    BreadcrumbComponent
-  ],
-  templateUrl: './post-detail.html',
-  styleUrl: './post-detail.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
-})
-export class PostDetailPage implements OnInit {
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-  private readonly location = inject(Location);
-  private readonly feedService = inject(FeedService);
-  private readonly commentService = inject(CommentService);
-  private readonly authSession = inject(AuthSession);
-  private readonly apollo = inject(Apollo);
-  private readonly toastr = inject(ToastService);
-  private readonly destroyRef = inject(DestroyRef);
+@Directive()
+export abstract class PostDetailPageBase implements OnInit {
+  protected readonly route = inject(ActivatedRoute);
+  protected readonly router = inject(Router);
+  protected readonly location = inject(Location);
+  protected readonly feedService = inject(FeedService);
+  protected readonly commentService = inject(CommentService);
+  protected readonly authSession = inject(AuthSession);
+  protected readonly apollo = inject(Apollo);
+  protected readonly toastr = inject(ToastService);
+  protected readonly destroyRef = inject(DestroyRef);
 
   postId = signal<string | null>(null);
   post = signal<Post | null>(null);
@@ -53,9 +38,21 @@ export class PostDetailPage implements OnInit {
   isSubmitting = signal(false);
   newCommentText = signal('');
 
+  // Edit post signals
+  isEditing = signal(false);
+  isSavingEdit = signal(false);
+  editTitle = signal('');
+  editContent = signal('');
+
   currentUserAvatar = computed(() => {
     const user = this.authSession.user();
     return user?.avatarUrl || buildAvatarUrl(user?.username || user?.email || 'nexora');
+  });
+
+  isOwner = computed(() => {
+    const user = this.authSession.getUser();
+    const p = this.post();
+    return user && p && user.id === p.author.id;
   });
 
   breadcrumbItems = computed<BreadcrumbItem[]>(() => {
@@ -95,6 +92,55 @@ export class PostDetailPage implements OnInit {
 
   goBack(): void {
     this.location.back();
+  }
+
+  startEdit(): void {
+    const p = this.post();
+    if (!p) return;
+    this.editTitle.set(p.title || '');
+    this.editContent.set(p.content);
+    this.isEditing.set(true);
+  }
+
+  cancelEdit(): void {
+    this.isEditing.set(false);
+  }
+
+  saveEdit(): void {
+    const p = this.post();
+    if (!p) return;
+
+    const title = this.editTitle().trim();
+    const content = this.editContent().trim();
+
+    if (!content) {
+      this.toastr.show('El contenido es obligatorio', 'error');
+      return;
+    }
+
+    this.isSavingEdit.set(true);
+    this.feedService.editPost(p.id, {
+      titulo: title || null,
+      contenido: content,
+      tags: p.tags,
+      location: p.location,
+      imageUrl: p.imageUrl
+    }).subscribe({
+      next: (updated) => {
+        if (updated) {
+          this.post.set(updated);
+          this.isEditing.set(false);
+          this.toastr.show('Publicación actualizada', 'success');
+        } else {
+          this.toastr.show('Error al actualizar la publicación', 'error');
+        }
+        this.isSavingEdit.set(false);
+      },
+      error: () => {
+        this.isSavingEdit.set(false);
+        this.toastr.show('Error al conectar con el servidor', 'error');
+      }
+    });
   }
 
   toggleLike(event: Event): void {
@@ -170,3 +216,20 @@ export class PostDetailPage implements OnInit {
     textarea.style.height = textarea.scrollHeight + 'px';
   }
 }
+
+@Component({
+  selector: 'app-post-detail',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ShellLayout,
+    FeedSidebar,
+    CommentThreadListComponent,
+    BreadcrumbComponent
+  ],
+  templateUrl: './post-detail.html',
+  styleUrl: './post-detail.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class PostDetailPage extends PostDetailPageBase {}

@@ -29,6 +29,11 @@
               <div class="mt-1 text-[0.62rem] uppercase tracking-[0.08em] text-[#9ca3b0]">{{ trend.conversations }} conversaciones</div>
             </li>
           }
+          @if (trends().length > 0) {
+            <li class="pt-2 border-t border-[var(--brand-border)]">
+              <a routerLink="/feed/explore" class="text-[0.75rem] font-bold text-[var(--brand-red)] hover:text-[#ee4542] transition-colors">Explorar más tendencias →</a>
+            </li>
+          }
           @if (trends().length === 0) {
             <li class="text-[0.84rem] text-[#9ca3b0]">No hay tendencias disponibles. <a routerLink="/feed/explore" class="text-[var(--brand-red)]">Explorar</a></li>
           }
@@ -81,7 +86,7 @@
   </div>
 
   <div class="border-t border-[var(--brand-border)] px-4 py-3 text-[0.52rem] uppercase tracking-[0.12em] text-[#717988]">
-    <p>© 2026 NEXORA. All rights reserved.</p>
-    <p class="mt-1">Privacy policy · Terms of service · University guidelines</p>
+    <p>© 2026 NEXORA. Todos los derechos reservados.</p>
+    <p class="mt-1">Política de privacidad · Términos de servicio · Pautas universitarias</p>
   </div>
 </aside>

@@ -1,0 +1,23 @@
+:host {
+  display: block;
+}
+
+.help-container {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+details {
+  transition: all 0.3s ease;
+}
+
+details[open] {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+iframe {
+  background-color: white;
+}
