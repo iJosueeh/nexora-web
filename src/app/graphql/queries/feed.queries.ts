@@ -100,6 +100,30 @@ export const DELETE_POST_MUTATION = gql`
 	}
 `;
 
+export const EDIT_POST_MUTATION = gql`
+	mutation EditPost($postId: ID!, $input: UpdatePublicationInput!) {
+		editarPublicacion(postId: $postId, input: $input) {
+			id
+			titulo
+			contenido
+			tags
+			location
+			isOfficial
+			createdAt
+			commentsCount
+			likesCount
+			isLiked
+			imageUrl
+			autor {
+				id
+				username
+				fullName
+				avatarUrl
+			}
+		}
+	}
+`;
+
 export const TOGGLE_LIKE_MUTATION = gql`
 	mutation ToggleLike($postId: ID!) {
 		toggleLike(postId: $postId)

@@ -191,7 +191,7 @@
                 tabindex="0"
                 role="button"
                 aria-label="Ver seguidores"
-                class="rounded-xl border border-white/8 bg-white/[0.03] px-3 py-3 text-center sm:px-4 cursor-pointer hover:bg-white/8 transition-all hover:border-[#df3432]/30 group"
+                class="rounded-xl border border-white/8 bg-white/3 px-3 py-3 text-center sm:px-4 cursor-pointer hover:bg-white/8 transition-all hover:border-[#df3432]/30 group"
               >
                 <p class="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-[#7f8591] sm:text-[0.6rem] sm:tracking-[0.2em] group-hover:text-[#f0b9b1]">{{ stat.label }}</p>
                 <p class="mt-2 text-[1.65rem] font-bold leading-none text-[#f4f5f7] sm:text-[2rem]">{{ stat.value }}</p>
@@ -332,5 +332,5 @@
   [userId]="state.profile()?.id || ''"
   [type]="followModalType()"
   [isOpen]="isFollowModalOpen()"
-  (closeModal)="closeFollowModal()"
+  (dismiss)="closeFollowModal()"
 ></app-follow-modal>

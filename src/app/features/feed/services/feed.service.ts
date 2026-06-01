@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { catchError, map, Observable, of } from 'rxjs';
 
-import { FEED_POSTS_QUERY, PROFILE_POSTS_QUERY, POST_BY_ID_QUERY } from '../../../graphql/graphql.queries';
+import { FEED_POSTS_QUERY, PROFILE_POSTS_QUERY, POST_BY_ID_QUERY, EDIT_POST_MUTATION } from '../../../graphql/graphql.queries';
 import { Post } from '../../../interfaces/feed';
 
 interface FeedAuthorQueryModel {
@@ -39,6 +39,10 @@ interface PostByIdQueryResponse {
   obtenerPublicacionPorId: FeedPostQueryModel;
 }
 
+interface EditPostQueryResponse {
+  editarPublicacion: FeedPostQueryModel;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -70,6 +74,24 @@ export class FeedService {
       .pipe(
         map((result) => result.data?.obtenerPublicacionPorId ? this.mapPost(result.data.obtenerPublicacionPorId) : null),
         catchError(() => of(null))
+      );
+  }
+
+  editPost(postId: string, input: any): Observable<Post | null> {
+    return this.apollo
+      .mutate<EditPostQueryResponse>({
+        mutation: EDIT_POST_MUTATION,
+        variables: {
+          postId,
+          input
+        }
+      })
+      .pipe(
+        map((result) => result.data?.editarPublicacion ? this.mapPost(result.data.editarPublicacion) : null),
+        catchError((err) => {
+          console.error('Error editing post:', err);
+          return of(null);
+        })
       );
   }
 

@@ -7,7 +7,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
   template: `
     <div class="flex flex-col gap-2">
       <label for="location-select" class="text-xs font-semibold uppercase tracking-[0.08em] text-[#8b7f8a]">
-        Location
+        Ubicación
       </label>
       <select
         id="location-select"

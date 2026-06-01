@@ -39,7 +39,7 @@ export class FeedTrends implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (mapped) => {
-          this.trends.set(mapped.slice(0, 3));
+          this.trends.set(mapped.slice(0, 5));
           this.loading.set(false);
         },
         error: (err) => {

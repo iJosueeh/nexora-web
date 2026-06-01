@@ -1,0 +1,118 @@
+<app-shell-layout [showRight]="false">
+  <div shell-left>
+    <app-feed-sidebar></app-feed-sidebar>
+  </div>
+
+  <div shell-main>
+    <main class="space-y-6 pb-12">
+      <!-- Header & Tabs -->
+      <section class="sticky top-0 z-10 border-b border-[var(--brand-border)] bg-[var(--brand-black)]/80 backdrop-blur-md">
+        <div class="px-4 py-4">
+          <h1 class="text-xl font-bold tracking-tight text-[var(--brand-text)]">Explorar</h1>
+        </div>
+        <div class="flex px-4">
+          <button 
+            (click)="setTab('todos')"
+            class="flex-1 border-b-2 py-3 text-sm font-semibold transition-colors"
+            [class.border-[var(--brand-red)]]="activeTab() === 'todos'"
+            [class.text-[var(--brand-text)]]="activeTab() === 'todos'"
+            [class.border-transparent]="activeTab() !== 'todos'"
+            [class.text-[var(--brand-muted)]]="activeTab() !== 'todos'"
+          >
+            Para ti
+          </button>
+          <button 
+            (click)="setTab('multimedia')"
+            class="flex-1 border-b-2 py-3 text-sm font-semibold transition-colors"
+            [class.border-[var(--brand-red)]]="activeTab() === 'multimedia'"
+            [class.text-[var(--brand-text)]]="activeTab() === 'multimedia'"
+            [class.border-transparent]="activeTab() !== 'multimedia'"
+            [class.text-[var(--brand-muted)]]="activeTab() !== 'multimedia'"
+          >
+            Multimedia
+          </button>
+          <button 
+            (click)="setTab('articulos')"
+            class="flex-1 border-b-2 py-3 text-sm font-semibold transition-colors"
+            [class.border-[var(--brand-red)]]="activeTab() === 'articulos'"
+            [class.text-[var(--brand-text)]]="activeTab() === 'articulos'"
+            [class.border-transparent]="activeTab() !== 'articulos'"
+            [class.text-[var(--brand-muted)]]="activeTab() !== 'articulos'"
+          >
+            Artículos
+          </button>
+        </div>
+      </section>
+
+      <!-- Trends Section -->
+      <section class="px-4">
+        <div class="rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] overflow-hidden">
+          <h2 class="p-4 text-lg font-bold border-b border-[var(--brand-border)]">Tendencias para ti</h2>
+          <div class="divide-y divide-[var(--brand-border)]">
+            @for (trend of (showAllTrends() ? trends() : trends().slice(0, 5)); track trend.title) {
+              <div 
+                (click)="selectTrend(trend)"
+                class="p-4 hover:bg-white/5 cursor-pointer transition-colors"
+              >
+                <p class="text-[0.65rem] text-[var(--brand-muted)] uppercase tracking-wider">{{ trend.category }}</p>
+                <p class="mt-0.5 font-bold text-[var(--brand-text)]">{{ trend.title }}</p>
+                <p class="mt-1 text-xs text-[var(--brand-muted)]">{{ trend.conversations }}</p>
+              </div>
+            }
+          </div>
+          @if (trends().length > 5) {
+            <button 
+              (click)="toggleTrends()"
+              class="w-full p-4 text-left text-sm text-[var(--brand-red)] hover:bg-white/5 transition-colors"
+            >
+              {{ showAllTrends() ? 'Mostrar menos' : 'Mostrar más' }}
+            </button>
+          }
+        </div>
+      </section>
+
+      <!-- Suggested Users Carousel -->
+      <section class="px-4">
+        <h2 class="mb-4 text-lg font-bold">A quién seguir</h2>
+        <div class="flex gap-4 overflow-x-auto pb-4 nexora-scrollbar-hidden">
+          @for (user of suggestedUsers(); track user.id) {
+            <div class="min-w-[14rem] rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-4 text-center shrink-0">
+              <img [src]="user.avatar" [alt]="user.name" class="mx-auto h-16 w-16 rounded-full border-2 border-[var(--brand-border)] object-cover" />
+              <p class="mt-3 font-bold text-sm truncate">{{ user.name }}</p>
+              <p class="text-[0.65rem] text-[var(--brand-muted)] truncate">{{ user.role }}</p>
+              <button class="mt-4 w-full rounded-full bg-[var(--brand-text)] py-1.5 text-xs font-bold text-[var(--brand-black)] hover:bg-opacity-90">
+                Seguir
+              </button>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- Related Posts -->
+      <section class="space-y-4 px-4">
+        <h2 class="text-lg font-bold">
+          {{ selectedTrend() ? 'Resultados para ' + selectedTrend() : 'Publicaciones destacadas' }}
+        </h2>
+        
+        @if (loading()) {
+          <div class="space-y-4">
+            @for (i of [1,2,3]; track i) {
+              <div class="h-64 rounded-2xl bg-white/5 animate-pulse"></div>
+            }
+          </div>
+        } @else {
+          <div class="space-y-4">
+            @for (post of relatedPosts(); track post.id) {
+              <app-post-card [post]="post"></app-post-card>
+            }
+            @if (relatedPosts().length === 0) {
+              <div class="py-12 text-center text-[var(--brand-muted)]">
+                <p>No se encontraron publicaciones relacionadas.</p>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    </main>
+  </div>
+</app-shell-layout>

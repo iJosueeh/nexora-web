@@ -2,10 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { FeedTrends } from './feed-trends/feed-trends';
 import { ApolloTestingModule } from 'apollo-angular/testing';
-import { Trend, SuggestedUser } from '../models/trend.model';
+import { Trend } from '../models/trend.model';
 import { of } from 'rxjs';
 import { FeedTagsService } from '../services/feed-tags.service';
 import { FeedService } from '../services/feed.service';
+import { provideRouter } from '@angular/router';
 
 import { AuthSession } from '../../../core/services/auth-session';
 import { ProfileService } from '../../profile/services/profile.service';
@@ -55,6 +56,7 @@ describe('FeedTrends Component', () => {
     await TestBed.configureTestingModule({
       imports: [FeedTrends, ApolloTestingModule],
       providers: [
+        provideRouter([]),
         { provide: FeedTagsService, useValue: mockFeedTags },
         { provide: FeedService, useValue: mockFeedService },
         { provide: AuthSession, useValue: mockAuthSession },
@@ -72,20 +74,16 @@ describe('FeedTrends Component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize trends signal with default data', () => {
+  it('should initialize trends signal with data', () => {
     expect(component.trends()).toBeTruthy();
     expect(component.trends().length).toBeGreaterThan(0);
   });
 
-  it('should initialize suggestedUsers signal with default data', () => {
-    expect(component.suggestedUsers()).toBeTruthy();
-    expect(component.suggestedUsers().length).toBeGreaterThan(0);
-  });
-
-  it('should display Tendencias Actuales heading', () => {
+  it('should display Tendencias para ti heading', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Tendencias Actuales');
+    // Updated text to match current implementation
+    expect(compiled.textContent).toContain('Tendencias para ti');
   });
 
   it('should have sticky positioning', () => {

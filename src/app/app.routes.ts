@@ -40,6 +40,10 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/feed/pages/notifications-page/notifications-page').then(m => m.NotificationsPage)
             },
             {
+                path: 'feed/explore',
+                loadComponent: () => import('./features/feed/pages/explore/explore-page').then(m => m.ExplorePage)
+            },
+            {
                 path: 'feed',
                 loadComponent: () => import('./features/feed/pages/feed-page/feed-page').then(m => m.FeedPage)
                 // canActivate: [authGuard]  // Deshabilitado para testing
@@ -51,6 +55,10 @@ export const routes: Routes = [
             {
                 path: 'publicar',
                 loadComponent: () => import('./features/feed/pages/new-publication/new-publication-page').then(m => m.NewPublicationPage)
+            },
+            {
+                path: 'ayuda',
+                loadComponent: () => import('./features/help/help-page').then(m => m.HelpPage)
             },
             {
                 path: 'settings',

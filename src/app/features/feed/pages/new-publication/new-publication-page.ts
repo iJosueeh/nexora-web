@@ -8,14 +8,12 @@ import { FeedPublicationQueueService } from '../../services/feed-publication-que
 import { FeedPublicationService } from '../../services/feed-publication.service';
 import { PublicationDraft } from './publication-draft.model';
 import { PublicationComposerComponent } from './components/publication-composer/publication-composer';
-import { PublicationDraftsCardComponent } from './components/publication-drafts-card/publication-drafts-card';
-import { PublicationGuidelinesCardComponent } from './components/publication-guidelines-card/publication-guidelines-card';
 
 @Component({
   selector: 'app-new-publication-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ShellLayout, FeedSidebar, PublicationComposerComponent, PublicationDraftsCardComponent, PublicationGuidelinesCardComponent],
+  imports: [ShellLayout, FeedSidebar, PublicationComposerComponent],
   templateUrl: './new-publication-page.html'
 })
 export class NewPublicationPage {
