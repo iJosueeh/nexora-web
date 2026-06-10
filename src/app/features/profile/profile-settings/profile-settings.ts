@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Apollo } from 'apollo-angular';
@@ -20,6 +21,24 @@ import { AuthApiService } from '../../auth/services/auth-api.service';
   templateUrl: './profile-settings.html',
   styleUrl: './profile-settings.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(10px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+    trigger('staggerList', [
+      transition('* => *', [
+        query(':enter', [
+          style({ opacity: 0, transform: 'scale(0.9)' }),
+          stagger(30, [
+            animate('200ms ease-out', style({ opacity: 1, transform: 'scale(1)' }))
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ]
 })
 export class ProfileSettingsPage {
   private readonly fb = inject(FormBuilder);
@@ -32,10 +51,21 @@ export class ProfileSettingsPage {
 
   readonly user = computed(() => this.authSession.getUser());
   readonly isSaving = signal(false);
+  readonly isUploadingAvatar = signal(false);
+  readonly isUploadingBanner = signal(false);
   readonly previewAvatar = signal<string | null>(null);
   readonly previewBanner = signal<string | null>(null);
   readonly interestOptions = signal<string[]>([]);
   readonly careerOptions = signal<string[]>([]);
+  readonly interestSearchQuery = signal('');
+  readonly selectedInterests = signal<string[]>([]);
+
+  readonly filteredInterestOptions = computed(() => {
+    const query = this.interestSearchQuery().toLowerCase().trim();
+    const options = this.interestOptions();
+    if (!query) return options.slice(0, 15);
+    return options.filter(opt => opt.toLowerCase().includes(query));
+  });
 
   readonly form = this.fb.group({
     fullName: ['', [Validators.required, Validators.minLength(3)]],
@@ -43,14 +73,12 @@ export class ProfileSettingsPage {
     bio: [''],
     avatarUrl: [''],
     bannerUrl: [''],
-    career: [''],
-    academicInterests: [[] as string[]]
+    career: ['']
   });
 
   constructor() {
     this.loadCatalogs();
 
-    // Sincronizar el formulario cuando el usuario cambie o se cargue la sesión
     effect(() => {
       const userData = this.user();
       if (userData) {
@@ -60,9 +88,9 @@ export class ProfileSettingsPage {
           bio: userData.bio || '',
           avatarUrl: userData.avatarUrl || '',
           bannerUrl: userData.bannerUrl || '',
-          career: userData.career || '',
-          academicInterests: userData.academicInterests || []
+          career: userData.career || ''
         }, { emitEvent: false });
+        this.selectedInterests.set(userData.academicInterests || []);
       }
     });
   }
@@ -78,24 +106,25 @@ export class ProfileSettingsPage {
   }
 
   toggleInterest(interest: string): void {
-    const current = this.form.value.academicInterests || [];
-    const index = current.indexOf(interest);
-    if (index === -1) {
-      this.form.patchValue({ academicInterests: [...current, interest] });
+    const current = this.selectedInterests();
+    if (current.includes(interest)) {
+      this.selectedInterests.set(current.filter(i => i !== interest));
     } else {
-      this.form.patchValue({ academicInterests: current.filter(i => i !== interest) });
+      this.selectedInterests.set([...current, interest]);
     }
   }
 
   isInterestSelected(interest: string): boolean {
-    return (this.form.value.academicInterests || []).includes(interest);
+    return this.selectedInterests().includes(interest);
   }
 
   async onFileSelected(event: Event, type: 'avatar' | 'banner'): Promise<void> {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
-    // Local preview
+    if (type === 'avatar') this.isUploadingAvatar.set(true);
+    else this.isUploadingBanner.set(true);
+
     const reader = new FileReader();
     reader.onload = () => {
       if (type === 'avatar') this.previewAvatar.set(reader.result as string);
@@ -108,10 +137,17 @@ export class ProfileSettingsPage {
       const fileExt = file.name.split('.').pop() || 'jpg';
       const path = `${this.user()?.id}/${type}-${crypto.randomUUID()}.${fileExt}`;
       const url = await this.storageService.uploadFile(bucket, path, file);
-      
-      if (type === 'avatar') this.form.patchValue({ avatarUrl: url });
-      else this.form.patchValue({ bannerUrl: url });
+
+      if (type === 'avatar') {
+        this.form.patchValue({ avatarUrl: url });
+        this.isUploadingAvatar.set(false);
+      } else {
+        this.form.patchValue({ bannerUrl: url });
+        this.isUploadingBanner.set(false);
+      }
     } catch (e) {
+      this.isUploadingAvatar.set(false);
+      this.isUploadingBanner.set(false);
       this.toastr.error(`Error al subir ${type === 'avatar' ? 'el avatar' : 'la portada'}`);
     }
   }
@@ -156,7 +192,7 @@ export class ProfileSettingsPage {
           career: formValue.career,
           avatarUrl: formValue.avatarUrl || null,
           bannerUrl: formValue.bannerUrl || null,
-          academicInterests: formValue.academicInterests
+          academicInterests: this.selectedInterests()
         }
       }
     }).subscribe({

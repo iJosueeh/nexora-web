@@ -14,7 +14,7 @@
       <h3>Total Usuarios</h3>
       <p class="stat-value">{{ s.totalUsers }}</p>
       <div class="h-16 mt-4">
-        <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" [type]="'line'"></canvas>
+        <canvas baseChart [data]="lineChartData()" [options]="lineChartOptions" [type]="'line'"></canvas>
       </div>
     </div>
 
@@ -61,7 +61,7 @@
           Distribución de Contenido
         </h3>
         <div class="h-64">
-          <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [type]="'doughnut'"></canvas>
+          <canvas baseChart [data]="pieChartData()" [options]="pieChartOptions" [type]="'doughnut'"></canvas>
         </div>
       </div>
 

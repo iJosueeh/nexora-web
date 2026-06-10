@@ -1,0 +1,16 @@
+<div class="card-container">
+  <div class="avatar-wrapper">
+    <img [src]="user().avatar" [alt]="user().name" class="avatar" />
+  </div>
+  <div class="user-info">
+    <span class="user-name">{{ user().name }}</span>
+    <span class="user-role">{{ user().role }}</span>
+  </div>
+  <button 
+    class="follow-btn"
+    [class.following]="user().isFollowing"
+    (click)="onFollow()"
+  >
+    {{ user().isFollowing ? 'Siguiendo' : 'Seguir' }}
+  </button>
+</div>

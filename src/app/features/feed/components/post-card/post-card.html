@@ -1,5 +1,5 @@
 <article 
-  class="group rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-5 transition-all duration-300 hover:border-[#df3432]/30 hover:bg-[var(--brand-surface-2)] outline-none" 
+  class="group rounded-2xl border border-white/5 bg-white/[0.03] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all duration-300 hover:border-white/10 hover:bg-white/[0.04] hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)] outline-none" 
   (click)="openComments($event)"
   (keydown.enter)="openComments($event)"
   (keydown.space)="openComments($event)"
@@ -15,7 +15,7 @@
           class="h-11 w-11 rounded-full object-cover ring-2 ring-white/5"
         />
         @if (isOfficial()) {
-          <div class="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--brand-red)] text-white ring-2 ring-[var(--brand-surface)]">
+          <div class="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#df3432] text-white ring-2 ring-[#0d0e12]">
             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
           </div>
         }
@@ -25,12 +25,12 @@
           <a
             [routerLink]="['/u', post().author.username]"
             (click)="$event.stopPropagation()"
-            class="author-name-link author-link truncate text-[0.9rem] font-bold text-[var(--brand-text)]"
+            class="author-name-link author-link truncate text-[0.9rem] font-bold text-white"
           >
             {{ post().author.fullName || post().author.username }}
           </a>
         </div>
-        <p class="truncate text-[0.7rem] uppercase tracking-wider text-[var(--brand-muted)]">
+        <p class="truncate text-[0.7rem] uppercase tracking-wider text-white/40">
           {{ post().author.role }}
           @if (relativeDate()) {
             · {{ relativeDate() }}
@@ -42,7 +42,7 @@
     @if (canDelete()) {
       <button 
         (click)="$event.stopPropagation(); showConfirmModal.set(true)"
-        class="flex h-8 w-8 items-center justify-center rounded-full text-[var(--brand-muted)] transition-all hover:bg-[#df3432]/10 hover:text-[var(--brand-red)]"
+        class="flex h-8 w-8 items-center justify-center rounded-full text-white/40 transition-all hover:bg-[#df3432]/10 hover:text-[#df3432]"
         title="Eliminar publicación"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -58,17 +58,17 @@
 
   <div class="space-y-3">
     @if (post().title) {
-      <h3 class="text-lg font-bold leading-tight text-[var(--brand-text)] group-hover:text-white transition-colors">
+      <h3 class="text-lg font-bold leading-tight text-white group-hover:text-white transition-colors break-words">
         {{ post().title }}
       </h3>
     }
 
-    <p class="text-[0.92rem] leading-relaxed text-[var(--brand-text)]/90">{{ post().content }}</p>
+    <div class="post-content text-[0.92rem] leading-relaxed text-white/70 break-words" [innerHTML]="sanitizedContent()"></div>
 
     @if (post().tags?.length) {
       <div class="flex flex-wrap gap-2 pt-1">
         @for (tag of post().tags ?? []; track tag) {
-          <span class="rounded-md bg-[#df3432]/10 px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-widest text-[var(--brand-red)]">
+          <span class="rounded-md bg-[#df3432]/10 px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-widest text-[#df3432]">
             #{{ tag }}
           </span>
         }
@@ -86,16 +86,17 @@
     }
   </div>
 
-  <footer class="mt-6 flex items-center justify-between border-t border-white/5 pt-4">
+  <footer class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/5 pt-4">
     <div class="flex items-center gap-4">
       <button
         type="button"
         (click)="toggleLike($event)"
         class="flex items-center gap-2 rounded-full px-3 py-1.5 transition-all duration-200"
-        [class.text-[var(--brand-red)]]="isLiked()"
+        [class.text-[#df3432]]="isLiked()"
         [class.bg-[#df3432]/10]="isLiked()"
-        [class.text-[var(--brand-muted)]]="!isLiked()"
+        [class.text-white/40]="!isLiked()"
         [class.hover:bg-white/5]="!isLiked()"
+        [class.hover:text-white]="!isLiked()"
       >
         <svg
           class="h-5 w-5 transition-transform duration-200 active:scale-125"
@@ -115,7 +116,7 @@
       <button
         type="button"
         (click)="openComments($event)"
-        class="flex items-center gap-2 rounded-full px-3 py-1.5 text-[var(--brand-muted)] transition-all duration-200 hover:bg-white/5 hover:text-white"
+        class="flex items-center gap-2 rounded-full px-3 py-1.5 text-white/40 transition-all duration-200 hover:bg-white/5 hover:text-white"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
         <span class="text-[0.75rem] font-bold">{{ post().commentsCount }}</span>
@@ -125,7 +126,7 @@
     <button
       type="button"
       (click)="$event.stopPropagation()"
-      class="flex items-center gap-2 rounded-full px-3 py-1.5 text-[var(--brand-muted)] transition-all duration-200 hover:bg-white/5 hover:text-white"
+      class="flex items-center gap-2 rounded-full px-3 py-1.5 text-white/40 transition-all duration-200 hover:bg-white/5 hover:text-white"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
       <span class="text-[0.75rem] font-bold">{{ post().shares }}</span>

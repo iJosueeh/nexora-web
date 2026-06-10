@@ -1,15 +1,15 @@
-<aside class="sticky top-0 flex h-full w-full flex-col overflow-hidden rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-black)]" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+<aside class="sticky top-0 flex h-full w-full flex-col overflow-hidden rounded-2xl border border-white/5 bg-[#0d0e12]" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
   <div class="nexora-scrollbar-hidden flex-1 space-y-6 overflow-y-auto p-4">
-    <div class="rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-4">
-      <h2 class="mb-5 text-[0.64rem] font-bold uppercase tracking-[0.18em] text-[var(--brand-muted)]">Tendencias Actuales</h2>
+    <div class="rounded-2xl border border-white/5 bg-white/[0.02] p-4">
+      <h2 class="mb-5 text-[0.64rem] font-bold uppercase tracking-[0.18em] text-white/40">Tendencias Actuales</h2>
 
       @if (loading()) {
         <ul class="space-y-5">
           @for (item of [1,2,3]; track item) {
             <li class="space-y-1">
-              <div class="h-3 w-2/3 rounded bg-[#1a1a1a] animate-pulse"></div>
-              <div class="h-4 w-3/4 rounded bg-[#111111] animate-pulse"></div>
-              <div class="h-3 w-1/2 rounded bg-[#0f0f0f] animate-pulse"></div>
+              <div class="h-3 w-2/3 rounded bg-white/5 animate-pulse"></div>
+              <div class="h-4 w-3/4 rounded bg-white/5 animate-pulse"></div>
+              <div class="h-3 w-1/2 rounded bg-white/5 animate-pulse"></div>
             </li>
           }
         </ul>
@@ -24,37 +24,37 @@
               role="button"
               tabindex="0"
             >
-              <div class="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--brand-muted)] group-hover:text-[#a0a6b0]">{{ trend.category }}</div>
-              <div class="mt-1 text-[1rem] font-bold tracking-tight text-[var(--brand-text)] transition-colors group-hover:text-[var(--brand-red)]">{{ trend.title }}</div>
-              <div class="mt-1 text-[0.62rem] uppercase tracking-[0.08em] text-[#9ca3b0]">{{ trend.conversations }} conversaciones</div>
+              <div class="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-white/40 group-hover:text-white/60 transition-colors">{{ trend.category }}</div>
+              <div class="mt-1 text-[1rem] font-bold tracking-tight text-white transition-colors group-hover:text-[#df3432]">{{ trend.title }}</div>
+              <div class="mt-1 text-[0.62rem] uppercase tracking-[0.08em] text-white/30">{{ trend.conversations }} conversaciones</div>
             </li>
           }
           @if (trends().length > 0) {
-            <li class="pt-2 border-t border-[var(--brand-border)]">
-              <a routerLink="/feed/explore" class="text-[0.75rem] font-bold text-[var(--brand-red)] hover:text-[#ee4542] transition-colors">Explorar más tendencias →</a>
+            <li class="pt-2 border-t border-white/5">
+              <a routerLink="/feed/explore" class="text-[0.75rem] font-bold text-[#df3432] hover:text-[#ee4542] transition-colors">Explorar más tendencias →</a>
             </li>
           }
           @if (trends().length === 0) {
-            <li class="text-[0.84rem] text-[#9ca3b0]">No hay tendencias disponibles. <a routerLink="/feed/explore" class="text-[var(--brand-red)]">Explorar</a></li>
+            <li class="text-[0.84rem] text-white/40">No hay tendencias disponibles. <a routerLink="/feed/explore" class="text-[#df3432]">Explorar</a></li>
           }
           @if (error()) {
-            <li class="text-[0.84rem] text-[#f87171]">{{ error() }}</li>
+            <li class="text-[0.84rem] text-red-400">{{ error() }}</li>
           }
         </ul>
       }
     </div>
 
-    <div class="rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-4">
-      <h2 class="mb-5 text-[0.64rem] font-bold uppercase tracking-[0.18em] text-[var(--brand-muted)]">Sugerencias para Seguir</h2>
+    <div class="rounded-2xl border border-white/5 bg-white/[0.02] p-4">
+      <h2 class="mb-5 text-[0.64rem] font-bold uppercase tracking-[0.18em] text-white/40">Sugerencias para Seguir</h2>
 
       @if (loadingSuggestions()) {
         <ul class="space-y-4">
           @for (item of [1,2]; track item) {
             <li class="flex items-center gap-3">
-              <div class="h-9 w-9 shrink-0 rounded-full bg-[#111] animate-pulse"></div>
+              <div class="h-9 w-9 shrink-0 rounded-full bg-white/5 animate-pulse"></div>
               <div class="flex-1 space-y-2">
-                <div class="h-3 w-3/4 rounded bg-[#0f0f0f] animate-pulse"></div>
-                <div class="h-2 w-1/2 rounded bg-[#0a0a0a] animate-pulse"></div>
+                <div class="h-3 w-3/4 rounded bg-white/5 animate-pulse"></div>
+                <div class="h-2 w-1/2 rounded bg-white/5 animate-pulse"></div>
               </div>
             </li>
           }
@@ -62,22 +62,28 @@
       } @else {
         <ul class="space-y-3">
           @for (user of suggestedUsers(); track user.id) {
-            <li class="flex items-center justify-between gap-3 rounded-xl bg-[var(--brand-surface-2)] p-3 transition-colors duration-150 hover:bg-[#21242c]">
+            <li class="flex items-center justify-between gap-3 rounded-xl bg-white/[0.02] p-3 transition-colors duration-150 hover:bg-white/[0.05]">
               <div class="flex min-w-0 flex-1 items-center gap-3">
                 <img [src]="user.avatar" [alt]="user.name" class="h-9 w-9 shrink-0 rounded-full object-cover" />
                 <div class="min-w-0">
-                  <div class="truncate text-[0.72rem] font-bold text-[var(--brand-text)]">{{ user.name }}</div>
-                  <div class="truncate text-[0.62rem] text-[var(--brand-muted)]">{{ user.role }}</div>
+                  <div class="truncate text-[0.72rem] font-bold text-white">{{ user.name }}</div>
+                  <div class="truncate text-[0.62rem] text-white/40">{{ user.role }}</div>
                 </div>
               </div>
-              <button class="shrink-0 whitespace-nowrap rounded-full border border-[var(--brand-muted)] px-3 py-1 text-[0.58rem] font-bold uppercase tracking-[0.12em] transition-all duration-150" (click)="onToggleFollow(user, $event)">
+              <button 
+                class="shrink-0 whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[0.58rem] font-bold uppercase tracking-[0.12em] transition-all duration-150 hover:bg-white/10 hover:border-white/20"
+                [class.bg-[#df3432]]="user.isFollowing"
+                [class.border-transparent]="user.isFollowing"
+                [class.text-white]="user.isFollowing"
+                (click)="onToggleFollow(user, $event)"
+              >
                 {{ user.isFollowing ? 'Siguiendo' : 'Seguir' }}
               </button>
             </li>
           }
           @if (suggestedUsers().length === 0) {
             <li class="py-2 text-center">
-              <p class="text-[0.7rem] text-[var(--brand-muted)] italic">No hay perfiles para sugerir en este momento.</p>
+              <p class="text-[0.7rem] text-white/40 italic">No hay perfiles para sugerir en este momento.</p>
             </li>
           }
         </ul>
@@ -85,7 +91,7 @@
     </div>
   </div>
 
-  <div class="border-t border-[var(--brand-border)] px-4 py-3 text-[0.52rem] uppercase tracking-[0.12em] text-[#717988]">
+  <div class="border-t border-white/5 px-4 py-3 text-[0.52rem] uppercase tracking-[0.12em] text-white/20">
     <p>© 2026 NEXORA. Todos los derechos reservados.</p>
     <p class="mt-1">Política de privacidad · Términos de servicio · Pautas universitarias</p>
   </div>

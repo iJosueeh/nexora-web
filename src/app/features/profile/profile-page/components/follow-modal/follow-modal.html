@@ -1,39 +1,37 @@
 @if (isOpen) {
-  <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4" 
+  <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4" 
     (click)="dismissModal()"
     (keydown.escape)="dismissModal()"
     tabindex="-1"
     role="presentation">
-    <div class="w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0d0f14] shadow-2xl" 
+    <div class="w-full max-w-md overflow-hidden rounded-2xl border border-white/5 bg-black/40 shadow-2xl backdrop-blur-xl" 
       (click)="$event.stopPropagation()"
       (keydown)="$event.stopPropagation()"
       tabindex="0"
       role="dialog"
       aria-modal="true">
-      <!-- Header -->
       <div class="flex items-center justify-between border-b border-white/5 px-6 py-4">
-        <h3 class="text-lg font-semibold text-[#f4f5f7]">
+        <h3 class="text-lg font-semibold text-white">
           {{ type === 'followers' ? 'Seguidores' : 'Siguiendo' }}
         </h3>
-        <button (click)="dismissModal()" class="rounded-full p-2 text-[#9496a1] transition-colors hover:bg-white/5 hover:text-white" type="button" aria-label="Cerrar modal">
+        <button (click)="dismissModal()" class="rounded-full p-2 text-white/40 transition-all duration-200 hover:bg-white/5 hover:text-white" type="button" aria-label="Cerrar modal">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
 
-      <!-- Content -->
       <div class="max-h-[60vh] overflow-y-auto">
         @if (isLoading()) {
           <div class="flex flex-col items-center justify-center py-12">
             <div class="h-8 w-8 animate-spin rounded-full border-2 border-[#df3432] border-t-transparent"></div>
-            <p class="mt-4 text-sm text-[#9496a1]">Cargando...</p>
+            <p class="mt-4 text-sm text-white/40">Cargando...</p>
           </div>
         } @else {
           @if (users().length === 0) {
             <div class="flex flex-col items-center justify-center py-12 text-center">
-              <div class="rounded-full bg-white/5 p-4 text-[#4b4d5a]">
+              <div class="rounded-full bg-white/5 p-4 text-white/20">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="18" y1="8" x2="23" y2="13"></line><line x1="23" y1="8" x2="18" y2="13"></line></svg>
               </div>
-              <p class="mt-4 text-[#9496a1]">No hay usuarios para mostrar</p>
+              <p class="mt-4 text-white/40">No hay usuarios para mostrar</p>
             </div>
           } @else {
             <div class="divide-y divide-white/5">
@@ -44,27 +42,27 @@
                   (keydown.space)="goToProfile(user.username)"
                   tabindex="0"
                   role="link"
-                  class="flex items-center gap-4 px-6 py-4 transition-colors hover:bg-white/5 cursor-pointer outline-none focus:bg-white/5"
+                  class="flex items-center gap-4 px-6 py-4 transition-colors duration-200 hover:bg-white/5 cursor-pointer outline-none focus:bg-white/5"
                 >
                   <img 
                     [src]="user.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.username" 
-                    class="h-10 w-10 rounded-full border border-white/10"
+                    class="h-10 w-10 rounded-full ring-2 ring-white/5"
                     alt="Avatar de {{ user.fullName || user.username }}"
                   >
                   <div class="flex-1 min-w-0">
-                    <p class="truncate text-sm font-semibold text-[#f4f5f7]">{{ user.fullName || user.username }}</p>
-                    <p class="truncate text-xs text-[#9496a1]">@{{ user.username }}</p>
+                    <p class="truncate text-sm font-semibold text-white">{{ user.fullName || user.username }}</p>
+                    <p class="truncate text-xs text-white/40">@{{ user.username }}</p>
                   </div>
                   
                   <button 
                     (click)="toggleFollow(user, $event)"
-                    class="rounded-full px-4 py-1.5 text-xs font-semibold transition-all"
+                    class="rounded-xl px-4 py-1.5 text-xs font-semibold transition-all duration-200"
                     [class.bg-[#df3432]]="!user.isFollowing"
                     [class.text-white]="!user.isFollowing"
                     [class.border]="user.isFollowing"
-                    [class.border-white/10]="user.isFollowing"
-                    [class.bg-white/6]="user.isFollowing"
-                    [class.text-[#e7e9ee]]="user.isFollowing"
+                    [class.border-white/5]="user.isFollowing"
+                    [class.bg-white/5]="user.isFollowing"
+                    [class.text-white/70]="user.isFollowing"
                     type="button"
                   >
                     {{ user.isFollowing ? 'Siguiendo' : 'Seguir' }}

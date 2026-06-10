@@ -59,4 +59,31 @@ export class ResearchService {
       variables: { slug }
     }).pipe(map(res => res.data.researchBySlug));
   }
+
+  getDebateDelDia(): Observable<ResearchPaper | null> {
+    const query = `
+      query DebateDelDia {
+        debateDelDia {
+          id
+          slug
+          title
+          summary
+          faculty
+          views
+          author {
+            id
+            username
+            fullName
+            avatarUrl
+          }
+          createdAt
+          pdfUrl
+        }
+      }
+    `;
+
+    return this.api.post<{ data: { debateDelDia: ResearchPaper | null } }>('/graphql', {
+      query
+    }).pipe(map(res => res.data.debateDelDia ?? null));
+  }
 }

@@ -10,6 +10,15 @@ export const GET_ADMIN_STATS = `
         description
         createdAt
       }
+      userGrowth {
+        label
+        value
+      }
+      careerDistribution {
+        category
+        count
+        percentage
+      }
     }
   }
 `;
@@ -73,5 +82,112 @@ export const UPDATE_USER_STATUS_MUTATION = `
       email
       profileComplete
     }
+  }
+`;
+
+export const UPDATE_USER_ADMIN_MUTATION = `
+  mutation UpdateUserAdmin($userId: ID!, $input: UpdateProfileInput!) {
+    updateProfileAdmin(userId: $userId, input: $input) {
+      id
+      username
+      fullName
+      career
+    }
+  }
+`;
+
+export const GET_CATALOGS = `
+  query GetCatalogs {
+    faculties { id name }
+    courses { id name faculty { id name } }
+    academicInterests { id name }
+  }
+`;
+
+export const CREATE_FACULTY = `
+  mutation CreateFaculty($name: String!) {
+    createFaculty(name: $name) { id name }
+  }
+`;
+
+export const UPDATE_FACULTY = `
+  mutation UpdateFaculty($id: ID!, $name: String!) {
+    updateFaculty(id: $id, name: $name) { id name }
+  }
+`;
+
+export const DELETE_FACULTY = `
+  mutation DeleteFaculty($id: ID!) {
+    deleteFaculty(id: $id)
+  }
+`;
+
+export const CREATE_COURSE = `
+  mutation CreateCourse($name: String!, $facultyId: ID!) {
+    createCourse(name: $name, facultyId: $facultyId) { id name faculty { id name } }
+  }
+`;
+
+export const UPDATE_COURSE = `
+  mutation UpdateCourse($id: ID!, $name: String!, $facultyId: ID!) {
+    updateCourse(id: $id, name: $name, facultyId: $facultyId) { id name faculty { id name } }
+  }
+`;
+
+export const DELETE_COURSE = `
+  mutation DeleteCourse($id: ID!) {
+    deleteCourse(id: $id)
+  }
+`;
+
+export const CREATE_INTEREST = `
+  mutation CreateInterest($name: String!) {
+    createAcademicInterest(name: $name) { id name }
+  }
+`;
+
+export const UPDATE_INTEREST = `
+  mutation UpdateInterest($id: ID!, $name: String!) {
+    updateAcademicInterest(id: $id, name: $name) { id name }
+  }
+`;
+
+export const DELETE_INTEREST = `
+  mutation DeleteInterest($id: ID!) {
+    deleteAcademicInterest(id: $id)
+  }
+`;
+
+export const GET_ADMIN_EVENTS = `
+  query GetAdminEvents($limit: Int, $offset: Int, $category: String) {
+    universityEvents(limit: $limit, offset: $offset, category: $category) {
+      id
+      title
+      description
+      date
+      location
+      category
+      attendeesCount
+      image
+      communityLinks { whatsapp telegram discord }
+    }
+  }
+`;
+
+export const CREATE_EVENT_MUTATION = `
+  mutation CreateEvent($input: CreateEventInput!) {
+    createEvent(input: $input) { id title }
+  }
+`;
+
+export const UPDATE_EVENT_MUTATION = `
+  mutation UpdateEvent($id: ID!, $input: UpdateEventInput!) {
+    updateEvent(id: $id, input: $input) { id title }
+  }
+`;
+
+export const DELETE_EVENT_MUTATION = `
+  mutation DeleteEvent($id: ID!) {
+    deleteEvent(id: $id)
   }
 `;

@@ -112,3 +112,13 @@
     </div>
   }
 </div>
+
+@if (isDeleteModalOpen()) {
+  <app-confirm-modal
+    title="Eliminar comentario"
+    message="¿Estás seguro de que deseas eliminar este comentario permanentemente?"
+    [isLoading]="isSubmitting()"
+    (confirm)="confirmDelete()"
+    (dismiss)="isDeleteModalOpen.set(false)"
+  ></app-confirm-modal>
+}

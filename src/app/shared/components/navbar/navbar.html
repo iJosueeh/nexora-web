@@ -1,5 +1,6 @@
 <nav
-  class="fixed left-0 right-0 top-0 z-50 border-b border-[#161b25] bg-[#06080d]/86 px-4 py-2.5 shadow-[inset_0_-1px_0_rgba(11,14,21,0.88)] backdrop-blur-md md:px-8 lg:px-12"
+  class="fixed left-0 right-0 top-0 z-50 border-b transition-all duration-300"
+  [class]="isScrolled() ? 'bg-black/40 backdrop-blur-md border-white/5 py-2' : 'bg-[#0a0b0f]/80 backdrop-blur-sm border-transparent py-3'"
 >
   <div class="mx-auto flex w-full max-w-352 items-center gap-4">
     <a
@@ -12,24 +13,28 @@
     @switch (mode()) {
       @case ('feed') {
         <div class="hidden min-w-0 flex-1 md:block">
-          <label class="relative block w-full max-w-2xl">
-            <span class="sr-only">Buscar debates académicos</span>
-            <svg class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#707887]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <circle cx="11" cy="11" r="7"></circle>
-              <path d="m20 20-3.5-3.5"></path>
-            </svg>
-            <input
-              type="search"
-              placeholder="Buscar debates académicos..."
-              class="w-full rounded-full border border-white/6 bg-[#0b0d13] py-3 pl-10 pr-4 text-sm text-[#e4e8ef] outline-none transition-colors placeholder:text-[#707887] focus:border-[#df3432]/50"
-            />
-          </label>
+          <form (submit)="submitSearch($event)">
+            <label class="relative block w-full max-w-2xl">
+              <span class="sr-only">Buscar debates académicos</span>
+              <svg class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#707887]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="m20 20-3.5-3.5"></path>
+              </svg>
+              <input
+                type="search"
+                [value]="searchQuery()"
+                (input)="onSearch($event)"
+                placeholder="Buscar debates académicos..."
+                class="w-full rounded-full border border-white/6 bg-[#0b0d13] py-3 pl-10 pr-4 text-sm text-[#e4e8ef] outline-none transition-colors placeholder:text-[#707887] focus:border-[#df3432]/50"
+              />
+            </label>
+          </form>
         </div>
 
         <div class="ml-auto flex items-center gap-2.5">
           <app-notification-center />
 
-          <div class="relative">
+          <div class="relative hidden lg:block">
             <button
               type="button"
               (click)="toggleProfileDropdown($event)"
@@ -94,7 +99,7 @@
         <ul class="hidden items-center gap-6 lg:flex">
           <li>
             <a
-              routerLink="/home"
+              routerLink="/sobre-nosotros"
               routerLinkActive="text-[#f08f84] after:scale-x-100"
               [routerLinkActiveOptions]="{ exact: true }"
               class="relative pb-1.5 text-[0.76rem] font-medium text-[#878d99] transition-colors duration-200 hover:text-[#d6dae3] after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#df3432] after:transition-transform after:duration-300"
@@ -122,7 +127,7 @@
             Ir al feed
           </a>
           
-          <div class="relative">
+          <div class="relative hidden lg:block">
             <button
               type="button"
               (click)="toggleProfileDropdown($event)"
@@ -190,7 +195,7 @@
               routerLink="/explorar"
               routerLinkActive="text-[#f08f84] after:scale-x-100"
               [routerLinkActiveOptions]="{ exact: true }"
-              class="relative pb-1.5 text-[0.76rem] font-medium text-[#878d99] transition-colors duration-200 hover:text-[#d6dae3] after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#df3432] after:transition-transform after:duration-300"
+              class="relative pb-1.5 text-[0.76rem] font-medium text-white/70 transition-all duration-300 hover:text-white/100 hover:scale-105 after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#df3432] after:transition-transform after:duration-300"
             >
               Funcionalidad
             </a>
@@ -199,7 +204,7 @@
             <a
               routerLink="/pulse"
               routerLinkActive="text-[#f08f84] after:scale-x-100"
-              class="relative pb-1.5 text-[0.76rem] font-medium text-[#878d99] transition-colors duration-200 hover:text-[#d6dae3] after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#df3432] after:transition-transform after:duration-300"
+              class="relative pb-1.5 text-[0.76rem] font-medium text-white/70 transition-all duration-300 hover:text-white/100 hover:scale-105 after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#df3432] after:transition-transform after:duration-300"
             >
               Comunidad
             </a>
@@ -208,16 +213,16 @@
             <a
               routerLink="/eventos"
               routerLinkActive="text-[#f08f84] after:scale-x-100"
-              class="relative pb-1.5 text-[0.76rem] font-medium text-[#878d99] transition-colors duration-200 hover:text-[#d6dae3] after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#df3432] after:transition-transform after:duration-300"
+              class="relative pb-1.5 text-[0.76rem] font-medium text-white/70 transition-all duration-300 hover:text-white/100 hover:scale-105 after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#df3432] after:transition-transform after:duration-300"
             >
               Eventos
             </a>
           </li>
           <li>
             <a
-              routerLink="/home"
+              routerLink="/sobre-nosotros"
               routerLinkActive="text-[#f08f84] after:scale-x-100"
-              class="relative pb-1.5 text-[0.76rem] font-medium text-[#878d99] transition-colors duration-200 hover:text-[#d6dae3] after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#df3432] after:transition-transform after:duration-300"
+              class="relative pb-1.5 text-[0.76rem] font-medium text-white/70 transition-all duration-300 hover:text-white/100 hover:scale-105 after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#df3432] after:transition-transform after:duration-300"
             >
               Sobre Nosotros
             </a>
@@ -227,22 +232,22 @@
         <div class="ml-auto flex items-center gap-2.5 md:gap-3">
           <a
             routerLink="/login"
-            class="hidden px-3 py-1.5 text-[0.74rem] font-medium text-[#979dab] transition-colors duration-200 hover:text-[#e3e7ee] md:inline-block"
+            class="hidden px-3 py-1.5 text-[0.74rem] font-medium text-white/70 transition-all duration-300 hover:text-white/100 hover:scale-105 md:inline-block"
           >
             Iniciar Sesión
           </a>
           <a
             routerLink="/register"
-            class="inline-flex items-center rounded-md bg-[#df3432] px-3 py-2 text-[0.64rem] font-bold uppercase tracking-[0.13em] text-white transition-colors duration-200 hover:bg-[#ee4542] md:px-4"
+            class="relative hidden rounded-md bg-[#df3432] px-4 py-2 text-[0.64rem] font-bold uppercase tracking-[0.13em] text-white transition-all duration-300 hover:bg-[#ee4542] before:absolute before:inset-0 before:rounded-md before:bg-[#df3432]/40 before:blur-md before:opacity-0 before:transition-opacity hover:before:opacity-100 shadow-[0_0_15px_rgba(223,52,50,0.25)] hover:shadow-[0_0_25px_rgba(223,52,50,0.4)] md:inline-flex"
           >
             Únete a la comunidad
           </a>
 
-          <button class="flex p-1 lg:hidden" type="button" (click)="toggleMenu()" aria-label="Menú">
+          <button class="flex p-1 lg:hidden" type="button" (click)="toggleMobileMenu()" aria-label="Menú">
             <span class="relative block h-4 w-5" aria-hidden="true">
-              <span class="absolute left-0 top-0 block h-0.5 w-5 bg-[#9ca2af] transition-all duration-200" [class.translate-y-[7px]]="menuOpen()" [class.rotate-45]="menuOpen()"></span>
-              <span class="absolute left-0 top-1.75 block h-0.5 w-5 bg-[#9ca2af] transition-all duration-200" [class.opacity-0]="menuOpen()"></span>
-              <span class="absolute left-0 top-3.5 block h-0.5 w-5 bg-[#9ca2af] transition-all duration-200" [class.-translate-y-[7px]]="menuOpen()" [class.-rotate-45]="menuOpen()"></span>
+              <span class="absolute left-0 top-0 block h-0.5 w-5 bg-white/70 transition-all duration-300" [class.translate-y-[7px]]="isMobileMenuOpen()" [class.rotate-45]="isMobileMenuOpen()"></span>
+              <span class="absolute left-0 top-1.75 block h-0.5 w-5 bg-white/70 transition-all duration-300" [class.opacity-0]="isMobileMenuOpen()"></span>
+              <span class="absolute left-0 top-3.5 block h-0.5 w-5 bg-white/70 transition-all duration-300" [class.-translate-y-[7px]]="isMobileMenuOpen()" [class.-rotate-45]="isMobileMenuOpen()"></span>
             </span>
           </button>
         </div>
@@ -250,16 +255,26 @@
     }
   </div>
 
-  @if (mode() === 'public' && menuOpen()) {
-    <div class="absolute left-0 right-0 top-full border-b border-white/8 bg-[#080a10] px-4 py-4 shadow-[0_22px_30px_rgba(0,0,0,0.45)] lg:hidden">
-      <div class="mx-auto flex w-full max-w-352 flex-col gap-4">
-        <a routerLink="/explorar" (click)="closeMenu()" class="text-sm text-[#979dab] transition-colors hover:text-[#e3e7ee]">Funcionalidad</a>
-        <a routerLink="/pulse" (click)="closeMenu()" class="text-sm text-[#979dab] transition-colors hover:text-[#e3e7ee]">Comunidad</a>
-        <a routerLink="/eventos" (click)="closeMenu()" class="text-sm text-[#979dab] transition-colors hover:text-[#e3e7ee]">Eventos</a>
-        <a routerLink="/home" (click)="closeMenu()" class="text-sm text-[#979dab] transition-colors hover:text-[#e3e7ee]">Sobre Nosotros</a>
-        <hr class="border-white/6" />
-        <a routerLink="/login" (click)="closeMenu()" class="text-sm text-[#979dab] transition-colors hover:text-[#e3e7ee]">Iniciar Sesión</a>
-        <a routerLink="/register" (click)="closeMenu()" class="text-sm text-[#979dab] transition-colors hover:text-[#e3e7ee]">Únete a la comunidad</a>
+  @if (isMobileMenuOpen()) {
+    <div class="absolute left-0 right-0 top-full z-40 lg:hidden" style="height: calc(100vh - 100%);">
+      <div class="flex h-full w-full flex-col gap-6 border-b border-white/5 bg-black/90 px-4 py-6 backdrop-blur-xl">
+        <nav class="flex flex-col gap-1">
+          <a routerLink="/explorar" (click)="closeMobileMenu()" class="rounded-lg px-4 py-3 text-[0.9rem] font-medium text-white/80 transition-all duration-300 hover:bg-white/5 hover:text-white">Funcionalidad</a>
+          <a routerLink="/pulse" (click)="closeMobileMenu()" class="rounded-lg px-4 py-3 text-[0.9rem] font-medium text-white/80 transition-all duration-300 hover:bg-white/5 hover:text-white">Comunidad</a>
+          <a routerLink="/eventos" (click)="closeMobileMenu()" class="rounded-lg px-4 py-3 text-[0.9rem] font-medium text-white/80 transition-all duration-300 hover:bg-white/5 hover:text-white">Eventos</a>
+          <a routerLink="/sobre-nosotros" (click)="closeMobileMenu()" class="rounded-lg px-4 py-3 text-[0.9rem] font-medium text-white/80 transition-all duration-300 hover:bg-white/5 hover:text-white">Sobre Nosotros</a>
+        </nav>
+
+        <hr class="border-white/5" />
+
+        <div class="flex flex-col gap-3">
+          <a routerLink="/login" (click)="closeMobileMenu()" class="rounded-lg border border-white/10 px-4 py-3 text-center text-[0.85rem] font-medium text-white/80 transition-all duration-300 hover:border-white/20 hover:bg-white/5 hover:text-white">
+            Iniciar Sesión
+          </a>
+          <a routerLink="/register" (click)="closeMobileMenu()" class="relative w-full rounded-lg bg-[#df3432] px-4 py-3.5 text-center text-[0.85rem] font-bold uppercase tracking-[0.1em] text-white transition-all duration-300 hover:bg-[#ee4542] before:absolute before:inset-0 before:rounded-lg before:bg-[#df3432]/40 before:blur-md before:opacity-0 before:transition-opacity hover:before:opacity-100 shadow-[0_0_20px_rgba(223,52,50,0.3)] hover:shadow-[0_0_30px_rgba(223,52,50,0.45)]">
+            Únete a la comunidad
+          </a>
+        </div>
       </div>
     </div>
   }

@@ -20,14 +20,17 @@ export class Navbar {
   private readonly authSession = inject(AuthSession);
   private readonly destroyRef = inject(DestroyRef);
 
-  readonly menuOpen = signal(false);
+  readonly isMobileMenuOpen = signal(false);
   readonly profileDropdownOpen = signal(false);
   readonly currentPath = signal(this.router.url);
+  readonly isScrolled = signal(false);
 
   readonly isAuthenticated = computed(() => !!this.authSession.session()?.user?.email);
   readonly isFeedRoute = computed(() => {
     const current = this.currentPath();
-    return current.startsWith('/feed') || current.startsWith('/publicar') || current.startsWith('/profile') || current.startsWith('/u/');
+    return current.startsWith('/feed') || current.startsWith('/publicar') || 
+           current.startsWith('/settings') || current.startsWith('/profile') || 
+           current.startsWith('/u/');
   });
   readonly profileLink = computed(() => {
     const username = this.authSession.getUser()?.username?.trim();
@@ -63,6 +66,8 @@ export class Navbar {
   });
   readonly avatarUrl = computed(() => this.authSession.getUser()?.avatarUrl);
 
+  readonly searchQuery = signal('');
+
   constructor() {
     this.router.events
       .pipe(
@@ -74,12 +79,27 @@ export class Navbar {
       });
   }
 
-  toggleMenu(): void {
-    this.menuOpen.update(value => !value);
+  onSearch(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    const query = target?.value?.trim() ?? '';
+    this.searchQuery.set(query);
   }
 
-  closeMenu(): void {
-    this.menuOpen.set(false);
+  submitSearch(event: Event): void {
+    event.preventDefault();
+    const query = this.searchQuery().trim();
+    if (query.length > 0) {
+      void this.router.navigate(['/feed/explore'], { queryParams: { q: query } });
+      this.searchQuery.set('');
+    }
+  }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen.update(value => !value);
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen.set(false);
   }
 
   toggleProfileDropdown(event: MouseEvent): void {
@@ -90,6 +110,11 @@ export class Navbar {
   @HostListener('document:click')
   closeProfileDropdown(): void {
     this.profileDropdownOpen.set(false);
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    this.isScrolled.set(window.scrollY > 20);
   }
 
   signOut(): void {

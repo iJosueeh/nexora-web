@@ -6,9 +6,12 @@ export interface ResearchPaper {
   faculty: string;
   views: number;
   author: {
+    id?: string;
+    username?: string;
     fullName: string;
     avatarUrl?: string;
   };
   createdAt: string;
   pdfUrl?: string;
+  isFeatured?: boolean;
 }

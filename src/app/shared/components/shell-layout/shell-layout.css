@@ -1,0 +1,144 @@
+:host {
+  display: block;
+}
+
+/* ── Base (mobile-first) ── */
+.nexora-shell {
+  background-color: #0a0b0f;
+}
+
+.nexora-shell-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.nexora-shell-side {
+  display: none;
+}
+
+.nexora-shell-content {
+  overflow: visible;
+  min-width: 0;
+}
+
+/* Mode spacing */
+.nexora-shell--feed {
+  padding: 1rem 0.75rem;
+}
+
+.nexora-shell--profile {
+  padding: 0.75rem 0.5rem;
+}
+
+/* ── Desktop (≥1024px) ── */
+@media (min-width: 1024px) {
+  .nexora-shell {
+    height: calc(100vh - 3.35rem);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .nexora-shell-grid {
+    height: 100%;
+    gap: 1rem;
+  }
+
+  .nexora-shell-side {
+    display: block;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .nexora-shell-content {
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 0.125rem;
+  }
+
+  /* Feed: 3 columns */
+  .nexora-shell--feed .nexora-shell-grid {
+    grid-template-columns: 12.5rem minmax(0, 1fr) 16.5rem;
+    max-width: 1800px;
+  }
+
+  .nexora-shell--feed.nexora-shell--no-left .nexora-shell-grid {
+    grid-template-columns: minmax(0, 1fr) 17rem;
+  }
+
+  .nexora-shell--feed.nexora-shell--no-right .nexora-shell-grid {
+    grid-template-columns: 12.5rem minmax(0, 1fr);
+  }
+
+  .nexora-shell--feed.nexora-shell--no-left.nexora-shell--no-right .nexora-shell-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nexora-shell--feed.nexora-shell--no-left.nexora-shell--no-right {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Profile: 2 columns */
+  .nexora-shell--profile .nexora-shell-grid {
+    grid-template-columns: 12.5rem minmax(0, 1fr);
+    max-width: 1760px;
+  }
+
+  .nexora-shell--profile.nexora-shell--no-left .nexora-shell-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nexora-shell--profile.nexora-shell--no-right .nexora-shell-grid {
+    grid-template-columns: 12.5rem minmax(0, 1fr);
+  }
+}
+
+/* ── Large desktop (≥1280px) ── */
+@media (min-width: 1280px) {
+  .nexora-shell-grid {
+    gap: 1.125rem;
+  }
+
+  .nexora-shell--feed .nexora-shell-grid {
+    grid-template-columns: 13.5rem minmax(0, 1fr) 17.5rem;
+  }
+
+  .nexora-shell--feed.nexora-shell--no-left .nexora-shell-grid {
+    grid-template-columns: minmax(0, 1fr) 18rem;
+  }
+
+  .nexora-shell--feed.nexora-shell--no-right .nexora-shell-grid {
+    grid-template-columns: 13.5rem minmax(0, 1fr);
+  }
+
+  .nexora-shell--profile .nexora-shell-grid {
+    grid-template-columns: 13.5rem minmax(0, 1fr);
+  }
+}
+
+/* ── Extra large desktop (≥1536px) ── */
+@media (min-width: 1536px) {
+  .nexora-shell-grid {
+    gap: 1.25rem;
+  }
+
+  .nexora-shell--feed .nexora-shell-grid {
+    grid-template-columns: 14rem minmax(0, 1fr) 18rem;
+  }
+
+  .nexora-shell--feed.nexora-shell--no-left .nexora-shell-grid {
+    grid-template-columns: minmax(0, 1fr) 19rem;
+  }
+
+  .nexora-shell--feed.nexora-shell--no-right .nexora-shell-grid {
+    grid-template-columns: 14rem minmax(0, 1fr);
+  }
+
+  .nexora-shell--profile .nexora-shell-grid {
+    grid-template-columns: 14rem minmax(0, 1fr);
+  }
+}

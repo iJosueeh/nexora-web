@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ManagementService, UserProfile } from '../../services/management.service';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-users-view',
@@ -13,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class UsersView implements OnInit, OnDestroy {
   private readonly managementService = inject(ManagementService);
+  private readonly toast = inject(ToastService);
   private readonly LIMIT = 12; 
   private readonly destroy$ = new Subject<void>();
   private readonly searchSubject = new Subject<string>();
@@ -33,12 +35,10 @@ export class UsersView implements OnInit, OnDestroy {
   readonly modalUser = signal<UserProfile | null>(null);
   readonly modalAction = signal<'activate' | 'deactivate' | 'edit'>('activate');
 
-  // Edit Form State
-  readonly editForm = signal({
-    fullName: '',
-    username: '',
-    career: ''
-  });
+  // Edit Form State (Refactor to separate signals for better binding)
+  readonly editFullName = signal('');
+  readonly editUsername = signal('');
+  readonly editCareer = signal('');
 
   ngOnInit(): void {
     this.managementService.resetUsers(); 
@@ -84,11 +84,9 @@ export class UsersView implements OnInit, OnDestroy {
   openEditModal(user: UserProfile): void {
     this.modalUser.set(user);
     this.modalAction.set('edit');
-    this.editForm.set({
-      fullName: user.fullName,
-      username: user.username || '',
-      career: user.career || ''
-    });
+    this.editFullName.set(user.fullName);
+    this.editUsername.set(user.username || '');
+    this.editCareer.set(user.career || '');
     this.isModalOpen.set(true);
   }
 
@@ -110,8 +108,22 @@ export class UsersView implements OnInit, OnDestroy {
     const user = this.modalUser();
     if (!user) return;
     
-    // Aquí se implementaría la llamada al servicio de actualización
-    this.closeModal();
+    const input = {
+      fullName: this.editFullName(),
+      username: this.editUsername(),
+      career: this.editCareer()
+    };
+
+    this.managementService.updateUserAdmin(user.id, input).subscribe({
+      next: () => {
+        this.toast.show('Usuario actualizado con éxito', 'success');
+        this.loadInitialUsers();
+        this.closeModal();
+      },
+      error: (err) => {
+        this.toast.show(err.message || 'Error al actualizar usuario', 'error');
+      }
+    });
   }
 
   confirmStatusChange(): void {
