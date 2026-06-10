@@ -18,6 +18,7 @@ export class ManagementPage {
     { label: 'Usuarios', icon: 'people', path: './users', roles: ['ROLE_ADMIN'] },
     { label: 'Publicaciones', icon: 'article', path: './posts' },
     { label: 'Eventos', icon: 'event', path: './events' },
+    { label: 'Mantenimiento', icon: 'settings', path: './maintenance', roles: ['ROLE_ADMIN'] },
   ];
 
   filterMenuItems() {

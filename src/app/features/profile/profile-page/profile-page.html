@@ -9,27 +9,27 @@
   <div shell-main>
 
     @if (showSkeleton()) {
-      <main class="min-h-[calc(100vh-2rem)] overflow-hidden rounded-3xl border border-[var(--brand-border)] bg-[#0a0b10] p-6">
+      <main class="min-h-[calc(100vh-2rem)] overflow-hidden rounded-2xl bg-white/[0.02] p-6">
         <div class="space-y-6" [class.animate-pulse]="!state.isGuest()">
-          <div class="h-64 rounded-3xl bg-white/6"></div>
+          <div class="h-64 rounded-2xl bg-white/5"></div>
           <div class="flex items-end gap-4">
-            <div class="h-28 w-28 rounded-2xl bg-white/8"></div>
+            <div class="h-28 w-28 rounded-xl bg-white/5 lg:h-[7.5rem] lg:w-[7.5rem]"></div>
             <div class="space-y-3">
-              <div class="h-8 w-64 rounded bg-white/8"></div>
-              <div class="h-4 w-40 rounded bg-white/8"></div>
+              <div class="h-8 w-64 rounded bg-white/5"></div>
+              <div class="h-4 w-40 rounded bg-white/5"></div>
             </div>
           </div>
           <div class="grid gap-4 sm:grid-cols-3">
-            <div class="h-24 rounded-2xl bg-white/6"></div>
-            <div class="h-24 rounded-2xl bg-white/6"></div>
-            <div class="h-24 rounded-2xl bg-white/6"></div>
+            <div class="h-20 rounded-2xl bg-white/[0.03]"></div>
+            <div class="h-20 rounded-2xl bg-white/[0.03]"></div>
+            <div class="h-20 rounded-2xl bg-white/[0.03]"></div>
           </div>
         </div>
 
         @if (state.isGuest()) {
-          <section class="mt-6 rounded-2xl border border-[#df3432]/25 bg-[#df3432]/10 p-5 sm:p-6">
-            <h2 class="text-lg font-semibold tracking-tight text-[#f4f5f7] sm:text-xl">Debes iniciar sesión para ver tu perfil</h2>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-[#d3d7e0]">
+          <section class="mt-6 rounded-2xl border border-[#df3432]/15 bg-[#df3432]/5 p-5 sm:p-6">
+            <h2 class="text-lg font-semibold tracking-tight text-white sm:text-xl">Debes iniciar sesión para ver tu perfil</h2>
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-white/50">
               Tu perfil académico, estadísticas y publicaciones están disponibles solo para usuarios autenticados.
               Inicia sesión para continuar o crea una cuenta nueva.
             </p>
@@ -37,14 +37,14 @@
             <div class="mt-5 flex flex-wrap items-center gap-3">
               <button
                 type="button"
-                class="rounded-full bg-[#df3432] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#ee4542]"
+                class="rounded-xl bg-[#df3432] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:shadow-[0_0_15px_rgba(223,52,50,0.35)]"
                 (click)="nav('/login')"
               >
                 Iniciar sesión
               </button>
               <button
                 type="button"
-                class="rounded-full border border-white/14 bg-white/6 px-5 py-2.5 text-sm font-semibold text-[#e8eaf0] transition-colors hover:bg-white/10"
+                class="rounded-xl border border-white/5 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/70 transition-all duration-200 hover:bg-white/10 hover:border-white/10 hover:text-white"
                 (click)="nav('/register')"
               >
                 Crear cuenta
@@ -54,24 +54,24 @@
         }
       </main>
     } @else if (state.isProfileNotFound()) {
-      <main class="min-h-[calc(100vh-2rem)] overflow-hidden rounded-3xl border border-[var(--brand-border)] bg-[#0a0b10] p-6 sm:p-8">
-        <section class="rounded-2xl border border-[#df3432]/25 bg-[#df3432]/10 p-5 sm:p-6">
-          <h2 class="text-lg font-semibold tracking-tight text-[#f4f5f7] sm:text-xl">Perfil no encontrado</h2>
-          <p class="mt-2 max-w-2xl text-sm leading-6 text-[#d3d7e0]">
+      <main class="min-h-[calc(100vh-2rem)] overflow-hidden rounded-2xl bg-white/[0.02] p-6 sm:p-8">
+        <section class="rounded-2xl border border-[#df3432]/15 bg-[#df3432]/5 p-5 sm:p-6">
+          <h2 class="text-lg font-semibold tracking-tight text-white sm:text-xl">Perfil no encontrado</h2>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-white/50">
             El enlace compartido no corresponde a un perfil disponible o el usuario cambió su handle.
           </p>
 
           <div class="mt-5 flex flex-wrap items-center gap-3">
             <button
               type="button"
-              class="rounded-full bg-[#df3432] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#ee4542]"
+              class="rounded-xl bg-[#df3432] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:shadow-[0_0_15px_rgba(223,52,50,0.35)]"
               (click)="nav('/login')"
             >
               Iniciar sesión
             </button>
             <button
               type="button"
-              class="rounded-full border border-white/14 bg-white/6 px-5 py-2.5 text-sm font-semibold text-[#e8eaf0] transition-colors hover:bg-white/10"
+              class="rounded-xl border border-white/5 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/70 transition-all duration-200 hover:bg-white/10 hover:border-white/10 hover:text-white"
               (click)="nav('/register')"
             >
               Crear cuenta
@@ -81,36 +81,36 @@
       </main>
     } @else {
       <main class="space-y-5 pb-8 sm:space-y-6">
-        <section class="overflow-visible rounded-3xl border border-[var(--brand-border)] bg-[var(--brand-surface)]">
+        <section class="overflow-visible rounded-2xl bg-white/[0.02]">
           <div class="relative h-56 overflow-hidden sm:h-64 lg:h-72">
-            <img [src]="bannerUrl()" [alt]="displayName() + ' banner'" class="h-full w-full object-cover opacity-85" />
-            <div class="absolute inset-0 bg-gradient-to-t from-[#0a0b10] via-[#0a0b10]/30 to-transparent"></div>
+            <img [src]="bannerUrl()" [alt]="displayName() + ' banner'" class="h-full w-full object-cover opacity-60" />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0a0b0f] via-[#0a0b0f]/50 to-transparent"></div>
           </div>
 
           <div class="relative px-4 pb-5 sm:px-6 lg:px-7">
             <div class="-mt-16 grid gap-6 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-end">
               <div class="min-w-0">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-end">
-                  <div class="h-28 w-28 shrink-0 overflow-hidden rounded-2xl border-4 border-[#0a0b10] bg-[#14161d] shadow-[0_10px_30px_rgba(0,0,0,0.35)] lg:h-[7.5rem] lg:w-[7.5rem]">
+                  <div class="h-28 w-28 shrink-0 overflow-hidden rounded-xl ring-4 ring-[#0a0b0f] bg-[#14161d] lg:h-[7.5rem] lg:w-[7.5rem]">
                     <img [src]="avatarUrl()" [alt]="displayName()" class="h-full w-full object-cover" />
                   </div>
 
                   <div class="min-w-0 pb-1">
                     <div class="flex flex-wrap items-center gap-3">
-                      <h1 class="text-4xl font-bold tracking-tight text-[#f4f5f7] sm:text-[2.75rem]">{{ displayName() }}</h1>
+                      <h1 class="text-4xl font-bold tracking-tight text-white sm:text-[2.75rem]">{{ displayName() }}</h1>
                       @if (state.profile()?.profileComplete) {
-                        <span class="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-emerald-200">Perfil completo</span>
+                        <span class="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-emerald-300">Perfil completo</span>
                       } @else {
-                        <span class="rounded-full border border-[#df3432]/30 bg-[#df3432]/12 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#f1b0aa]">Perfil pendiente</span>
+                        <span class="rounded-full border border-[#df3432]/20 bg-[#df3432]/10 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-red-300">Perfil pendiente</span>
                       }
                     </div>
-                    <p class="mt-1 text-sm text-[#f0c2bc]">{{ handle() }}</p>
-                    <p class="mt-4 max-w-4xl text-[1.03rem] leading-7 text-[#c8cbd3]">{{ bio() }}</p>
+                    <p class="mt-1 text-sm text-white/50">{{ handle() }}</p>
+                    <p class="mt-4 max-w-4xl text-[1.03rem] leading-7 text-white/60">{{ bio() }}</p>
 
-                    <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[#a0a6b1]">
-                      <span class="inline-flex items-center gap-2"><span class="text-[#f0b9b1]">✦</span>{{ state.profile()?.career }}</span>
-                      <span class="inline-flex items-center gap-2"><span class="text-[#f0b9b1]">◷</span>{{ state.profile()?.joinedLabel }}</span>
-                      <span class="inline-flex items-center gap-2"><span class="text-[#f0b9b1]">✉</span>{{ state.profile()?.email }}</span>
+                    <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-white/40">
+                      <span class="inline-flex items-center gap-2"><span class="text-[#df3432]/60">✦</span>{{ state.profile()?.career }}</span>
+                      <span class="inline-flex items-center gap-2"><span class="text-[#df3432]/60">◷</span>{{ state.profile()?.joinedLabel }}</span>
+                      <span class="inline-flex items-center gap-2"><span class="text-[#df3432]/60">✉</span>{{ state.profile()?.email }}</span>
                     </div>
                   </div>
                 </div>
@@ -120,7 +120,7 @@
                     <button
                       type="button"
                       (click)="copyProfileLink()"
-                      class="rounded-full border border-white/12 bg-white/6 px-4 py-2.5 text-sm font-semibold text-[#e8eaf0] transition-colors hover:bg-white/10"
+                      class="rounded-xl border border-white/5 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white/70 transition-all duration-200 hover:bg-white/10 hover:border-white/10 hover:text-white"
                     >
                       {{ shareLabel() }}
                     </button>
@@ -129,7 +129,7 @@
                     <button
                       type="button"
                       (click)="nav('/settings', $event)"
-                      class="rounded-full border border-white/12 bg-white/6 px-5 py-2.5 text-sm font-semibold text-[#e8eaf0] transition-colors hover:bg-white/10"
+                      class="rounded-xl border border-white/5 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/70 transition-all duration-200 hover:bg-white/10 hover:border-white/10 hover:text-white"
                     >
                       Editar perfil
                     </button>
@@ -138,14 +138,15 @@
                     <button
                       type="button"
                       (click)="state.toggleFollow()"
-                      class="rounded-full px-5 py-2.5 text-sm font-semibold transition-colors"
+                      class="rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200"
                       [class.bg-[#df3432]]="!state.isFollowing()"
                       [class.text-white]="!state.isFollowing()"
-                      [class.hover:bg-[#ee4542]]="!state.isFollowing()"
+                      [class.hover:shadow-[0_0_15px_rgba(223,52,50,0.35)]="!state.isFollowing()"
                       [class.border]="state.isFollowing()"
-                      [class.border-white/10]="state.isFollowing()"
-                      [class.bg-white/6]="state.isFollowing()"
-                      [class.text-[#e7e9ee]]="state.isFollowing()"
+                      [class.border-white/5]="state.isFollowing()"
+                      [class.bg-white/5]="state.isFollowing()"
+                      [class.text-white/70]="state.isFollowing()"
+                      [class.hover:bg-white/10]="state.isFollowing()"
                     >
                       {{ state.isFollowing() ? 'Siguiendo' : 'Seguir' }}
                     </button>
@@ -153,7 +154,7 @@
                     <button
                       type="button"
                       (click)="nav('/login')"
-                      class="rounded-full border border-[#df3432]/35 bg-[#df3432]/14 px-5 py-2.5 text-sm font-semibold text-[#f7d0cb] transition-colors hover:bg-[#df3432]/22"
+                      class="rounded-xl border border-[#df3432]/20 bg-[#df3432]/10 px-5 py-2.5 text-sm font-semibold text-red-300/80 transition-all duration-200 hover:bg-[#df3432]/15 hover:border-[#df3432]/30"
                     >
                       Inicia sesión para seguir
                     </button>
@@ -169,11 +170,11 @@
                 </div>
               </div>
 
-              <section class="hidden rounded-2xl border border-[var(--brand-border)] bg-[#11141c] p-4 lg:block">
-                <p class="text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-[#f0b9b1]">Scholarly focus</p>
+              <section class="hidden rounded-xl border border-white/5 bg-white/[0.03] p-4 backdrop-blur-sm lg:block">
+                <p class="text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-white/40">Scholarly focus</p>
                 <div class="mt-3 flex flex-wrap gap-2">
                   @for (interest of featuredInterests(); track interest) {
-                    <span class="rounded-md bg-white/8 px-2.5 py-1 text-[0.69rem] text-[#d6d9e1]">{{ interest }}</span>
+                    <span class="rounded-md bg-white/5 px-2.5 py-1 text-[0.69rem] text-white/50">{{ interest }}</span>
                   }
                 </div>
               </section>
@@ -181,7 +182,7 @@
           </div>
         </section>
 
-        <section class="grid grid-cols-3 gap-3 border-b border-white/8 pb-4 sm:gap-5">
+        <section class="grid grid-cols-3 gap-3 border-b border-white/5 pb-4 sm:gap-4">
           @for (stat of stats(); track stat.label) {
             @if (stat.label === 'Seguidores') {
               <article 
@@ -191,10 +192,10 @@
                 tabindex="0"
                 role="button"
                 aria-label="Ver seguidores"
-                class="rounded-xl border border-white/8 bg-white/3 px-3 py-3 text-center sm:px-4 cursor-pointer hover:bg-white/8 transition-all hover:border-[#df3432]/30 group"
+                class="rounded-2xl border border-white/[0.05] bg-white/[0.03] px-3 py-3 text-center sm:px-4 cursor-pointer transition-all duration-200 hover:bg-white/[0.05] hover:border-white/10 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] group"
               >
-                <p class="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-[#7f8591] sm:text-[0.6rem] sm:tracking-[0.2em] group-hover:text-[#f0b9b1]">{{ stat.label }}</p>
-                <p class="mt-2 text-[1.65rem] font-bold leading-none text-[#f4f5f7] sm:text-[2rem]">{{ stat.value }}</p>
+                <p class="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-white/40 sm:text-[0.6rem] sm:tracking-[0.2em] group-hover:text-white/60">{{ stat.label }}</p>
+                <p class="mt-2 text-[1.65rem] font-bold leading-none text-white sm:text-[2rem]">{{ stat.value }}</p>
               </article>
             } @else if (stat.label === 'Seguidos') {
               <article 
@@ -204,25 +205,40 @@
                 tabindex="0"
                 role="button"
                 aria-label="Ver seguidos"
-                class="rounded-xl border border-white/8 bg-white/[0.03] px-3 py-3 text-center sm:px-4 cursor-pointer hover:bg-white/8 transition-all hover:border-[#df3432]/30 group"
+                class="rounded-2xl border border-white/[0.05] bg-white/[0.03] px-3 py-3 text-center sm:px-4 cursor-pointer transition-all duration-200 hover:bg-white/[0.05] hover:border-white/10 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] group"
               >
-                <p class="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-[#7f8591] sm:text-[0.6rem] sm:tracking-[0.2em] group-hover:text-[#f0b9b1]">{{ stat.label }}</p>
-                <p class="mt-2 text-[1.65rem] font-bold leading-none text-[#f4f5f7] sm:text-[2rem]">{{ stat.value }}</p>
+                <p class="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-white/40 sm:text-[0.6rem] sm:tracking-[0.2em] group-hover:text-white/60">{{ stat.label }}</p>
+                <p class="mt-2 text-[1.65rem] font-bold leading-none text-white sm:text-[2rem]">{{ stat.value }}</p>
               </article>
             } @else {
-              <article class="rounded-xl border border-white/8 bg-white/[0.03] px-3 py-3 text-center sm:px-4">
-                <p class="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-[#7f8591] sm:text-[0.6rem] sm:tracking-[0.2em]">{{ stat.label }}</p>
-                <p class="mt-2 text-[1.65rem] font-bold leading-none text-[#f4f5f7] sm:text-[2rem]">{{ stat.value }}</p>
+              <article class="rounded-2xl border border-white/[0.05] bg-white/[0.03] px-3 py-3 text-center sm:px-4">
+                <p class="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-white/40 sm:text-[0.6rem] sm:tracking-[0.2em]">{{ stat.label }}</p>
+                <p class="mt-2 text-[1.65rem] font-bold leading-none text-white sm:text-[2rem]">{{ stat.value }}</p>
               </article>
             }
           }
         </section>
 
         @if (!state.isAnonymousPreview()) {
-          <section class="flex flex-wrap gap-2 border-b border-white/8 pb-4">
-            <button type="button" (click)="state.setTab('posts')" class="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors" [class.bg-white/8]="state.activeTab() === 'posts'" [class.text-white]="state.activeTab() === 'posts'" [class.text-[#a2a7b2]]="state.activeTab() !== 'posts'">Posts</button>
-            <button type="button" (click)="state.setTab('media')" class="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors" [class.bg-white/8]="state.activeTab() === 'media'" [class.text-white]="state.activeTab() === 'media'" [class.text-[#a2a7b2]]="state.activeTab() !== 'media'">Media</button>
-            <button type="button" (click)="state.setTab('likes')" class="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors" [class.bg-white/8]="state.activeTab() === 'likes'" [class.text-white]="state.activeTab() === 'likes'" [class.text-[#a2a7b2]]="state.activeTab() !== 'likes'">Likes</button>
+          <section class="flex gap-6 border-b border-white/5 pb-4">
+            <button type="button" (click)="state.setTab('posts')" class="relative pb-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200" [class.text-white]="state.activeTab() === 'posts'" [class.text-white/40]="state.activeTab() !== 'posts'" [class.hover:text-white/70]="state.activeTab() !== 'posts'">
+              Posts
+              @if (state.activeTab() === 'posts') {
+                <span class="absolute bottom-0 left-0 h-0.5 w-full bg-white/80"></span>
+              }
+            </button>
+            <button type="button" (click)="state.setTab('media')" class="relative pb-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200" [class.text-white]="state.activeTab() === 'media'" [class.text-white/40]="state.activeTab() !== 'media'" [class.hover:text-white/70]="state.activeTab() !== 'media'">
+              Media
+              @if (state.activeTab() === 'media') {
+                <span class="absolute bottom-0 left-0 h-0.5 w-full bg-white/80"></span>
+              }
+            </button>
+            <button type="button" (click)="state.setTab('likes')" class="relative pb-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200" [class.text-white]="state.activeTab() === 'likes'" [class.text-white/40]="state.activeTab() !== 'likes'" [class.hover:text-white/70]="state.activeTab() !== 'likes'">
+              Likes
+              @if (state.activeTab() === 'likes') {
+                <span class="absolute bottom-0 left-0 h-0.5 w-full bg-white/80"></span>
+              }
+            </button>
           </section>
         }
 
@@ -230,16 +246,16 @@
           @for (card of visibleCards(); track card.id) {
             @switch (card.variant) {
               @case ('image') {
-                <article class="overflow-hidden rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] transition-transform duration-200 hover:-translate-y-0.5">
+                <article class="overflow-hidden rounded-2xl bg-[#12141a] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
                   <img [src]="card.imageUrl" [alt]="card.title" class="h-64 w-full object-cover" />
                   <div class="space-y-3 p-4">
-                    <div class="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.16em] text-[#f0b9b1]">
+                    <div class="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.16em] text-[#df3432]/50">
                       <span>{{ card.label }}</span>
-                      <span class="text-[#7e8591]">{{ card.badge }}</span>
+                      <span class="text-white/30">{{ card.badge }}</span>
                     </div>
-                    <h2 class="text-[2rem] font-semibold leading-tight text-[#f4f5f7] sm:text-[2.15rem] xl:text-[2.25rem]">{{ card.title }}</h2>
-                    <p class="text-sm leading-6 text-[#b6bbc6]">{{ card.description }}</p>
-                    <div class="flex items-center gap-5 text-xs text-[#a7adb8]">
+                    <h2 class="text-[2rem] font-semibold leading-tight text-white sm:text-[2.15rem] xl:text-[2.25rem]">{{ card.title }}</h2>
+                    <p class="text-sm leading-6 text-white/50">{{ card.description }}</p>
+                    <div class="flex items-center gap-5 text-xs text-white/30">
                       <span>♡ {{ card.likes || '0' }}</span>
                       <span>💬 {{ card.comments || '0' }}</span>
                     </div>
@@ -247,25 +263,25 @@
                 </article>
               }
               @case ('text') {
-                <article class="rounded-2xl border border-[var(--brand-border)] bg-[linear-gradient(165deg,#17181f,#1f1f24)] p-6 transition-transform duration-200 hover:-translate-y-0.5">
-                  <div class="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.16em] text-[#7ed8ea]">
-                    <span class="rounded bg-[#1f4f5b] px-2 py-0.5">{{ card.label }}</span>
-                    <span class="text-[#9ea4b0]">{{ card.badge }}</span>
+                <article class="rounded-2xl bg-[#12141a] p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+                  <div class="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.16em] text-[#22d3ee]/60">
+                    <span class="rounded bg-white/5 px-2 py-0.5">{{ card.label }}</span>
+                    <span class="text-white/30">{{ card.badge }}</span>
                   </div>
-                  <h2 class="mt-5 text-[2rem] font-semibold leading-tight text-[#f4f5f7] sm:text-[2.1rem] xl:text-[2.2rem]">{{ card.title }}</h2>
-                  <p class="mt-4 text-sm leading-6 text-[#b6bbc6]">{{ card.description }}</p>
-                  <div class="mt-6 flex items-center gap-5 text-xs text-[#a7adb8]">
+                  <h2 class="mt-5 text-[2rem] font-semibold leading-tight text-white sm:text-[2.1rem] xl:text-[2.2rem]">{{ card.title }}</h2>
+                  <p class="mt-4 text-sm leading-6 text-white/50">{{ card.description }}</p>
+                  <div class="mt-6 flex items-center gap-5 text-xs text-white/30">
                     <span>♡ {{ card.likes || '0' }}</span>
                     <span>💬 {{ card.comments || '0' }}</span>
                   </div>
                 </article>
               }
               @case ('link') {
-                <article class="rounded-2xl border border-[#642429] bg-[linear-gradient(150deg,#2c1015,#321418)] p-6 transition-transform duration-200 hover:-translate-y-0.5">
-                  <p class="text-[0.6rem] uppercase tracking-[0.16em] text-[#f6b3ba]">{{ card.label }}</p>
-                  <h2 class="mt-5 text-[1.95rem] font-semibold leading-tight text-[#f7e6e8] sm:text-[2.05rem] xl:text-[2.15rem]">{{ card.title }}</h2>
-                  <p class="mt-4 text-sm leading-6 text-[#e3c3c8]">{{ card.description }}</p>
-                  <button type="button" class="mt-6 text-xs font-semibold uppercase tracking-[0.13em] text-[#ffd8dc]">
+                <article class="rounded-2xl bg-[#12141a] p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+                  <p class="text-[0.6rem] uppercase tracking-[0.16em] text-[#df3432]/50">{{ card.label }}</p>
+                  <h2 class="mt-5 text-[1.95rem] font-semibold leading-tight text-white sm:text-[2.05rem] xl:text-[2.15rem]">{{ card.title }}</h2>
+                  <p class="mt-4 text-sm leading-6 text-white/50">{{ card.description }}</p>
+                  <button type="button" class="mt-6 text-xs font-semibold uppercase tracking-[0.13em] text-[#df3432]/70 hover:text-[#df3432] transition-colors">
                     {{ card.cta || 'Read article' }} →
                   </button>
                 </article>
@@ -274,8 +290,8 @@
           }
 
           @if (visibleCards().length === 0) {
-            <article class="col-span-full rounded-2xl border border-white/10 bg-white/4 p-6 text-center">
-              <p class="text-sm text-[#c7ccd6]">No encontramos publicaciones para este perfil aun. Si ya publicaste, recarga la pagina o verifica tu username de perfil.</p>
+            <article class="col-span-full rounded-2xl border border-white/5 bg-white/[0.02] p-6 text-center">
+              <p class="text-sm text-white/40">No encontramos publicaciones para este perfil aun. Si ya publicaste, recarga la pagina o verifica tu username de perfil.</p>
             </article>
           }
         </section>
@@ -286,7 +302,7 @@
               type="button"
               (click)="state.loadMorePosts()"
               [disabled]="state.isLoadingMorePosts()"
-              class="rounded-full border border-white/12 bg-white/6 px-5 py-2.5 text-sm font-semibold text-[#e8eaf0] transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+              class="rounded-xl border border-white/5 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/70 transition-all duration-200 hover:bg-white/10 hover:border-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
             >
               {{ state.isLoadingMorePosts() ? 'Cargando...' : 'Cargar mas publicaciones' }}
             </button>
@@ -296,26 +312,26 @@
 
       @if (state.isAnonymousPreview() && showAnonymousLock()) {
         <div class="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-3 pb-4 sm:px-4 lg:px-5">
-          <section class="pointer-events-auto relative w-full max-w-4xl overflow-hidden rounded-3xl border border-[#df3432]/22 bg-[#0c0e14]/96 p-6 shadow-[0_24px_60px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:p-7">
-            <div class="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[#0a0b10]/0 via-[#0a0b10]/70 to-[#0c0e14]"></div>
+          <section class="pointer-events-auto relative w-full max-w-4xl overflow-hidden rounded-2xl border border-[#df3432]/15 bg-black/50 p-6 shadow-[0_24px_60px_rgba(0,0,0,0.5)] backdrop-blur-xl sm:p-7">
+            <div class="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[#0a0b0f]/0 via-[#0a0b0f]/70 to-[#0c0e14]"></div>
             <div class="relative">
-              <p class="text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#f0b9b1]">Vista parcial</p>
-              <h3 class="mt-3 text-xl font-semibold tracking-tight text-[#f4f5f7]">Inicia sesión para seguir viendo e interactuar</h3>
-              <p class="mt-2 max-w-2xl text-sm leading-6 text-[#c7ccd6]">
+              <p class="text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#df3432]/70">Vista parcial</p>
+              <h3 class="mt-3 text-xl font-semibold tracking-tight text-white">Inicia sesión para seguir viendo e interactuar</h3>
+              <p class="mt-2 max-w-2xl text-sm leading-6 text-white/50">
                 Este perfil se muestra parcialmente en modo anónimo. Para ver más publicaciones, seguir este perfil y participar en la comunidad, inicia sesión o crea una cuenta.
               </p>
               <div class="mt-5 flex flex-wrap gap-3">
                 <button
                   type="button"
                   (click)="nav('/login')"
-                  class="rounded-full bg-[#df3432] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#ee4542]"
+                  class="rounded-xl bg-[#df3432] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:shadow-[0_0_15px_rgba(223,52,50,0.35)]"
                 >
                   Iniciar sesión
                 </button>
                 <button
                   type="button"
                   (click)="nav('/register')"
-                  class="rounded-full border border-white/14 bg-white/6 px-5 py-2.5 text-sm font-semibold text-[#e8eaf0] transition-colors hover:bg-white/10"
+                  class="rounded-xl border border-white/5 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/70 transition-all duration-200 hover:bg-white/10 hover:border-white/10"
                 >
                   Crear cuenta
                 </button>

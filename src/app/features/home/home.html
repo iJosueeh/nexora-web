@@ -1,20 +1,29 @@
 <app-hero></app-hero>
+
+<app-trust-badges></app-trust-badges>
+
 <app-collaboration></app-collaboration>
+
+@defer (on viewport) {
+  <app-feature-cards></app-feature-cards>
+} @placeholder {
+  <div class="h-80 bg-[#0a0b0f]"></div>
+}
 
 @defer (on viewport) {
   <app-stats></app-stats>
 } @placeholder {
-  <div class="h-64 bg-[#0d0d0d]"></div>
+  <div class="h-64 bg-[#0a0b0f]"></div>
 }
 
 @defer (on viewport) {
   <app-testimonials></app-testimonials>
 } @placeholder {
-  <div class="h-96 bg-[#0d0d0d]"></div>
+  <div class="h-96 bg-[#0a0b0f]"></div>
 }
 
 @defer (on viewport) {
   <app-cta-banner></app-cta-banner>
 } @placeholder {
-  <div class="h-96 bg-[#0d0d0d]"></div>
+  <div class="h-64 bg-[#0a0b0f]"></div>
 }

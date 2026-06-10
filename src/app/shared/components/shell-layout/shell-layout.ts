@@ -8,6 +8,7 @@ export type ShellLayoutMode = 'feed' | 'profile';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './shell-layout.html',
+  styleUrl: './shell-layout.css',
 })
 export class ShellLayout {
   @Input() showLeft = true;

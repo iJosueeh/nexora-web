@@ -9,6 +9,7 @@ import { AuthSession } from '../../../../core/services/auth-session';
 import { FeedInteractionService } from '../../services/feed-interaction.service';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
+import { SanitizeHtmlService } from '../../../../shared/services/sanitize-html.service';
 import { getRelativeDate, canDeletePost } from './post-card.helpers';
 
 @Component({
@@ -30,6 +31,7 @@ export class PostCardComponent implements OnInit {
 	private readonly toastr = inject(ToastrService);
 	private readonly destroyRef = inject(DestroyRef);
 	public readonly router = inject(Router);
+	private readonly sanitizeService = inject(SanitizeHtmlService);
 
 	readonly post = input.required<Post>();
 	readonly deleted = output<string>();
@@ -43,6 +45,7 @@ export class PostCardComponent implements OnInit {
 	readonly canDelete = computed(() => canDeletePost(this.authSession.user(), this.post()));
 	readonly isOfficial = computed(() => this.post().is_official === true);
 	readonly relativeDate = computed(() => getRelativeDate(this.post()));
+	readonly sanitizedContent = computed(() => this.sanitizeService.sanitize(this.post().content || ''));
 
 	ngOnInit(): void {
 		this.isLiked.set(this.post().isLiked ?? false);

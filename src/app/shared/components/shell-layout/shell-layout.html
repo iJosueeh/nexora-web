@@ -8,7 +8,7 @@
 >
   <div class="nexora-shell-grid">
     @if (showLeft) {
-      <div class="nexora-shell-side hidden lg:block">
+      <div class="nexora-shell-side">
         <ng-content select="[shell-left]"></ng-content>
       </div>
     }
@@ -18,7 +18,7 @@
     </div>
 
     @if (showRight) {
-      <div class="nexora-shell-side hidden lg:block">
+      <div class="nexora-shell-side">
         <ng-content select="[shell-right]"></ng-content>
       </div>
     }

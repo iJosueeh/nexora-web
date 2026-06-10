@@ -2,7 +2,7 @@
   <button
     type="button"
     (click)="toggleMenu($event)"
-    class="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/8 text-white transition-colors hover:border-white/35 hover:bg-white/14"
+    class="flex h-11 w-11 items-center justify-center rounded-xl border border-white/5 bg-white/5 text-white/70 transition-all duration-200 hover:border-white/10 hover:bg-white/10 hover:text-white"
     aria-label="Abrir menu del perfil"
   >
     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" aria-hidden="true">
@@ -14,7 +14,7 @@
 
   @if (isOpen()) {
     <div
-      class="fixed inset-x-3 bottom-4 z-[90] max-h-[70vh] overflow-y-auto rounded-2xl border border-white/12 bg-[#10131b] p-1.5 shadow-[0_18px_40px_rgba(0,0,0,0.45)] sm:absolute sm:inset-x-auto sm:bottom-auto sm:right-0 sm:top-[calc(100%+0.5rem)] sm:w-56"
+      class="fixed inset-x-3 bottom-4 z-[90] max-h-[70vh] overflow-y-auto rounded-2xl border border-white/5 bg-black/50 p-1.5 shadow-[0_18px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl sm:absolute sm:inset-x-auto sm:bottom-auto sm:right-0 sm:top-[calc(100%+0.5rem)] sm:w-56"
       (click)="$event.stopPropagation()"
       (keydown)="$event.stopPropagation()"
       tabindex="-1"
@@ -23,11 +23,11 @@
       <button
         type="button"
         (click)="goToHome($event)"
-        class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm transition-colors"
+        class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm transition-colors duration-200"
         [class.bg-white/10]="isMenuRoute('/home')"
         [class.text-white]="isMenuRoute('/home')"
-        [class.text-[#d9dde6]]="!isMenuRoute('/home')"
-        [class.hover:bg-white/8]="!isMenuRoute('/home')"
+        [class.text-white/60]="!isMenuRoute('/home')"
+        [class.hover:bg-white/5]="!isMenuRoute('/home')"
       >
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
         <span>Inicio</span>
@@ -36,11 +36,11 @@
       <button
         type="button"
         (click)="goToExplore($event)"
-        class="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm transition-colors"
+        class="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm transition-colors duration-200"
         [class.bg-white/10]="isMenuRoute('/feed/explore')"
         [class.text-white]="isMenuRoute('/feed/explore')"
-        [class.text-[#d9dde6]]="!isMenuRoute('/feed/explore')"
-        [class.hover:bg-white/8]="!isMenuRoute('/feed/explore')"
+        [class.text-white/60]="!isMenuRoute('/feed/explore')"
+        [class.hover:bg-white/5]="!isMenuRoute('/feed/explore')"
       >
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
         <span>Explorar</span>
@@ -49,23 +49,23 @@
       <button
         type="button"
         (click)="goToNotifications($event)"
-        class="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm transition-colors"
+        class="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm transition-colors duration-200"
         [class.bg-white/10]="isMenuRoute('/feed/notifications')"
         [class.text-white]="isMenuRoute('/feed/notifications')"
-        [class.text-[#d9dde6]]="!isMenuRoute('/feed/notifications')"
-        [class.hover:bg-white/8]="!isMenuRoute('/feed/notifications')"
+        [class.text-white/60]="!isMenuRoute('/feed/notifications')"
+        [class.hover:bg-white/5]="!isMenuRoute('/feed/notifications')"
       >
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         <span>Notificaciones</span>
       </button>
 
-      <div class="my-1.5 h-px bg-white/12"></div>
+      <div class="my-1.5 h-px bg-white/5"></div>
 
       @if (isOwnProfile()) {
         <button
           type="button"
           (click)="goToSettings($event)"
-          class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-[#d9dde6] transition-colors hover:bg-white/8"
+          class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-white/60 transition-colors duration-200 hover:bg-white/5"
         >
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
           <span>Editar perfil</span>
@@ -75,18 +75,18 @@
       <button
         type="button"
         (click)="onCopyLink($event)"
-        class="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-[#d9dde6] transition-colors hover:bg-white/8"
+        class="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-white/60 transition-colors duration-200 hover:bg-white/5"
       >
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
         <span>Copiar enlace</span>
       </button>
 
-      <div class="my-1.5 h-px bg-white/12"></div>
+      <div class="my-1.5 h-px bg-white/5"></div>
 
       <button
         type="button"
         (click)="onSignOut($event)"
-        class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-[#f87171] transition-colors hover:bg-red-500/10"
+        class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-red-400/70 transition-colors duration-200 hover:bg-red-500/10 hover:text-red-400"
       >
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1-2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
         <span>Cerrar sesión</span>

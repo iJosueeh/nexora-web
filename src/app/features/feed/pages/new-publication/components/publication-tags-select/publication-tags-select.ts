@@ -11,7 +11,7 @@ import { FeedTagsService } from '../../../../services/feed-tags.service';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="flex flex-col gap-2">
-      <label for="tags-search" class="text-xs font-semibold uppercase tracking-[0.08em] text-[#8b7f8a]">
+      <label for="tags-search" class="text-xs font-semibold uppercase tracking-[0.08em] text-white/40">
         Etiquetas
       </label>
 
@@ -24,18 +24,18 @@ import { FeedTagsService } from '../../../../services/feed-tags.service';
           (focus)="openDropdown()"
           (blur)="closeDropdown()"
           placeholder="Busca o añade etiquetas..."
-          class="w-full rounded-lg border border-[rgba(255,70,82,0.2)] bg-transparent px-3 py-2 text-sm text-[var(--brand-text)] placeholder:text-[#6e6270] focus:border-[#ff4652] focus:outline-none"
+          class="w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[#df3432] focus:outline-none"
         />
 
         @if (isOpen() && filteredTags().length > 0) {
           <div
-            class="absolute top-full left-0 right-0 z-10 mt-1 max-h-40 overflow-y-auto rounded-lg border border-[rgba(255,70,82,0.2)] bg-[var(--brand-surface)] shadow-lg"
+            class="absolute top-full left-0 right-0 z-10 mt-1 max-h-40 overflow-y-auto rounded-lg border border-white/10 bg-white/5 backdrop-blur-xl shadow-lg"
           >
             @for (tag of filteredTags(); track tag) {
               <button
                 type="button"
                 (click)="selectTag(tag)"
-                class="w-full text-left px-3 py-2 text-sm text-[var(--brand-text)] hover:bg-[rgba(255,70,82,0.1)] transition-colors"
+                class="w-full text-left px-3 py-2 text-sm text-white/70 hover:bg-[#df3432]/15 hover:text-[#df3432] transition-colors"
               >
                 {{ tag }}
               </button>
@@ -47,12 +47,12 @@ import { FeedTagsService } from '../../../../services/feed-tags.service';
       @if (selectedTags().length > 0) {
         <div class="flex flex-wrap gap-2">
           @for (tag of selectedTags(); track tag) {
-            <div class="inline-flex items-center gap-2 rounded-full bg-[rgba(255,70,82,0.15)] px-3 py-1">
-              <span class="text-xs font-medium text-[#ff4652]">{{ tag }}</span>
+            <div class="inline-flex items-center gap-2 rounded-full bg-[#df3432]/15 px-3 py-1">
+              <span class="text-xs font-medium text-[#df3432]">{{ tag }}</span>
               <button
                 type="button"
                 (click)="removeTag(tag)"
-                class="text-[#ff4652] hover:text-[#d71f2c] transition-colors"
+                class="text-[#df3432] hover:text-[#b82a29] transition-colors"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

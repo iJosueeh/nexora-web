@@ -1,16 +1,16 @@
-<aside class="sticky top-0 flex h-full w-full flex-col overflow-hidden rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-black)]" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
-  <div class="border-b border-[var(--brand-border)] p-4">
+<aside class="sticky top-0 flex h-full w-full flex-col overflow-hidden rounded-2xl border border-white/5 bg-[#0d0e12]" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+  <div class="border-b border-white/5 p-4">
     <a routerLink="/feed" class="mb-4 flex items-center gap-2.5">
-      <span class="text-[0.95rem] font-bold tracking-tight text-[#f3f4f6]">Nexora</span>
+      <span class="text-[0.95rem] font-bold tracking-tight text-white">Nexora</span>
     </a>
-    <div class="flex items-center gap-2 rounded-xl border border-[var(--brand-border)] bg-[#0d1016] px-3 py-2.5 transition-colors duration-200 hover:border-white/20">
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#7c8492]"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-      <span class="text-[0.65rem] text-[#7c8492]">Buscar debates académicos...</span>
+    <div class="flex items-center gap-2 rounded-full border border-white/5 bg-white/[0.03] px-3 py-2.5 transition-all duration-200 hover:border-white/10 hover:bg-white/[0.05] focus-within:border-white/15 focus-within:bg-white/[0.05]">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/30 shrink-0"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+      <span class="text-[0.65rem] text-white/30">Buscar debates académicos...</span>
     </div>
 
-    <div class="mt-5 border-l-2 border-[var(--brand-red)]/70 pl-2.5">
-      <p class="text-[0.62rem] font-bold uppercase tracking-[0.12em] text-[#f2f4f8]">Entérate De Las Últimas Novedades</p>
-      <p class="mt-1 text-[0.56rem] uppercase tracking-widest text-[#7d8490]">Explora, descubre y comenta</p>
+    <div class="mt-5 border-l-2 border-[#df3432]/70 pl-2.5">
+      <p class="text-[0.62rem] font-bold uppercase tracking-[0.12em] text-white">Entérate De Las Últimas Novedades</p>
+      <p class="mt-1 text-[0.56rem] uppercase tracking-widest text-white/40">Explora, descubre y comenta</p>
     </div>
   </div>
 
@@ -20,17 +20,17 @@
         <a
           routerLink="/feed"
           class="
-            relative flex items-center gap-4 rounded-full px-4 py-3 text-sm font-normal
-            text-[#838383] transition-all duration-150
-            hover:bg-[#1a1a1a] hover:text-[#ffffff]
+            relative flex items-center gap-4 rounded-lg px-4 py-3 text-sm font-normal
+            text-white/50 transition-all duration-200
+            hover:bg-white/10 hover:text-white
           "
-          [class.bg-[#121212]]="routerLinkActive.isActive"
-          [class.text-[#ffffff]]="routerLinkActive.isActive"
+          [class.bg-white/10]="routerLinkActive.isActive"
+          [class.text-white]="routerLinkActive.isActive"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
           <span class="flex-1">Inicio</span>
           @if (routerLinkActive.isActive) {
-            <div class="absolute right-2 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--brand-red)]"></div>
+            <div class="absolute right-2 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[#df3432]"></div>
           }
         </a>
       </li>
@@ -39,17 +39,17 @@
         <a
           routerLink="/feed/explore"
           class="
-            relative flex items-center gap-4 rounded-full px-4 py-3 text-sm font-normal
-            text-[#838383] transition-all duration-150
-            hover:bg-[#1a1a1a] hover:text-[#ffffff]
+            relative flex items-center gap-4 rounded-lg px-4 py-3 text-sm font-normal
+            text-white/50 transition-all duration-200
+            hover:bg-white/10 hover:text-white
           "
-          [class.bg-[#121212]]="routerLinkActive1.isActive"
-          [class.text-[#ffffff]]="routerLinkActive1.isActive"
+          [class.bg-white/10]="routerLinkActive1.isActive"
+          [class.text-white]="routerLinkActive1.isActive"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
           <span class="flex-1">Exploración</span>
           @if (routerLinkActive1.isActive) {
-            <div class="absolute right-2 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--brand-red)]"></div>
+            <div class="absolute right-2 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[#df3432]"></div>
           }
         </a>
       </li>
@@ -58,22 +58,22 @@
         <a
           routerLink="/feed/notifications"
           class="
-            relative flex items-center gap-4 rounded-full px-4 py-3 text-sm font-normal
-            text-[#838383] transition-all duration-150
-            hover:bg-[#1a1a1a] hover:text-[#ffffff]
+            relative flex items-center gap-4 rounded-lg px-4 py-3 text-sm font-normal
+            text-white/50 transition-all duration-200
+            hover:bg-white/10 hover:text-white
           "
-          [class.bg-[#121212]]="routerLinkActive2.isActive"
-          [class.text-[#ffffff]]="routerLinkActive2.isActive"
+          [class.bg-white/10]="routerLinkActive2.isActive"
+          [class.text-white]="routerLinkActive2.isActive"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
           <span class="flex-1">Notificación</span>
           @if (unreadCount() > 0) {
-            <span class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--brand-red)] px-1.5 text-xs font-bold text-white">
+            <span class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#df3432] px-1.5 text-xs font-bold text-white">
               {{ unreadCount() }}
             </span>
           }
           @if (routerLinkActive2.isActive) {
-            <div class="absolute right-2 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--brand-red)]"></div>
+            <div class="absolute right-2 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[#df3432]"></div>
           }
         </a>
       </li>
@@ -83,49 +83,51 @@
           [routerLink]="profileLink()"
           (click)="goToProfile($event)"
           class="
-            relative flex items-center gap-4 rounded-full px-4 py-3 text-sm font-normal
-            text-[#838383] transition-all duration-150
-            hover:bg-[#1a1a1a] hover:text-[#ffffff]
+            relative flex items-center gap-4 rounded-lg px-4 py-3 text-sm font-normal
+            text-white/50 transition-all duration-200
+            hover:bg-white/10 hover:text-white
           "
-          [class.bg-[#121212]]="routerLinkActive3.isActive"
-          [class.text-[#ffffff]]="routerLinkActive3.isActive"
+          [class.bg-white/10]="routerLinkActive3.isActive"
+          [class.text-white]="routerLinkActive3.isActive"
         >
           <div class="h-5 w-5 shrink-0 overflow-hidden rounded-full border border-white/10">
             <img [src]="userAvatar()" alt="Mi perfil" class="h-full w-full object-cover" />
           </div>
           <span class="flex-1">Perfil</span>
           @if (routerLinkActive3.isActive) {
-            <div class="absolute right-2 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--brand-red)]"></div>
+            <div class="absolute right-2 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[#df3432]"></div>
           }
         </a>
       </li>
     </ul>
   </nav>
 
-  <div class="border-t border-[var(--brand-border)] p-4">
+  <div class="border-t border-white/5 p-4">
     <button 
       type="button"
       (click)="goToPublication($event)"
       class="
-        w-full rounded-xl bg-[var(--brand-red)] py-3 text-sm font-bold tracking-wide text-white
-        transition-all duration-150 hover:bg-[#f13a43] active:scale-[0.99]
+        w-full rounded-xl bg-gradient-to-br from-[#df3432] to-[#b82829] py-3 text-sm font-bold tracking-wide text-white
+        shadow-[0_0_15px_rgba(223,52,50,0.3)] transition-all duration-200
+        hover:shadow-[0_0_20px_rgba(223,52,50,0.45)] hover:brightness-110
+        active:scale-[0.97]
       "
     >
       Postear
     </button>
 
-    <div class="mt-5 space-y-3 border-t border-[var(--brand-border)] pt-4">
-      <a routerLink="/settings" class="flex items-center gap-2 text-[0.7rem] text-[#7f8793] transition-colors hover:text-[#d3d8e2]">
+    <div class="mt-5 space-y-3 border-t border-white/5 pt-4">
+      <a routerLink="/settings" class="flex items-center gap-2 text-[0.7rem] text-white/40 transition-colors hover:text-white/70">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01A1.65 1.65 0 0 0 9.91 3.1V3a2 2 0 1 1 4 0v.09c0 .67.39 1.27 1 1.51.58.22 1.24.1 1.71-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06c-.47.47-.59 1.13-.33 1.71.24.61.84 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.67 0-1.27.39-1.51 1z"></path></svg>
         Configuración
       </a>
 
-      <a routerLink="/ayuda" class="mt-4 flex flex-col gap-1.5 rounded-xl border border-[var(--brand-red)]/20 bg-[var(--brand-red)]/5 p-3.5 transition-all duration-200 hover:border-[var(--brand-red)]/40 hover:bg-[var(--brand-red)]/10">
+      <a routerLink="/ayuda" class="mt-4 flex flex-col gap-1.5 rounded-xl border border-[#df3432]/20 bg-[#df3432]/5 p-3.5 transition-all duration-200 hover:border-[#df3432]/40 hover:bg-[#df3432]/10">
         <div class="flex items-center gap-2 text-[0.75rem] font-bold text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--brand-red)]"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 1 1 5.82 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#df3432]"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 1 1 5.82 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
           Centro de Ayuda
         </div>
-        <p class="text-[0.62rem] leading-relaxed text-[#8f95a3]">Resuelve dudas, conoce las normas o reporta problemas técnicos.</p>
+        <p class="text-[0.62rem] leading-relaxed text-white/50">Resuelve dudas, conoce las normas o reporta problemas técnicos.</p>
       </a>
     </div>
   </div>

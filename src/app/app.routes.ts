@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { NotFound } from './features/not-found/not-found';
+import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
     {
@@ -37,16 +38,18 @@ export const routes: Routes = [
             },
             {
                 path: 'feed/notifications',
-                loadComponent: () => import('./features/feed/pages/notifications-page/notifications-page').then(m => m.NotificationsPage)
+                loadComponent: () => import('./features/feed/pages/notifications-page/notifications-page').then(m => m.NotificationsPage),
+                canActivate: [authGuard]
             },
             {
                 path: 'feed/explore',
-                loadComponent: () => import('./features/feed/pages/explore/explore-page').then(m => m.ExplorePage)
+                loadComponent: () => import('./features/feed/pages/explore/explore-page').then(m => m.ExplorePage),
+                canActivate: [authGuard]
             },
             {
                 path: 'feed',
-                loadComponent: () => import('./features/feed/pages/feed-page/feed-page').then(m => m.FeedPage)
-                // canActivate: [authGuard]  // Deshabilitado para testing
+                loadComponent: () => import('./features/feed/pages/feed-page/feed-page').then(m => m.FeedPage),
+                canActivate: [authGuard]
             },
             {
                 path: 'feed/post/:id',
@@ -54,15 +57,21 @@ export const routes: Routes = [
             },
             {
                 path: 'publicar',
-                loadComponent: () => import('./features/feed/pages/new-publication/new-publication-page').then(m => m.NewPublicationPage)
+                loadComponent: () => import('./features/feed/pages/new-publication/new-publication-page').then(m => m.NewPublicationPage),
+                canActivate: [authGuard]
             },
             {
                 path: 'ayuda',
                 loadComponent: () => import('./features/help/help-page').then(m => m.HelpPage)
             },
             {
+                path: 'sobre-nosotros',
+                loadComponent: () => import('./features/home/pages/sobre-nosotros/sobre-nosotros').then(m => m.SobreNosotrosPage)
+            },
+            {
                 path: 'settings',
-                loadComponent: () => import('./features/profile/profile-settings/profile-settings').then(m => m.ProfileSettingsPage)
+                loadComponent: () => import('./features/profile/profile-settings/profile-settings').then(m => m.ProfileSettingsPage),
+                canActivate: [authGuard]
             },
             {
                 path: 'profile',
@@ -98,6 +107,18 @@ export const routes: Routes = [
             {
                 path: 'posts',
                 loadComponent: () => import('./features/management/pages/posts/posts').then(m => m.PostsView),
+                canActivate: [() => import('./core/guards/role-guard').then(m => m.roleGuard)],
+                data: { allowedRoles: ['ROLE_ADMIN', 'ROLE_OFFICIAL'] }
+            },
+            {
+                path: 'maintenance',
+                loadComponent: () => import('./features/management/pages/maintenance/maintenance').then(m => m.MaintenancePage),
+                canActivate: [() => import('./core/guards/role-guard').then(m => m.roleGuard)],
+                data: { allowedRoles: ['ROLE_ADMIN'] }
+            },
+            {
+                path: 'events',
+                loadComponent: () => import('./features/management/pages/events/events').then(m => m.EventsView),
                 canActivate: [() => import('./core/guards/role-guard').then(m => m.roleGuard)],
                 data: { allowedRoles: ['ROLE_ADMIN', 'ROLE_OFFICIAL'] }
             }

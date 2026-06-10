@@ -24,3 +24,8 @@
 .author-name-link:hover {
   color: #ffffff;
 }
+
+.post-content {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}

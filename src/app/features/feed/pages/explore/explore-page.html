@@ -4,110 +4,211 @@
   </div>
 
   <div shell-main>
-    <main class="space-y-6 pb-12">
-      <!-- Header & Tabs -->
-      <section class="sticky top-0 z-10 border-b border-[var(--brand-border)] bg-[var(--brand-black)]/80 backdrop-blur-md">
-        <div class="px-4 py-4">
-          <h1 class="text-xl font-bold tracking-tight text-[var(--brand-text)]">Explorar</h1>
+    <main class="space-y-8 pb-12 font-sans">
+      <!-- Header & Tabs Mejorados -->
+      <section class="sticky top-0 z-20 border-b border-white/5 bg-[#070a12]/80 backdrop-blur-xl">
+        <div class="px-6 py-5">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 class="text-3xl font-black tracking-tight text-white">Explorar <span class="text-[#df3432]">Comunidad</span></h1>
+              <p class="mt-1 text-sm text-zinc-500">Descubre las tendencias y conversaciones más relevantes.</p>
+            </div>
+          </div>
         </div>
-        <div class="flex px-4">
-          <button 
-            (click)="setTab('todos')"
-            class="flex-1 border-b-2 py-3 text-sm font-semibold transition-colors"
-            [class.border-[var(--brand-red)]]="activeTab() === 'todos'"
-            [class.text-[var(--brand-text)]]="activeTab() === 'todos'"
-            [class.border-transparent]="activeTab() !== 'todos'"
-            [class.text-[var(--brand-muted)]]="activeTab() !== 'todos'"
-          >
-            Para ti
-          </button>
-          <button 
-            (click)="setTab('multimedia')"
-            class="flex-1 border-b-2 py-3 text-sm font-semibold transition-colors"
-            [class.border-[var(--brand-red)]]="activeTab() === 'multimedia'"
-            [class.text-[var(--brand-text)]]="activeTab() === 'multimedia'"
-            [class.border-transparent]="activeTab() !== 'multimedia'"
-            [class.text-[var(--brand-muted)]]="activeTab() !== 'multimedia'"
-          >
-            Multimedia
-          </button>
-          <button 
-            (click)="setTab('articulos')"
-            class="flex-1 border-b-2 py-3 text-sm font-semibold transition-colors"
-            [class.border-[var(--brand-red)]]="activeTab() === 'articulos'"
-            [class.text-[var(--brand-text)]]="activeTab() === 'articulos'"
-            [class.border-transparent]="activeTab() !== 'articulos'"
-            [class.text-[var(--brand-muted)]]="activeTab() !== 'articulos'"
-          >
-            Artículos
-          </button>
+        
+         <!-- Tabs Pills Flotantes -->
+        <div class="px-6 pb-4">
+          <div class="flex flex-nowrap gap-1 overflow-x-auto rounded-full bg-white/5 p-1 scrollbar-hide">
+            <button 
+              (click)="setTab('todos')"
+              class="relative flex-shrink-0 whitespace-nowrap rounded-full px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold transition-all duration-300"
+              [class.bg-white/10]="activeTab() === 'todos'"
+              [class.text-white]="activeTab() === 'todos'"
+              [class.text-zinc-400]="activeTab() !== 'todos'"
+              [class.hover:text-zinc-300]="activeTab() !== 'todos'"
+            >
+              <span class="relative z-10">Para ti</span>
+              @if (activeTab() === 'todos') {
+                <span class="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-3/5 bg-[#df3432] rounded-full"></span>
+              }
+            </button>
+            <button 
+              (click)="setTab('multimedia')"
+              class="relative flex-shrink-0 whitespace-nowrap rounded-full px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold transition-all duration-300"
+              [class.bg-white/10]="activeTab() === 'multimedia'"
+              [class.text-white]="activeTab() === 'multimedia'"
+              [class.text-zinc-400]="activeTab() !== 'multimedia'"
+              [class.hover:text-zinc-300]="activeTab() !== 'multimedia'"
+            >
+              <span class="relative z-10">Multimedia</span>
+              @if (activeTab() === 'multimedia') {
+                <span class="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-3/5 bg-[#df3432] rounded-full"></span>
+              }
+            </button>
+            <button 
+              (click)="setTab('articulos')"
+              class="relative flex-shrink-0 whitespace-nowrap rounded-full px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold transition-all duration-300"
+              [class.bg-white/10]="activeTab() === 'articulos'"
+              [class.text-white]="activeTab() === 'articulos'"
+              [class.text-zinc-400]="activeTab() !== 'articulos'"
+              [class.hover:text-zinc-300]="activeTab() !== 'articulos'"
+            >
+              <span class="relative z-10">Artículos</span>
+              @if (activeTab() === 'articulos') {
+                <span class="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-3/5 bg-[#df3432] rounded-full"></span>
+              }
+            </button>
+          </div>
         </div>
       </section>
 
-      <!-- Trends Section -->
-      <section class="px-4">
-        <div class="rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] overflow-hidden">
-          <h2 class="p-4 text-lg font-bold border-b border-[var(--brand-border)]">Tendencias para ti</h2>
-          <div class="divide-y divide-[var(--brand-border)]">
-            @for (trend of (showAllTrends() ? trends() : trends().slice(0, 5)); track trend.title) {
+      <!-- Hero: Debate del Día -->
+      @if (featuredPost()) {
+        <section class="px-6">
+          <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#0d0e12] via-[#13141c] to-[#0d0e12] p-6">
+            <div class="absolute inset-0 bg-gradient-to-br from-[#df3432]/5 via-transparent to-transparent"></div>
+            <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#df3432]/10 blur-3xl"></div>
+            
+            <div class="relative">
+              <div class="inline-flex items-center gap-2 rounded-full border border-[#df3432]/20 bg-[#df3432]/10 px-4 py-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4 w-4 text-[#df3432]">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                </svg>
+                <span class="text-[0.65rem] font-bold uppercase tracking-widest text-[#df3432]">Debate del Día</span>
+              </div>
+              
+              <h2 class="mt-4 text-2xl font-bold leading-tight text-white break-words">{{ featuredPost()!.title || 'Conversación destacada' }}</h2>
+              <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-zinc-400">{{ featuredPost()!.content }}</p>
+              
+              <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex items-center gap-3">
+                  <img [src]="featuredPost()!.author.avatar" [alt]="featuredPost()!.author.fullName" class="h-10 w-10 flex-shrink-0 rounded-full border-2 border-white/20 object-cover" />
+                  <div>
+                    <span class="block text-sm font-semibold text-white">{{ featuredPost()!.author.fullName }}</span>
+                    <span class="block text-xs text-zinc-500">{{ featuredPost()!.author.role }}</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-4 text-xs text-zinc-500">
+                  <span class="flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4 w-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                    {{ featuredPost()!.likesCount }} interacciones
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- Bento Grid: Tendencias -->
+      <section class="px-6">
+        <div class="mb-5 flex items-center justify-between">
+          <h3 class="text-lg font-bold text-white">Tendencias</h3>
+        </div>
+        
+        @if (loading()) {
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            @for (i of [1,2,3,4,5,6]; track i) {
+              <div class="h-32 rounded-2xl bg-white/5 animate-pulse" [class.col-span-2]="i === 1" [class.row-span-2]="i === 1"></div>
+            }
+          </div>
+        } @else if (trends().length > 0) {
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <!-- Principal (2x2) -->
+            @if (trends()[0]) {
+              <div 
+                (click)="selectTrend(trends()[0])"
+                class="group col-span-2 row-span-2 cursor-pointer rounded-2xl border border-[#df3432]/20 bg-gradient-to-br from-[#df3432]/10 to-white/5 p-5 backdrop-blur-md transition-all duration-300 hover:border-[#df3432]/40 hover:shadow-lg hover:shadow-[#df3432]/5"
+              >
+                <span class="text-[0.55rem] font-bold uppercase tracking-widest text-[#df3432]/70">{{ trends()[0].category }}</span>
+                <h4 class="mt-2 text-xl font-bold leading-snug text-white group-hover:text-[#df3432] transition-colors break-words">{{ trends()[0].title }}</h4>
+                <p class="mt-3 text-[0.65rem] uppercase tracking-wider text-white/40">{{ trends()[0].conversations }}</p>
+              </div>
+            }
+            
+            <!-- Secondary items -->
+            @for (trend of trends().slice(1, 5); track trend.title) {
               <div 
                 (click)="selectTrend(trend)"
-                class="p-4 hover:bg-white/5 cursor-pointer transition-colors"
+                class="group cursor-pointer rounded-2xl border border-white/5 bg-white/3 p-4 backdrop-blur-md transition-all duration-300 hover:border-white/15 hover:bg-white/5"
               >
-                <p class="text-[0.65rem] text-[var(--brand-muted)] uppercase tracking-wider">{{ trend.category }}</p>
-                <p class="mt-0.5 font-bold text-[var(--brand-text)]">{{ trend.title }}</p>
-                <p class="mt-1 text-xs text-[var(--brand-muted)]">{{ trend.conversations }}</p>
+                <span class="text-[0.55rem] font-bold uppercase tracking-widest text-white/40">{{ trend.category }}</span>
+                <h4 class="mt-1.5 text-sm font-bold leading-snug text-white group-hover:text-[#df3432] transition-colors truncate">{{ trend.title }}</h4>
+                <p class="mt-2 text-[0.6rem] uppercase tracking-wider text-white/30">{{ trend.conversations }}</p>
+              </div>
+            }
+            
+            <!-- Bottom row -->
+            @for (trend of trends().slice(5, 7); track trend.title) {
+              <div 
+                (click)="selectTrend(trend)"
+                class="group cursor-pointer rounded-2xl border border-white/5 bg-white/3 p-4 backdrop-blur-md transition-all duration-300 hover:border-white/15 hover:bg-white/5"
+              >
+                <span class="text-[0.55rem] font-bold uppercase tracking-widest text-white/40">{{ trend.category }}</span>
+                <h4 class="mt-1.5 text-sm font-bold leading-snug text-white group-hover:text-[#df3432] transition-colors truncate">{{ trend.title }}</h4>
+                <p class="mt-2 text-[0.6rem] uppercase tracking-wider text-white/30">{{ trend.conversations }}</p>
               </div>
             }
           </div>
-          @if (trends().length > 5) {
+          
+          @if (trends().length > 7) {
             <button 
               (click)="toggleTrends()"
-              class="w-full p-4 text-left text-sm text-[var(--brand-red)] hover:bg-white/5 transition-colors"
+              class="mt-4 w-full rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-zinc-400 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
             >
-              {{ showAllTrends() ? 'Mostrar menos' : 'Mostrar más' }}
+              {{ showAllTrends() ? 'Mostrar menos' : 'Ver más tendencias' }}
             </button>
           }
-        </div>
+        } @else {
+          <div class="rounded-2xl border border-white/5 bg-white/3 p-8 text-center">
+            <p class="text-zinc-500">No hay tendencias disponibles.</p>
+          </div>
+        }
       </section>
 
-      <!-- Suggested Users Carousel -->
-      <section class="px-4">
-        <h2 class="mb-4 text-lg font-bold">A quién seguir</h2>
-        <div class="flex gap-4 overflow-x-auto pb-4 nexora-scrollbar-hidden">
-          @for (user of suggestedUsers(); track user.id) {
-            <div class="min-w-[14rem] rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-4 text-center shrink-0">
-              <img [src]="user.avatar" [alt]="user.name" class="mx-auto h-16 w-16 rounded-full border-2 border-[var(--brand-border)] object-cover" />
-              <p class="mt-3 font-bold text-sm truncate">{{ user.name }}</p>
-              <p class="text-[0.65rem] text-[var(--brand-muted)] truncate">{{ user.role }}</p>
-              <button class="mt-4 w-full rounded-full bg-[var(--brand-text)] py-1.5 text-xs font-bold text-[var(--brand-black)] hover:bg-opacity-90">
-                Seguir
-              </button>
-            </div>
-          }
-        </div>
+      <!-- Carrusel: A quién seguir (Glassmorphic) -->
+      <section class="px-6">
+        <h3 class="mb-5 text-lg font-bold text-white">A quién seguir</h3>
+        
+        @if (suggestedUsers().length > 0) {
+          <div class="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory nexora-scrollbar-hidden">
+            @for (user of suggestedUsers(); track user.id) {
+              <app-user-suggest-card 
+                [user]="user" 
+                (followToggle)="onToggleFollow($event)"
+              ></app-user-suggest-card>
+            }
+          </div>
+        } @else {
+          <div class="rounded-2xl border border-white/5 bg-white/3 p-8 text-center">
+            <p class="text-zinc-500">No hay perfiles para sugerir en este momento.</p>
+          </div>
+        }
       </section>
 
-      <!-- Related Posts -->
-      <section class="space-y-4 px-4">
-        <h2 class="text-lg font-bold">
-          {{ selectedTrend() ? 'Resultados para ' + selectedTrend() : 'Publicaciones destacadas' }}
-        </h2>
+      <!-- Publicaciones Destacadas -->
+      <section class="space-y-4 px-6">
+        <h3 class="text-lg font-bold text-white">
+          <span class="break-words">{{ selectedTrend() ? 'Resultados para #' + selectedTrend() : 'Publicaciones' }}</span>
+        </h3>
         
         @if (loading()) {
           <div class="space-y-4">
             @for (i of [1,2,3]; track i) {
-              <div class="h-64 rounded-2xl bg-white/5 animate-pulse"></div>
+              <div class="h-48 rounded-2xl bg-white/5 animate-pulse"></div>
             }
           </div>
         } @else {
           <div class="space-y-4">
-            @for (post of relatedPosts(); track post.id) {
+            @for (post of filteredPosts(); track post.id) {
               <app-post-card [post]="post"></app-post-card>
             }
-            @if (relatedPosts().length === 0) {
-              <div class="py-12 text-center text-[var(--brand-muted)]">
-                <p>No se encontraron publicaciones relacionadas.</p>
+            @if (filteredPosts().length === 0) {
+              <div class="rounded-2xl border border-white/5 bg-white/3 p-12 text-center">
+                <p class="text-zinc-500">No se encontraron publicaciones relacionadas.</p>
               </div>
             }
           </div>

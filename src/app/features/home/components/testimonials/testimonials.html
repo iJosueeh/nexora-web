@@ -1,37 +1,152 @@
-<section class="bg-[#1a1c22] px-4 py-16 md:px-10 md:py-20 lg:px-14 lg:py-24">
-  <!-- Header -->
-  <div class="mx-auto mb-10 flex w-full max-w-6xl flex-col items-center gap-2 text-center md:mb-12 lg:mb-14">
-    <h2 class="text-3xl font-medium text-[#f3f4f7] md:text-4xl lg:text-[2.45rem]" style="font-family: 'Inter', sans-serif">
-      Testimonios
-    </h2>
-    <p class="text-sm text-[#a1a6b2] md:text-[0.95rem]">Escucha a los académicos que definen el futuro de la UTP.</p>
-  </div>
+<section class="relative overflow-hidden bg-[#0a0b0f] px-4 py-16 md:px-10 md:py-20 lg:px-14 lg:py-24">
+  <!-- Orbs -->
+  <div class="pointer-events-none absolute -left-24 top-1/3 h-72 w-72 rounded-full bg-[#6366f1]/5 blur-[120px]"></div>
+  <div class="pointer-events-none absolute -right-24 bottom-1/4 h-64 w-64 rounded-full bg-[#df3432]/5 blur-[100px]"></div>
 
-  <!-- Cards grid -->
-  <div class="mx-auto grid w-full max-w-6xl grid-cols-1 gap-4 md:grid-cols-2 md:gap-5 lg:grid-cols-3 lg:gap-6">
-    @for (t of testimonials(); track t.id) {
-      <div
-        class="flex h-full flex-col gap-5 rounded-2xl border border-white/8 bg-[#212329] p-6 transition-colors duration-300 hover:border-white/16 md:p-7"
+  <div class="relative z-10 mx-auto w-full max-w-6xl">
+    <!-- Header -->
+    <div class="mx-auto mb-12 flex max-w-2xl flex-col items-center gap-2 text-center md:mb-14 lg:mb-16">
+      <span class="inline-block rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.28em] text-[#6366f1] backdrop-blur-sm">
+        Comunidad
+      </span>
+      <h2
+        class="mt-3 text-3xl font-bold leading-tight text-white md:text-4xl lg:text-[2.75rem]"
+        style="font-family: 'Inter', sans-serif"
       >
-        <!-- Quote -->
-        <p class="flex-1 text-sm leading-relaxed text-[#d5d8de] md:text-[0.96rem]">"{{ t.quote }}"</p>
+        Voces de la
+        <span class="bg-gradient-to-r from-[#df3432] to-[#6366f1] bg-clip-text text-transparent">comunidad</span>
+      </h2>
+      <p class="text-sm text-slate-400 md:text-[0.95rem]">Investigadores, docentes y estudiantes que construyen el futuro académico.</p>
+    </div>
 
-        <!-- Author -->
-        <div class="flex items-center gap-3 border-t border-white/10 pt-4">
-          <!-- Avatar -->
-          <div
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold"
-            [style.background]="t.avatarBg"
-            [style.color]="t.avatarColor"
-          >
-            {{ t.initials }}
+    <!-- Desktop grid (md+) -->
+    <div class="hidden gap-4 md:grid md:grid-cols-2 md:gap-5 lg:grid-cols-3 lg:gap-6">
+      @for (t of testimonials(); track t.id) {
+        <div
+          class="card-3d group relative cursor-default overflow-hidden rounded-3xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-xl transition-all duration-300"
+          [style.transform]="getTilt(t.id)"
+          (mousemove)="onTilt(t.id, $event)"
+          (mouseleave)="resetTilt(t.id)"
+        >
+          <!-- Corner glow -->
+          <div class="pointer-events-none absolute -top-20 -right-20 h-40 w-40 rounded-full bg-[#6366f1]/10 opacity-0 blur-[60px] transition-opacity duration-500 group-hover:opacity-100"></div>
+
+          <div class="flex h-full flex-col gap-4 p-6 md:p-7">
+            <!-- Quote -->
+            <div
+              class="flex-1"
+              role="button"
+              tabindex="0"
+              (click)="toggleExpand(t.id)"
+              (keyup.enter)="toggleExpand(t.id)"
+            >
+              <p class="text-sm leading-relaxed text-slate-400 transition-colors duration-300 group-hover:text-slate-300 md:text-[0.96rem]">
+                <span class="text-[#6366f1]">"</span>{{ expandedId() === t.id ? t.fullQuote : t.quote }}<span class="text-[#6366f1]">"</span>
+              </p>
+              @if (expandedId() !== t.id) {
+                <button
+                  type="button"
+                  class="mt-2 text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-[#6366f1] transition-all duration-200 hover:tracking-[0.28em]"
+                >
+                  Leer más
+                </button>
+              }
+            </div>
+
+            <!-- Author -->
+            <div class="flex items-center gap-3 border-t border-white/[0.06] pt-4">
+              <div
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+                [style.background]="t.avatarBg"
+                [style.color]="t.avatarColor"
+              >
+                {{ t.initials }}
+              </div>
+              <div class="flex flex-col">
+                <span class="text-sm font-semibold leading-tight text-[#e2e8f0]">{{ t.name }}</span>
+                <span class="text-xs leading-tight text-slate-500">{{ t.role }}</span>
+              </div>
+            </div>
           </div>
-          <div class="flex flex-col">
-            <span class="text-sm font-semibold leading-tight text-[#f2f4f6]">{{ t.name }}</span>
-            <span class="text-xs leading-tight text-[#9da3af]">{{ t.role }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Mobile carousel (< md) -->
+    <div class="md:hidden">
+      @let active = testimonials()[activeIndex()];
+      <div class="relative overflow-hidden rounded-3xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-xl">
+        <div class="flex flex-col gap-4 p-6">
+          <!-- Quote -->
+          <div
+            role="button"
+            tabindex="0"
+            (click)="toggleExpand(active.id)"
+            (keyup.enter)="toggleExpand(active.id)"
+          >
+            <p class="text-sm leading-relaxed text-slate-400">
+              <span class="text-[#6366f1]">"</span>{{ expandedId() === active.id ? active.fullQuote : active.quote }}<span class="text-[#6366f1]">"</span>
+            </p>
+            @if (expandedId() !== active.id) {
+              <button type="button" class="mt-2 text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-[#6366f1]">
+                Leer más
+              </button>
+            }
+          </div>
+
+          <!-- Author -->
+          <div class="flex items-center gap-3 border-t border-white/[0.06] pt-4">
+            <div
+              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+              [style.background]="active.avatarBg"
+              [style.color]="active.avatarColor"
+            >
+              {{ active.initials }}
+            </div>
+            <div class="flex flex-col">
+              <span class="text-sm font-semibold leading-tight text-[#e2e8f0]">{{ active.name }}</span>
+              <span class="text-xs leading-tight text-slate-500">{{ active.role }}</span>
+            </div>
           </div>
         </div>
       </div>
-    }
+
+      <!-- Carousel controls -->
+      <div class="mt-6 flex items-center justify-center gap-4">
+        <button
+          class="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-slate-400 transition-all duration-200 hover:border-white/20 hover:text-white"
+          (click)="prev()"
+          aria-label="Anterior"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-3.5 w-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+        </button>
+
+        <!-- Dots -->
+        <div class="flex gap-2">
+          @for (t of testimonials(); track t.id; let idx = $index) {
+            <button
+              class="h-1.5 rounded-full transition-all duration-300"
+              [class.w-6]="idx === activeIndex()"
+              [class.w-1.5]="idx !== activeIndex()"
+              [style.background]="idx === activeIndex() ? '#6366f1' : 'rgba(255,255,255,0.12)'"
+              (click)="setActive(idx)"
+              [attr.aria-label]="'Testimonio ' + (idx + 1)"
+            ></button>
+          }
+        </div>
+
+        <button
+          class="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-slate-400 transition-all duration-200 hover:border-white/20 hover:text-white"
+          (click)="next()"
+          aria-label="Siguiente"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-3.5 w-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
 </section>

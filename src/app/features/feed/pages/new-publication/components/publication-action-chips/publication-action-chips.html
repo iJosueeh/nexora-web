@@ -1,14 +1,11 @@
-<div class="flex flex-wrap items-center gap-2">
+<div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
   @for (action of actions; track action.id) {
     <button
       type="button"
-      class="inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-[11px] font-medium transition-colors"
-      [class.border-[var(--brand-red)]]="activeActions().includes(action.id)"
-      [class.bg-[color-mix(in_srgb,var(--brand-red)_12%,transparent)]]="activeActions().includes(action.id)"
-      [class.text-[var(--brand-red)]]="activeActions().includes(action.id)"
-      [class.border-[var(--brand-border)]]="!activeActions().includes(action.id)"
-      [class.bg-black/20]="!activeActions().includes(action.id)"
-      [class.text-[var(--brand-text)]]="!activeActions().includes(action.id)"
+      class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1.5 px-4 text-sm text-white/70 transition-all hover:bg-white/10 hover:text-white"
+      [class.border-[#df3432]/50]="activeActions().includes(action.id)"
+      [class.bg-[#df3432]/15]="activeActions().includes(action.id)"
+      [class.text-[#df3432]]="activeActions().includes(action.id)"
       (click)="toggleAction(action.id)"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

@@ -1,20 +1,15 @@
 <div
   class="min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#08090f] px-4 py-8 relative md:px-6 lg:px-8"
 >
-
-  <!-- Background image -->
   <div
     class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
     style="background-image: url('/assets/images/bg-login.webp');"
   ></div>
-  <!-- Fade overlay -->
   <div class="absolute inset-0 pointer-events-none"
        style="background: radial-gradient(ellipse 75% 90% at 35% 45%, rgba(10,12,18,0.92) 0%, rgba(6,8,13,0.98) 65%, transparent 100%);"></div>
 
-  <!-- Main Container -->
   <div class="relative z-10 flex flex-col items-center gap-10 md:gap-12 w-full max-w-sm md:max-w-md">
 
-    <!-- Logo Section -->
     <div class="flex flex-col items-center gap-1.5">
       <h1 class="text-4xl md:text-5xl font-black tracking-[0.04em] text-[#f08f84]"
           style="font-family: 'Inter', sans-serif;">
@@ -25,169 +20,177 @@
       </p>
     </div>
 
-    <!-- Card -->
-      <app-loading mode="spinner" [fullscreen]="true" [message]="loadingMessage" [hidden]="!isLoading()"></app-loading>
+    <app-loading mode="spinner" [fullscreen]="true" [message]="loadingMessage" [hidden]="!isLoading()"></app-loading>
 
-    <div class="relative z-10 w-full flex flex-col gap-6 md:gap-7">
+    <div class="relative z-10 w-full">
 
-    <!-- Tab switcher -->
-    <div class="flex gap-3 w-full border-b border-white/8 pb-4">
-      <button
-        (click)="setLoginTab()"
-        [disabled]="isSubmitting"
-        class="flex-1 px-4 py-2 text-xs md:text-sm font-semibold rounded-t-lg border-b-2 transition-all duration-300"
-        [ngClass]="{
-          'border-[#df3432] text-[#f2f4f8]': activeTab === 'login',
-          'border-transparent text-[#8f95a3] hover:text-[#a9afbc]': activeTab !== 'login'
-        }"
-      >
-        Iniciar sesión
-      </button>
-      <button
-        (click)="goToSignUp()"
-        [disabled]="isSubmitting"
-        class="flex-1 px-4 py-2 text-xs md:text-sm font-semibold rounded-t-lg border-b-2 transition-all duration-300"
-        [ngClass]="{
-          'border-[#df3432] text-[#f2f4f8]': activeTab === 'signup',
-          'border-transparent text-[#8f95a3] hover:text-[#a9afbc]': activeTab !== 'signup'
-        }"
-      >
-        Registrarse
-      </button>
-    </div>
+      <div class="bg-black/40 backdrop-blur-xl rounded-2xl border border-white/10 p-6 md:p-8 flex flex-col gap-6 md:gap-7">
 
-      <!-- Heading -->
-      <div class="flex flex-col gap-1.5">
-        <h2 class="text-2xl md:text-3xl font-semibold text-[#f2f4f8]" style="font-family: 'Inter', sans-serif; line-height: 1.2;">
-          Bienvenido de nuevo
-        </h2>
-        <p class="text-[#8f95a3] text-xs md:text-sm">Inicia sesión en la plataforma.</p>
-      </div>
-
-      <!-- Input Fields Container -->
-      <div class="flex flex-col gap-5 md:gap-6">
-
-      <!-- Email -->
-      <div class="flex flex-col gap-2">
-        <label for="email-input" class="text-[0.6rem] md:text-[0.65rem] font-semibold tracking-[0.12em] uppercase text-[#8f95a3]">
-          Correo Electrónico
-        </label>
-        <div class="flex items-center gap-3 bg-[#0f1219] border border-white/10 rounded-xl px-3.5 py-2.5 md:py-3 focus-within:border-white/25 focus-within:bg-[#131820] transition-all duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-[#6d7280] shrink-0">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-          </svg>
-          <input
-            id="email-input"
-            type="email"
-            placeholder="usuario@utp.edu.pe"
-            [(ngModel)]="email"
-            [disabled]="isSubmitting"
-            class="flex-1 bg-transparent text-xs md:text-sm text-[#d6dbe4] placeholder-[#5a6270] outline-none"
-          />
-        </div>
-      </div>
-
-      <!-- Password -->
-      <div class="flex flex-col gap-2">
-        <div class="flex items-center justify-between">
-          <label for="password-input" class="text-[0.6rem] md:text-[0.65rem] font-semibold tracking-[0.12em] uppercase text-[#8f95a3]">
-            Contraseña
-          </label>
-          <a routerLink="/forgot-password"
-             class="text-[0.57rem] md:text-[0.6rem] font-semibold tracking-[0.12em] uppercase text-[#f08f84] hover:text-[#f5a99d] transition-colors duration-200">
-            ¿Olvidaste tu contraseña?
-          </a>
-        </div>
-        <div class="flex items-center gap-3 bg-[#0f1219] border border-white/10 rounded-xl px-3.5 py-2.5 md:py-3 focus-within:border-white/25 focus-within:bg-[#131820] transition-all duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-[#6d7280] shrink-0">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-          </svg>
-          <input
-            id="password-input"
-            [type]="showPassword ? 'text' : 'password'"
-            placeholder="········"
-            [(ngModel)]="password"
-            [disabled]="isSubmitting"
-            class="flex-1 bg-transparent text-xs md:text-sm text-[#d6dbe4] placeholder-[#5a6270] outline-none"
-          />
-          <button (click)="toggleShowPassword()" [disabled]="isSubmitting" class="text-[#5a6270] hover:text-[#7a8196] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200" type="button">
-            @if (showPassword) {
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
-              </svg>
-            } @else {
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            }
-          </button>
-        </div>
-      </div>
-
-      <!-- Remember me -->
-      <div class="flex items-center gap-3 group py-1">
-        <div
-          id="remember-me-checkbox"
-          role="checkbox"
-          tabindex="0"
-          aria-labelledby="remember-me-label"
-          [attr.aria-checked]="rememberMe"
-          class="w-5 h-5 rounded border flex items-center justify-center transition-all duration-200 shrink-0 focus:ring-2 focus:ring-[#df3432] outline-none cursor-pointer"
-          [class.bg-[#df3432]]="rememberMe"
-          [class.border-[#df3432]]="rememberMe"
-          [class.border-white/25]="!rememberMe"
-          [class.bg-transparent]="!rememberMe"
-          [class.opacity-60]="isSubmitting"
-          [class.cursor-not-allowed]="isSubmitting"
-          (click)="toggleRememberMe()"
-          (keydown.enter)="$event.preventDefault(); toggleRememberMe()"
-          (keydown.space)="$event.preventDefault(); toggleRememberMe()"
-        >
-          @if (rememberMe) {
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class="w-3 h-3">
-              <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" />
-            </svg>
+        <div class="flex gap-3 w-full border-b border-white/8 pb-4">
+          @if (activeTab() === 'login') {
+            <button
+              (click)="setLoginTab()"
+              [disabled]="isSubmitting"
+              class="flex-1 px-4 py-2 text-xs md:text-sm font-semibold rounded-t-lg border-b-2 border-[#df3432] text-white transition-all duration-300"
+              type="button"
+            >
+              Iniciar sesión
+            </button>
+            <button
+              (click)="goToSignUp()"
+              [disabled]="isSubmitting"
+              class="flex-1 px-4 py-2 text-xs md:text-sm font-semibold rounded-t-lg border-b-2 border-transparent text-white/50 hover:text-white/70 transition-all duration-300"
+              type="button"
+            >
+              Registrarse
+            </button>
+          } @else {
+            <button
+              (click)="setLoginTab()"
+              [disabled]="isSubmitting"
+              class="flex-1 px-4 py-2 text-xs md:text-sm font-semibold rounded-t-lg border-b-2 border-transparent text-white/50 hover:text-white/70 transition-all duration-300"
+              type="button"
+            >
+              Iniciar sesión
+            </button>
+            <button
+              (click)="goToSignUp()"
+              [disabled]="isSubmitting"
+              class="flex-1 px-4 py-2 text-xs md:text-sm font-semibold rounded-t-lg border-b-2 border-[#df3432] text-white transition-all duration-300"
+              type="button"
+            >
+              Registrarse
+            </button>
           }
         </div>
-        <label id="remember-me-label" for="remember-me-checkbox" class="text-[0.75rem] md:text-[0.8rem] text-[#8f95a3] group-hover:text-[#a9afbc] transition-colors duration-200 cursor-pointer">
-          Mantén la sesión iniciada durante 30 días.
-        </label>
+
+        <div class="flex flex-col gap-1.5">
+          <h2 class="text-2xl md:text-3xl font-semibold text-white" style="font-family: 'Inter', sans-serif; line-height: 1.2;">
+            Bienvenido de nuevo
+          </h2>
+          <p class="text-white/50 text-xs md:text-sm">Inicia sesión en la plataforma.</p>
+        </div>
+
+        <div class="flex flex-col gap-5 md:gap-6">
+
+          <div class="flex flex-col gap-2">
+            <label for="email-input" class="text-[0.6rem] md:text-[0.65rem] font-semibold tracking-[0.12em] uppercase text-white/50">
+              Correo Electrónico
+            </label>
+            <div class="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 md:py-3 focus-within:border-white/20 focus-within:ring-2 focus-within:ring-white/10 transition-all duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-white/30 shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+              </svg>
+              <input
+                id="email-input"
+                type="email"
+                placeholder="usuario@utp.edu.pe"
+                [(ngModel)]="email"
+                [disabled]="isSubmitting"
+                class="flex-1 bg-transparent text-xs md:text-sm text-white placeholder-white/30 outline-none"
+              />
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center justify-between">
+              <label for="password-input" class="text-[0.6rem] md:text-[0.65rem] font-semibold tracking-[0.12em] uppercase text-white/50">
+                Contraseña
+              </label>
+              <a routerLink="/forgot-password"
+                 class="text-[0.57rem] md:text-[0.6rem] font-semibold tracking-[0.12em] uppercase text-[#f08f84] hover:text-[#f5a99d] transition-colors duration-200">
+                ¿Olvidaste tu contraseña?
+              </a>
+            </div>
+            <div class="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 md:py-3 focus-within:border-white/20 focus-within:ring-2 focus-within:ring-white/10 transition-all duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-white/30 shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+              <input
+                id="password-input"
+                [type]="showPassword() ? 'text' : 'password'"
+                placeholder="········"
+                [(ngModel)]="password"
+                [disabled]="isSubmitting"
+                class="flex-1 bg-transparent text-xs md:text-sm text-white placeholder-white/30 outline-none"
+              />
+              <button (click)="toggleShowPassword()" [disabled]="isSubmitting" class="text-white/30 hover:text-white/60 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200" type="button">
+                @if (showPassword()) {
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                  </svg>
+                } @else {
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 group py-1">
+            <div
+              id="remember-me-checkbox"
+              role="checkbox"
+              tabindex="0"
+              aria-labelledby="remember-me-label"
+              [attr.aria-checked]="rememberMe"
+              class="w-5 h-5 rounded border flex items-center justify-center transition-all duration-200 shrink-0 focus:ring-2 focus:ring-[#df3432] outline-none cursor-pointer"
+              [class.bg-[#df3432]]="rememberMe"
+              [class.border-[#df3432]]="rememberMe"
+              [class.border-white/25]="!rememberMe"
+              [class.bg-transparent]="!rememberMe"
+              [class.opacity-60]="isSubmitting"
+              [class.cursor-not-allowed]="isSubmitting"
+              (click)="toggleRememberMe()"
+              (keydown.enter)="$event.preventDefault(); toggleRememberMe()"
+              (keydown.space)="$event.preventDefault(); toggleRememberMe()"
+            >
+              @if (rememberMe) {
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class="w-3 h-3">
+                  <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" />
+                </svg>
+              }
+            </div>
+            <label id="remember-me-label" for="remember-me-checkbox" class="text-[0.75rem] md:text-[0.8rem] text-white/50 group-hover:text-white/70 transition-colors duration-200 cursor-pointer">
+              Mantén la sesión iniciada durante 30 días.
+            </label>
+          </div>
+
+          <button
+            (click)="onLogin()"
+            [disabled]="isSubmitting"
+            type="button"
+            class="w-full flex items-center justify-center gap-2 bg-[#df3432] hover:bg-[#ee4542] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs md:text-sm tracking-[0.12em] uppercase py-3.5 md:py-4 rounded-xl transition-all duration-200 mt-1 shadow-[0_0_20px_rgba(223,52,50,0.35)] hover:shadow-[0_0_25px_rgba(223,52,50,0.45)] active:scale-[0.97]"
+          >
+            <span [hidden]="!isLoading()" class="inline-flex items-center gap-2">
+              <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              Entrando...
+            </span>
+            <span [hidden]="isLoading()" class="inline-flex items-center gap-2">
+              Entrar al portal
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </span>
+          </button>
+
+        </div>
       </div>
+    </div>
 
-      <!-- Submit -->
-      <button
-        (click)="onLogin()"
-        [disabled]="isSubmitting"
-        type="button"
-        class="w-full flex items-center justify-center gap-2 bg-[#df3432] hover:bg-[#ee4542] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs md:text-sm tracking-[0.12em] uppercase py-3.5 md:py-4 rounded-xl transition-colors duration-200 mt-1"
-      >
-        <span [hidden]="!isLoading()" class="inline-flex items-center gap-2">
-          <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-          </svg>
-          Entrando...
-        </span>
-        <span [hidden]="isLoading()" class="inline-flex items-center gap-2">
-          Entrar al portal
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-          </svg>
-        </span>
-      </button>
+    <div class="relative z-10 flex flex-col items-center gap-1.5 mt-auto pt-6 md:pt-8">
+      <p class="text-[0.55rem] md:text-[0.6rem] tracking-[0.12em] uppercase text-white/30">
+        Protegido por el Protocolo de Integridad Académica
+      </p>
+      <p class="text-[0.5rem] md:text-[0.55rem] text-white/20 tracking-wide">
+        © 2024 UTP Scholar · Edición Noir Académica
+      </p>
+    </div>
 
-      </div>
   </div>
-
-  <!-- Footer -->
-  <div class="relative z-10 flex flex-col items-center gap-1.5 mt-auto pt-6 md:pt-8">
-    <p class="text-[0.55rem] md:text-[0.6rem] tracking-[0.12em] uppercase text-[#5a6070]">
-      Protegido por el Protocolo de Integridad Académica
-    </p>
-    <p class="text-[0.5rem] md:text-[0.55rem] text-[#4a5060] tracking-wide">
-      © 2024 UTP Scholar · Edición Noir Académica
-    </p>
-  </div>
-
 </div>

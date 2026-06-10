@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
 
 import { AuthSession } from '../../../../../../core/services/auth-session';
+import { RichTextEditorComponent } from '../../../../../../shared/components/rich-text-editor/rich-text-editor';
 import { PublicationDraft } from '../../publication-draft.model';
 import { PublicationActionChipsComponent } from '../publication-action-chips/publication-action-chips';
 import { PublicationLocationSelectComponent } from '../publication-location-select/publication-location-select';
@@ -13,13 +14,15 @@ import { PublicationTagsSelectComponent } from '../publication-tags-select/publi
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    RichTextEditorComponent,
     PublicationActionChipsComponent,
     PublicationLocationSelectComponent,
     PublicationMediaDropzoneComponent,
     PublicationVisibilitySelectorComponent,
     PublicationTagsSelectComponent
   ],
-  templateUrl: './publication-composer.html'
+  templateUrl: './publication-composer.html',
+  styleUrl: './publication-composer.css'
 })
 export class PublicationComposerComponent {
   readonly published = output<PublicationDraft>();
@@ -33,11 +36,14 @@ export class PublicationComposerComponent {
   readonly location = signal('');
   readonly selectedTags = signal<string[]>([]);
   readonly activeActions = signal<string[]>([]);
+  readonly isUploading = signal(false);
+  readonly mediaDragging = signal(false);
 
   readonly extractedTags = computed(() => {
-    const content = `${this.title()} ${this.description()}`.trim();
+    const plainText = this.description().replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    const content = `${this.title()} ${plainText}`.trim();
     const matches = content.match(/#[\p{L}\p{N}_]+/gu) || [];
-    return [...new Set(matches)]; // Remove duplicates
+    return [...new Set(matches)];
   });
 
   readonly userAvatar = computed(() => {
@@ -53,7 +59,7 @@ export class PublicationComposerComponent {
   readonly canPublish = computed(() => {
     const title = this.title().trim();
     const description = this.description().trim();
-    return title.length >= 3 || description.length >= 3 || this.attachments().length > 0;
+    return (title.length >= 3 || description.length >= 3 || this.attachments().length > 0) && !this.isUploading();
   });
 
   updateTitle(event: Event): void {
@@ -61,9 +67,14 @@ export class PublicationComposerComponent {
     this.title.set(target?.value ?? '');
   }
 
-  updateDescription(event: Event): void {
-    const target = event.target as HTMLTextAreaElement | null;
-    this.description.set(target?.value ?? '');
+  updateDescription(html: string): void {
+    this.description.set(html);
+  }
+
+  handlePastedImages(files: File[]): void {
+    const currentFiles = this.attachments();
+    const updated = [...currentFiles, ...files].slice(0, 6);
+    this.attachments.set(updated);
   }
 
   updateAttachments(files: File[]): void {
@@ -84,6 +95,14 @@ export class PublicationComposerComponent {
 
   updateActions(actions: string[]): void {
     this.activeActions.set(actions);
+  }
+
+  setUploading(uploading: boolean): void {
+    this.isUploading.set(uploading);
+  }
+
+  setMediaDragging(dragging: boolean): void {
+    this.mediaDragging.set(dragging);
   }
 
   readonly isTagsOpen = computed(() => this.activeActions().includes('tags'));

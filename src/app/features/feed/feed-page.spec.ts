@@ -36,11 +36,10 @@ describe('FeedPage Component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have 3-column layout with sidebars', () => {
+  it('should have main content with rounded classes', () => {
     fixture.detectChanges();
     const main = fixture.nativeElement.querySelector('main') as HTMLElement;
-    expect(main.classList.contains('border')).toBe(true);
-    expect(main.classList.contains('border-[var(--brand-border)]')).toBe(true);
+    expect(main.classList.contains('rounded-2xl')).toBe(true);
   });
 
   it('should display feed header', () => {
@@ -67,10 +66,9 @@ describe('FeedPage Component', () => {
     expect(containerComponent).toBeTruthy();
   });
 
-  it('should have proper border classes in main content', () => {
+  it('should have proper background class in main content', () => {
     fixture.detectChanges();
     const main = fixture.nativeElement.querySelector('main') as HTMLElement;
-    expect(main.classList.contains('border')).toBe(true);
-    expect(main.classList.contains('border-[var(--brand-border)]')).toBe(true);
+    expect(main.classList.contains('bg-[#0d0e12]')).toBe(true);
   });
 });

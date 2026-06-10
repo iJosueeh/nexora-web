@@ -4,10 +4,11 @@ import { filter } from 'rxjs';
 
 import { Footer } from '../../shared/components/footer/footer';
 import { Navbar } from '../../shared/components/navbar/navbar';
+import { MobileBottomNavComponent } from '../../shared/components/mobile-bottom-nav/mobile-bottom-nav';
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, Navbar, Footer],
+  imports: [RouterOutlet, Navbar, Footer, MobileBottomNavComponent],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css',
 })
@@ -17,7 +18,16 @@ export class MainLayout {
 
   readonly shouldShowFooter = computed(() => {
     const path = this.currentPath();
-    return !(path.startsWith('/feed') || path.startsWith('/publicar') || path.startsWith('/profile') || path.startsWith('/u/'));
+    return !(path.startsWith('/feed') || path.startsWith('/publicar') || 
+             path.startsWith('/settings') || path.startsWith('/profile') || 
+             path.startsWith('/u/'));
+  });
+
+  readonly shouldShowBottomNav = computed(() => {
+    const path = this.currentPath();
+    return path.startsWith('/feed') || path.startsWith('/publicar') || 
+           path.startsWith('/settings') || path.startsWith('/profile') || 
+           path.startsWith('/u/');
   });
 
   constructor() {

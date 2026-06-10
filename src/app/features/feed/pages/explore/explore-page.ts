@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit, DestroyRef, Directive } from '@angular/core';
+import { Component, signal, inject, OnInit, DestroyRef, Directive, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
@@ -13,6 +13,7 @@ import { ShellLayout } from '../../../../shared/components/shell-layout/shell-la
 import { FeedSidebar } from '../../components/feed-sidebar/feed-sidebar';
 import { AuthSession } from '../../../../core/services/auth-session';
 import { ProfileService } from '../../../profile/services/profile.service';
+import { UserSuggestCard } from '../../../../features/home/components/explorar/components/user-suggest-card/user-suggest-card';
 
 @Directive()
 export abstract class ExplorePageBase implements OnInit {
@@ -30,6 +31,20 @@ export abstract class ExplorePageBase implements OnInit {
   relatedPosts = signal<Post[]>([]);
   selectedTrend = signal<string | null>(null);
   showAllTrends = signal(false);
+  featuredPost = signal<Post | null>(null);
+
+  filteredPosts = computed(() => {
+    const tab = this.activeTab();
+    const posts = this.relatedPosts();
+    
+    if (tab === 'multimedia') {
+      return posts.filter(p => !!p.imageUrl);
+    }
+    if (tab === 'articulos') {
+      return posts.filter(p => !!p.title);
+    }
+    return posts;
+  });
 
   ngOnInit(): void {
     this.loadInitialData();
@@ -46,6 +61,9 @@ export abstract class ExplorePageBase implements OnInit {
       next: ({ trends, posts }) => {
         this.trends.set(trends);
         this.relatedPosts.set(posts);
+        if (posts.length > 0) {
+          this.featuredPost.set(posts[0]);
+        }
         this.loading.set(false);
       },
       error: (err) => {
@@ -81,6 +99,30 @@ export abstract class ExplorePageBase implements OnInit {
       });
   }
 
+  onToggleFollow(user: SuggestedUser): void {
+    const current = this.suggestedUsers();
+    const idx = current.findIndex(u => u.id === user.id);
+    if (idx === -1) return;
+
+    const updated = current.map(u => ({ ...u }));
+    const prev = !!updated[idx].isFollowing;
+    updated[idx].isFollowing = !prev;
+    this.suggestedUsers.set(updated);
+
+    this.profileService.toggleFollow(user.id).subscribe({
+      next: (ok) => {
+        if (!ok) {
+          updated[idx].isFollowing = prev;
+          this.suggestedUsers.set(updated);
+        }
+      },
+      error: () => {
+        updated[idx].isFollowing = prev;
+        this.suggestedUsers.set(updated);
+      }
+    });
+  }
+
   private loadSuggestions(): void {
     const user = this.authSession.getUser();
     if (!user || !user.id) return;
@@ -113,7 +155,7 @@ export abstract class ExplorePageBase implements OnInit {
 @Component({
   selector: 'app-explore-page',
   standalone: true,
-  imports: [CommonModule, PostCardComponent, ShellLayout, FeedSidebar],
+  imports: [CommonModule, PostCardComponent, ShellLayout, FeedSidebar, UserSuggestCard],
   templateUrl: './explore-page.html',
   styleUrl: './explore-page.css'
 })

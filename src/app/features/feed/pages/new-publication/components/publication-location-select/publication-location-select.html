@@ -1,0 +1,73 @@
+<div class="relative">
+  <button
+    type="button"
+    class="dropdown-trigger"
+    [class.has-value]="value()"
+    (click)="toggleDropdown()"
+  >
+    <span>{{ selectedLabel() }}</span>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="chevron"
+      [class.rotate-180]="isOpen()"
+    >
+      <path d="m6 9 6 6 6-6"></path>
+    </svg>
+  </button>
+
+  @if (isOpen()) {
+    <div class="dropdown-menu">
+      <input
+        type="text"
+        [value]="searchQuery()"
+        (input)="onSearchChange($event)"
+        (keydown.escape)="closeDropdown()"
+        placeholder="Buscar ubicación..."
+        class="search-input"
+        #searchInput
+      />
+
+      @if (filteredRegions().length > 0) {
+        @for (region of filteredRegions(); track region) {
+          <button
+            type="button"
+            class="dropdown-item"
+            [class.is-selected]="value() === region"
+            (click)="selectRegion(region)"
+          >
+            @if (value() === region) {
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="check-icon"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m9 12 2 2 4-4"></path>
+              </svg>
+            }
+            {{ region }}
+          </button>
+        }
+      } @else {
+        <p class="no-results">Sin resultados</p>
+      }
+    </div>
+
+    <div class="overlay-backdrop" (click)="closeDropdown()" (keydown.escape)="closeDropdown()" tabindex="-1"></div>
+  }
+</div>

@@ -8,11 +8,12 @@ import { CommentService } from '../../services/comment.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AuthSession } from '../../../../core/services/auth-session';
 import { Router } from '@angular/router';
+import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
 
 @Component({
 	selector: 'app-comment-thread',
 	standalone: true,
-	imports: [CommonModule, RouterLink, FormsModule],
+	imports: [CommonModule, RouterLink, FormsModule, ConfirmModal],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	host: {
 		class: 'block'
@@ -52,6 +53,7 @@ export class CommentThreadComponent {
 		readonly isEditing = signal(false);
 		readonly editText = signal('');
 		readonly isSubmitting = signal(false);
+		readonly isDeleteModalOpen = signal(false);
 
 		private readonly commentService = inject(CommentService);
 		private readonly toastService = inject(ToastService);
@@ -71,15 +73,25 @@ export class CommentThreadComponent {
 		}
 
 		onDelete(): void {
-			if (!confirm('¿Estás seguro de que deseas eliminar este comentario?')) return;
+			this.isDeleteModalOpen.set(true);
+		}
 
+		confirmDelete(): void {
+			this.isSubmitting.set(true);
 			this.commentService.deleteComment(this.comment().id)
+				.pipe(takeUntilDestroyed(this.destroyRef))
 				.subscribe({
 					next: () => {
+						this.isSubmitting.set(false);
+						this.isDeleteModalOpen.set(false);
 						this.toastService.show('Comentario eliminado', 'success');
 						this.commentDeleted.emit(this.comment().id);
 					},
-					error: () => this.toastService.show('Error al eliminar comentario', 'error')
+					error: () => {
+						this.isSubmitting.set(false);
+						this.isDeleteModalOpen.set(false);
+						this.toastService.show('Error al eliminar comentario', 'error');
+					}
 				});
 		}
 

@@ -1,7 +1,6 @@
 import { Component, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { NgClass } from '@angular/common';
 import { catchError, firstValueFrom, of, timeout } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { AuthSession } from '../../../core/services/auth-session';
@@ -15,7 +14,7 @@ import { PermissionService } from '../../../core/services/permission.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterLink, NgClass, Loading],
+  imports: [FormsModule, RouterLink, Loading],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -30,12 +29,12 @@ export class Login {
   private readonly authSession = inject(AuthSession);
   private readonly permissionService = inject(PermissionService);
 
-  activeTab: 'login' | 'signup' = 'login';
+  activeTab = signal<'login' | 'register'>('login');
 
   email = '';
   password = '';
   rememberMe = false;
-  showPassword = false;
+  showPassword = signal(false);
   isLoading = signal(false);
   isSubmitting = false;
   readonly loadingMessage = LOADING_MESSAGES.AUTH.LOGIN_VALIDATING;
@@ -49,12 +48,12 @@ export class Login {
 
   setLoginTab(): void {
     if (this.isSubmitting) return;
-    this.activeTab = 'login';
+    this.activeTab.set('login');
   }
 
   toggleShowPassword(): void {
     if (this.isSubmitting) return;
-    this.showPassword = !this.showPassword;
+    this.showPassword.update(v => !v);
   }
 
   toggleRememberMe(): void {

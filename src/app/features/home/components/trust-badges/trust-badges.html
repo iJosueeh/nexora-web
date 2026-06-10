@@ -1,0 +1,51 @@
+<section class="border-y border-white/[0.04] bg-[#0c0d12] px-4 py-10 md:px-10 md:py-12 lg:px-14">
+  <div class="mx-auto flex w-full max-w-6xl flex-col items-center gap-6 md:flex-row md:justify-between md:gap-10">
+    <!-- Label -->
+    <span class="shrink-0 text-[0.6rem] font-semibold uppercase tracking-[0.28em] text-slate-500">
+      Respaldado por
+    </span>
+
+    <!-- Badges row -->
+    <div class="flex flex-wrap items-center justify-center gap-3 md:gap-4">
+      @for (badge of badges(); track badge.id) {
+        <div
+          class="group relative cursor-default rounded-2xl border backdrop-blur-sm transition-all duration-400"
+          [style.borderColor]="hoveredId() === badge.id ? badge.color + '30' : 'rgba(255,255,255,0.06)'"
+          [style.background]="
+            hoveredId() === badge.id
+              ? 'linear-gradient(135deg, ' + badge.color + '12, rgba(255,255,255,0.03))'
+              : 'rgba(255,255,255,0.03)'
+          "
+          (mouseenter)="onHover(badge.id)"
+          (mouseleave)="onHover(null)"
+        >
+          <!-- Glow -->
+          <div
+            class="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500"
+            [style.background]="'radial-gradient(ellipse at center, ' + badge.color + '20, transparent 70%)'"
+            [class.opacity-100]="hoveredId() === badge.id"
+          ></div>
+
+          <div class="relative z-10 flex items-center gap-3 px-4 py-2.5 md:px-5">
+            <!-- Badge circle -->
+            <div
+              class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[0.55rem] font-bold transition-all duration-500"
+              [style.background]="hoveredId() === badge.id ? badge.color : 'rgba(255,255,255,0.06)'"
+              [style.color]="hoveredId() === badge.id ? '#ffffff' : '#64748b'"
+            >
+              {{ badge.abbreviation.slice(0, 2) }}
+            </div>
+
+            <!-- Name -->
+            <span
+              class="text-xs font-medium whitespace-nowrap transition-colors duration-500 md:text-sm"
+              [style.color]="hoveredId() === badge.id ? '#e2e8f0' : '#64748b'"
+            >
+              {{ badge.name }}
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
