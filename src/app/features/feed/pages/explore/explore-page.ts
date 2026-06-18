@@ -1,5 +1,6 @@
 import { Component, signal, inject, OnInit, DestroyRef, Directive, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
 
@@ -23,6 +24,7 @@ export abstract class ExplorePageBase implements OnInit {
   protected readonly authSession = inject(AuthSession);
   protected readonly profileService = inject(ProfileService);
   protected readonly destroyRef = inject(DestroyRef);
+  protected readonly route = inject(ActivatedRoute);
 
   activeTab = signal<'todos' | 'multimedia' | 'articulos'>('todos');
   loading = signal(true);
@@ -32,6 +34,7 @@ export abstract class ExplorePageBase implements OnInit {
   selectedTrend = signal<string | null>(null);
   showAllTrends = signal(false);
   featuredPost = signal<Post | null>(null);
+  searchQuery = signal<string | null>(null);
 
   filteredPosts = computed(() => {
     const tab = this.activeTab();
@@ -47,7 +50,29 @@ export abstract class ExplorePageBase implements OnInit {
   });
 
   ngOnInit(): void {
-    this.loadInitialData();
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+      const q = params['q'];
+      if (q && q.trim()) {
+        this.searchQuery.set(q.trim());
+        this.performSearch(q.trim());
+      } else {
+        this.searchQuery.set(null);
+        this.loadInitialData();
+      }
+    });
+  }
+
+  performSearch(query: string): void {
+    this.loading.set(true);
+    this.feedService.searchPosts(query, 20, 0)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (posts) => {
+          this.relatedPosts.set(posts);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false)
+      });
   }
 
   private loadInitialData(): void {

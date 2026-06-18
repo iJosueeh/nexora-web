@@ -47,6 +47,11 @@ export const routes: Routes = [
                 canActivate: [authGuard]
             },
             {
+                path: 'feed/bookmarks',
+                loadComponent: () => import('./features/feed/pages/bookmarks/bookmarks').then(m => m.BookmarksPage),
+                canActivate: [authGuard]
+            },
+            {
                 path: 'feed',
                 loadComponent: () => import('./features/feed/pages/feed-page/feed-page').then(m => m.FeedPage),
                 canActivate: [authGuard]

@@ -40,7 +40,31 @@
     </div>
 
     @if (canDelete()) {
-      <button 
+    <button
+      type="button"
+      (click)="toggleBookmark($event)"
+      class="flex items-center gap-2 rounded-full px-3 py-1.5 transition-all duration-200"
+      [class.text-[#df3432]]="isBookmarked()"
+      [class.bg-[#df3432]/10]="isBookmarked()"
+      [class.text-white/40]="!isBookmarked()"
+      [class.hover:bg-white/5]="!isBookmarked()"
+      [class.hover:text-white]="!isBookmarked()"
+    >
+      <svg
+        class="h-5 w-5 transition-transform duration-200 active:scale-125"
+        [class.fill-current]="isBookmarked()"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+      </svg>
+    </button>
+
+    <button
         (click)="$event.stopPropagation(); showConfirmModal.set(true)"
         class="flex h-8 w-8 items-center justify-center rounded-full text-white/40 transition-all hover:bg-[#df3432]/10 hover:text-[#df3432]"
         title="Eliminar publicación"

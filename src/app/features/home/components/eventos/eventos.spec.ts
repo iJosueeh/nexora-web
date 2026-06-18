@@ -8,7 +8,7 @@ import { provideRouter } from '@angular/router';
 describe('EventosPage', () => {
   let component: EventosPage;
   let fixture: ComponentFixture<EventosPage>;
-  let eventServiceSpy: any;
+  let eventServiceSpy: { getEvents: ReturnType<typeof vi.fn> };
 
   const mockEvents: UniversityEvent[] = [
     { id: '1', slug: 'e1', title: 'Event 1', category: 'Debate', attendeesCount: 5, date: '', description: '', location: '' },

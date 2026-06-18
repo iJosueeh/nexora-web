@@ -1,8 +1,33 @@
 <div class="px-6 py-10 lg:px-12">
-  <header class="mb-12 space-y-2">
-    <h1 class="text-4xl font-black tracking-tight text-white">Próximos <span class="text-[#df3432]">Eventos</span></h1>
-    <p class="text-zinc-400">Conecta cara a cara con la comunidad científica de la UTP.</p>
+  <header class="mb-12 flex items-end justify-between">
+    <div class="space-y-2">
+      <h1 class="text-4xl font-black tracking-tight text-white">Próximos <span class="text-[#df3432]">Eventos</span></h1>
+      <p class="text-zinc-400">Conecta cara a cara con la comunidad científica de la UTP.</p>
+    </div>
+    <button
+      (click)="toggleCreateForm()"
+      class="rounded-lg bg-[#df3432] px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white transition-all hover:bg-[#b82b29] shadow-lg shadow-[#df3432]/10 flex items-center gap-2"
+    >
+      @if (showCreateForm()) {
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        Cerrar
+      } @else {
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Crear Evento
+      }
+    </button>
   </header>
+
+  <!-- Formulario de Creación -->
+  @if (showCreateForm()) {
+    <div class="mb-10">
+      <app-event-create-form (cancelled)="showCreateForm.set(false)" (created)="onEventCreated()" />
+    </div>
+  }
 
   <!-- Filtros de Categoría -->
   <div class="mb-10 flex flex-wrap gap-3">

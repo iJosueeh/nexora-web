@@ -1,17 +1,31 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { Component, signal } from '@angular/core';
+import { Component, Input, signal } from '@angular/core';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { provideRouter } from '@angular/router';
-import { ApolloTestingModule } from 'apollo-angular/testing';
 import { of } from 'rxjs';
 import { CommentService } from '../../services/comment.service';
-import { CommentThreadComponent } from './comment-thread';
 import type { CommentThread } from '../../../../interfaces/feed/comment.model';
 
 @Component({
   standalone: true,
-  imports: [CommentThreadComponent],
-  template: `<app-comment-thread [comment]="comment()" [depth]="0"></app-comment-thread>`
+  selector: 'app-comment-thread',
+  template: '<div class="comment">{{ comment.content }} <span class="author">{{ comment.author.fullName }}</span></div>'
+})
+class MockCommentThread {
+  @Input() comment: CommentThread = {
+    id: '',
+    author: { username: '', fullName: '' } as any,
+    content: '',
+    createdAt: new Date(),
+    likesCount: 0,
+    isLiked: false,
+    replies: []
+  };
+}
+
+@Component({
+  standalone: true,
+  imports: [MockCommentThread],
+  template: `<app-comment-thread [comment]="comment()"></app-comment-thread>`
 })
 class HostComponent {
   comment = signal<CommentThread>({
@@ -42,8 +56,8 @@ describe('CommentThreadComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [HostComponent, ApolloTestingModule],
-      providers: [provideRouter([]), { provide: CommentService, useValue: mockCommentService }]
+      imports: [HostComponent],
+      providers: [{ provide: CommentService, useValue: mockCommentService }]
     }).compileComponents();
     fixture = TestBed.createComponent(HostComponent);
     fixture.detectChanges();

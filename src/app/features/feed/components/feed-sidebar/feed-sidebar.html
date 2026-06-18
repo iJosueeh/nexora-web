@@ -78,6 +78,25 @@
         </a>
       </li>
 
+      <li [routerLinkActive]="'active'" #routerLinkActive4="routerLinkActive">
+        <a
+          routerLink="/feed/bookmarks"
+          class="
+            relative flex items-center gap-4 rounded-lg px-4 py-3 text-sm font-normal
+            text-white/50 transition-all duration-200
+            hover:bg-white/10 hover:text-white
+          "
+          [class.bg-white/10]="routerLinkActive4.isActive"
+          [class.text-white]="routerLinkActive4.isActive"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+          <span class="flex-1">Guardados</span>
+          @if (routerLinkActive4.isActive) {
+            <div class="absolute right-2 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[#df3432]"></div>
+          }
+        </a>
+      </li>
+
       <li [routerLinkActive]="'active'" #routerLinkActive3="routerLinkActive">
         <a
           [routerLink]="profileLink()"

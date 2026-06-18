@@ -10,24 +10,10 @@
 
     @if (showSkeleton()) {
       <main class="min-h-[calc(100vh-2rem)] overflow-hidden rounded-2xl bg-white/[0.02] p-6">
-        <div class="space-y-6" [class.animate-pulse]="!state.isGuest()">
-          <div class="h-64 rounded-2xl bg-white/5"></div>
-          <div class="flex items-end gap-4">
-            <div class="h-28 w-28 rounded-xl bg-white/5 lg:h-[7.5rem] lg:w-[7.5rem]"></div>
-            <div class="space-y-3">
-              <div class="h-8 w-64 rounded bg-white/5"></div>
-              <div class="h-4 w-40 rounded bg-white/5"></div>
-            </div>
-          </div>
-          <div class="grid gap-4 sm:grid-cols-3">
-            <div class="h-20 rounded-2xl bg-white/[0.03]"></div>
-            <div class="h-20 rounded-2xl bg-white/[0.03]"></div>
-            <div class="h-20 rounded-2xl bg-white/[0.03]"></div>
-          </div>
-        </div>
+        <app-profile-skeleton></app-profile-skeleton>
 
         @if (state.isGuest()) {
-          <section class="mt-6 rounded-2xl border border-[#df3432]/15 bg-[#df3432]/5 p-5 sm:p-6">
+          <section class="mt-5 rounded-2xl border border-[#df3432]/15 bg-[#df3432]/5 p-5 sm:p-6">
             <h2 class="text-lg font-semibold tracking-tight text-white sm:text-xl">Debes iniciar sesión para ver tu perfil</h2>
             <p class="mt-2 max-w-2xl text-sm leading-6 text-white/50">
               Tu perfil académico, estadísticas y publicaciones están disponibles solo para usuarios autenticados.
@@ -138,15 +124,9 @@
                     <button
                       type="button"
                       (click)="state.toggleFollow()"
-                      class="rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200"
-                      [class.bg-[#df3432]]="!state.isFollowing()"
-                      [class.text-white]="!state.isFollowing()"
-                      [class.hover:shadow-[0_0_15px_rgba(223,52,50,0.35)]="!state.isFollowing()"
-                      [class.border]="state.isFollowing()"
-                      [class.border-white/5]="state.isFollowing()"
-                      [class.bg-white/5]="state.isFollowing()"
-                      [class.text-white/70]="state.isFollowing()"
-                      [class.hover:bg-white/10]="state.isFollowing()"
+                      [class]="state.isFollowing()
+                        ? 'rounded-xl border border-white/5 bg-white/5 text-white/70 px-5 py-2.5 text-sm font-semibold transition-all duration-200 hover:bg-white/10'
+                        : 'rounded-xl bg-[#df3432] text-white px-5 py-2.5 text-sm font-semibold transition-all duration-200 hover:shadow-[0_0_15px_rgba(223,52,50,0.35)]'"
                     >
                       {{ state.isFollowing() ? 'Siguiendo' : 'Seguir' }}
                     </button>
@@ -170,11 +150,11 @@
                 </div>
               </div>
 
-              <section class="hidden rounded-xl border border-white/5 bg-white/[0.03] p-4 backdrop-blur-sm lg:block">
-                <p class="text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-white/40">Scholarly focus</p>
+              <section class="rounded-xl border border-white/5 bg-white/[0.03] p-4 backdrop-blur-sm overflow-x-auto lg:overflow-visible">
+                <p class="text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-white/40 shrink-0">Scholarly focus</p>
                 <div class="mt-3 flex flex-wrap gap-2">
                   @for (interest of featuredInterests(); track interest) {
-                    <span class="rounded-md bg-white/5 px-2.5 py-1 text-[0.69rem] text-white/50">{{ interest }}</span>
+                    <span class="rounded-md bg-white/5 px-2.5 py-1 text-[0.69rem] text-white/50 shrink-0">{{ interest }}</span>
                   }
                 </div>
               </section>
@@ -242,56 +222,34 @@
           </section>
         }
 
-        <section class="grid gap-4 xl:grid-cols-2">
+        <section class="grid gap-5 xl:grid-cols-2">
           @for (card of visibleCards(); track card.id) {
-            @switch (card.variant) {
-              @case ('image') {
-                <article class="overflow-hidden rounded-2xl bg-[#12141a] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
-                  <img [src]="card.imageUrl" [alt]="card.title" class="h-64 w-full object-cover" />
-                  <div class="space-y-3 p-4">
-                    <div class="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.16em] text-[#df3432]/50">
-                      <span>{{ card.label }}</span>
-                      <span class="text-white/30">{{ card.badge }}</span>
-                    </div>
-                    <h2 class="text-[2rem] font-semibold leading-tight text-white sm:text-[2.15rem] xl:text-[2.25rem]">{{ card.title }}</h2>
-                    <p class="text-sm leading-6 text-white/50">{{ card.description }}</p>
-                    <div class="flex items-center gap-5 text-xs text-white/30">
-                      <span>♡ {{ card.likes || '0' }}</span>
-                      <span>💬 {{ card.comments || '0' }}</span>
-                    </div>
-                  </div>
-                </article>
-              }
-              @case ('text') {
-                <article class="rounded-2xl bg-[#12141a] p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
-                  <div class="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.16em] text-[#22d3ee]/60">
-                    <span class="rounded bg-white/5 px-2 py-0.5">{{ card.label }}</span>
-                    <span class="text-white/30">{{ card.badge }}</span>
-                  </div>
-                  <h2 class="mt-5 text-[2rem] font-semibold leading-tight text-white sm:text-[2.1rem] xl:text-[2.2rem]">{{ card.title }}</h2>
-                  <p class="mt-4 text-sm leading-6 text-white/50">{{ card.description }}</p>
-                  <div class="mt-6 flex items-center gap-5 text-xs text-white/30">
-                    <span>♡ {{ card.likes || '0' }}</span>
-                    <span>💬 {{ card.comments || '0' }}</span>
-                  </div>
-                </article>
-              }
-              @case ('link') {
-                <article class="rounded-2xl bg-[#12141a] p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
-                  <p class="text-[0.6rem] uppercase tracking-[0.16em] text-[#df3432]/50">{{ card.label }}</p>
-                  <h2 class="mt-5 text-[1.95rem] font-semibold leading-tight text-white sm:text-[2.05rem] xl:text-[2.15rem]">{{ card.title }}</h2>
-                  <p class="mt-4 text-sm leading-6 text-white/50">{{ card.description }}</p>
-                  <button type="button" class="mt-6 text-xs font-semibold uppercase tracking-[0.13em] text-[#df3432]/70 hover:text-[#df3432] transition-colors">
-                    {{ card.cta || 'Read article' }} →
-                  </button>
-                </article>
-              }
-            }
+            <app-profile-post-card
+              [card]="card"
+              [featured]="$first && card.variant === 'text'"
+            ></app-profile-post-card>
           }
 
           @if (visibleCards().length === 0) {
-            <article class="col-span-full rounded-2xl border border-white/5 bg-white/[0.02] p-6 text-center">
-              <p class="text-sm text-white/40">No encontramos publicaciones para este perfil aun. Si ya publicaste, recarga la pagina o verifica tu username de perfil.</p>
+            <article class="col-span-full flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/[0.02] p-12 text-center">
+              <div class="mb-6 text-white/10">
+                <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="12" y1="18" x2="12" y2="12"></line>
+                  <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+              </div>
+              <p class="text-sm text-white/40 max-w-xs leading-6">Aún no hay publicaciones en este perfil.</p>
+              @if (state.isOwnProfile()) {
+                <button
+                  type="button"
+                  (click)="nav('/feed/new', $event)"
+                  class="mt-5 rounded-xl bg-[#df3432] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:shadow-[0_0_15px_rgba(223,52,50,0.35)]"
+                >
+                  Crear primera publicación
+                </button>
+              }
             </article>
           }
         </section>

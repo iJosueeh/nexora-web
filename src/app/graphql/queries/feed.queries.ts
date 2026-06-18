@@ -269,3 +269,26 @@ export const TRENDING_TOPICS_QUERY = gql`
     }
   }
 `;
+
+export const SEARCH_POSTS_QUERY = gql`
+  query SearchPosts($query: String!, $limit: Int!, $offset: Int!) {
+    searchPosts(query: $query, limit: $limit, offset: $offset) {
+      id
+      titulo
+      contenido
+      imageUrl
+      location
+      isOfficial
+      createdAt
+      commentsCount
+      likesCount
+      isLiked
+      autor {
+        id
+        username
+        fullName
+        avatarUrl
+      }
+    }
+  }
+`;

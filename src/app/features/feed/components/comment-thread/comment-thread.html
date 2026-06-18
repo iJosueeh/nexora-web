@@ -1,5 +1,5 @@
-<div class="comment-thread-wrapper" [style.paddingLeft.rem]="depth() > 0 ? 0.5 : 0">
-  <article class="comment-card">
+<div class="comment-thread-wrapper">
+  <div class="comment-body">
     <header class="comment-header">
       <a [routerLink]="['/u', comment().author.username]" class="shrink-0">
         <img
@@ -8,14 +8,13 @@
           class="comment-avatar"
         />
       </a>
-
       <div class="comment-meta">
         <div class="flex items-center gap-2">
           <a [routerLink]="['/u', comment().author.username]" class="author-name">
             {{ displayName() }}
           </a>
           @if (comment().author.verified) {
-            <span class="text-[var(--brand-red)] material-symbols-outlined text-sm">verified</span>
+            <span class="text-[#df3432] text-sm leading-none">&#10003;</span>
           }
         </div>
         <p class="comment-info">
@@ -25,27 +24,21 @@
     </header>
 
     @if (isEditing()) {
-      <div class="edit-form-container mt-2">
-        <textarea 
-          class="standard-textarea text-base min-h-[80px] p-2 bg-black/40 rounded-xl border border-[#df3432]/30" 
+      <div class="mt-3">
+        <textarea
+          class="reply-textarea min-h-[70px] rounded-xl bg-white/[0.03] p-3 text-sm"
           [(ngModel)]="editText"
           placeholder="Edita tu comentario..."
           autofocus
         ></textarea>
-        <div class="flex justify-end mt-3 gap-2">
-          <button 
-            class="action-btn !text-[#5a6070] hover:!text-white" 
-            (click)="isEditing.set(false)"
-          >
-            Cancelar
-          </button>
-          <button 
-            class="submit-btn-modern !py-1.5 !px-4 !text-xs" 
-            [disabled]="!editText().trim() || isSubmitting()"
+        <div class="flex justify-end mt-2 gap-2">
+          <button class="action-btn" (click)="isEditing.set(false)">Cancelar</button>
+          <button
+            class="action-btn !text-white"
+            [class.opacity-40]="!editText().trim() || isSubmitting()"
+            [class.pointer-events-none]="!editText().trim() || isSubmitting()"
             (click)="submitEdit()"
-          >
-            Guardar Cambios
-          </button>
+          >Guardar</button>
         </div>
       </div>
     } @else {
@@ -56,56 +49,55 @@
 
     <div class="comment-actions">
       <button type="button" class="action-btn" (click)="reply()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
         {{ showReply() ? 'Cancelar' : 'Responder' }}
       </button>
 
-      <button type="button" class="action-btn" (click)="toggleLike()" [class.active]="currentIsLiked()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" [attr.fill]="currentIsLiked() ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+      <button type="button" class="action-btn" (click)="toggleLike()" [class.!text-[#df3432]]="currentIsLiked()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" [attr.fill]="currentIsLiked() ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
         {{ currentLikesCount() || 0 }}
       </button>
 
       @if (isAuthor() && !isEditing()) {
         <button type="button" class="action-btn" (click)="toggleEdit()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
           Editar
         </button>
 
-        <button type="button" class="action-btn delete" (click)="onDelete()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+        <button type="button" class="action-btn hover:!text-[#df3432]" (click)="onDelete()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
           Eliminar
         </button>
       }
     </div>
 
     @if (showReply()) {
-      <div class="reply-form-container">
-        <textarea 
-          class="standard-textarea text-sm min-h-[60px]" 
+      <div class="reply-form">
+        <textarea
+          class="reply-textarea min-h-[50px] text-sm"
           [(ngModel)]="replyText"
           placeholder="Escribe tu respuesta..."
         ></textarea>
         <div class="flex justify-end mt-2">
-          <button 
-            class="submit-btn-modern !py-1.5 !px-4 !text-xs" 
-            [disabled]="!replyText().trim() || isSubmitting()"
+          <button
+            class="action-btn !text-white"
+            [class.opacity-40]="!replyText().trim() || isSubmitting()"
+            [class.pointer-events-none]="!replyText().trim() || isSubmitting()"
             (click)="submitReply()"
-          >
-            Responder
-          </button>
+          >Responder</button>
         </div>
       </div>
     }
-  </article>
+  </div>
 
   @if (hasReplies()) {
     <div class="replies-container">
       @for (reply of replies(); track reply.id) {
-        <app-comment-thread 
-          [comment]="reply" 
-          [depth]="depth() + 1" 
-          [postId]="postId()" 
-          [reloadComments]="reloadComments()" 
+        <app-comment-thread
+          [comment]="reply"
+          [depth]="depth() + 1"
+          [postId]="postId()"
+          [reloadComments]="reloadComments()"
           (commentDeleted)="commentDeleted.emit($event)"
         />
       }

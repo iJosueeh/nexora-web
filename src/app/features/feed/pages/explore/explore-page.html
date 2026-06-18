@@ -10,8 +10,13 @@
         <div class="px-6 py-5">
           <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 class="text-3xl font-black tracking-tight text-white">Explorar <span class="text-[#df3432]">Comunidad</span></h1>
-              <p class="mt-1 text-sm text-zinc-500">Descubre las tendencias y conversaciones más relevantes.</p>
+              @if (searchQuery()) {
+                <h1 class="text-3xl font-black tracking-tight text-white">Resultados para <span class="text-[#df3432]">"{{ searchQuery() }}"</span></h1>
+                <p class="mt-1 text-sm text-zinc-500">{{ relatedPosts().length }} publicaciones encontradas</p>
+              } @else {
+                <h1 class="text-3xl font-black tracking-tight text-white">Explorar <span class="text-[#df3432]">Comunidad</span></h1>
+                <p class="mt-1 text-sm text-zinc-500">Descubre las tendencias y conversaciones más relevantes.</p>
+              }
             </div>
           </div>
         </div>

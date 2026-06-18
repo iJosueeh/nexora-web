@@ -1,88 +1,55 @@
-.comment-input-standard {
-  background: var(--brand-surface-2);
-  border-radius: 1.25rem;
-  border: 1px solid var(--brand-border);
-  padding: 1.25rem;
-  transition: all 0.2s ease;
+:host {
+  display: block;
 }
 
-.comment-input-standard:focus-within {
-  border-color: rgba(227, 38, 46, 0.4);
-  box-shadow: 0 0 0 1px rgba(227, 38, 46, 0.2);
-  background: rgba(13, 17, 25, 0.8);
+.post-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-.textarea-wrapper {
-  flex: 1;
-  position: relative;
+.comment-input-area {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 1rem;
+  padding: 1rem;
+  transition: background 0.2s;
 }
 
-.standard-textarea {
+.comment-input-area:focus-within {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.reply-textarea {
   width: 100%;
   background: transparent;
   border: none;
   resize: none;
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.5;
   outline: none;
-  padding: 0;
+  padding: 0.25rem 0;
   margin: 0;
 }
 
-.standard-textarea::placeholder {
-  color: #5a6070;
+.reply-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.25);
 }
 
-.input-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.input-tools {
-  display: flex;
-  gap: 0.5rem;
-  color: var(--brand-red);
-}
-
-.tool-btn {
+.action-icon-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 9999px;
-  transition: background 0.2s;
-  cursor: pointer;
-}
-
-.tool-btn:hover {
-  background: rgba(227, 38, 46, 0.1);
-}
-
-.submit-btn-modern {
-  background: var(--brand-red);
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.85rem;
-  padding: 0.5rem 1.25rem;
-  border-radius: 9999px;
   transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
 }
 
-.submit-btn-modern:hover:not(:disabled) {
-  background: #f02d36;
-  transform: translateY(-1px);
-}
-
-.submit-btn-modern:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.action-icon-btn:hover {
+  transform: scale(1.1);
 }
