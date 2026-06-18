@@ -9,6 +9,8 @@ import { FeedService } from '../../services/feed.service';
 import { FeedPaginationQueueService } from '../../services/feed-pagination-queue.service';
 import { Trend, SuggestedUser } from '../../models/trend.model';
 import { Post } from '../../../../interfaces/feed';
+import { UniversityEvent } from '../../../home/components/eventos/interfaces/event.model';
+import { ResearchPaper } from '../../../home/components/explorar/interfaces/research-paper.model';
 import { PostCardComponent } from '../../components/post-card/post-card';
 import { ShellLayout } from '../../../../shared/components/shell-layout/shell-layout';
 import { FeedSidebar } from '../../components/feed-sidebar/feed-sidebar';
@@ -27,10 +29,13 @@ export abstract class ExplorePageBase implements OnInit {
   protected readonly route = inject(ActivatedRoute);
 
   activeTab = signal<'todos' | 'multimedia' | 'articulos'>('todos');
+  searchType = signal<'posts' | 'events' | 'papers'>('posts');
   loading = signal(true);
   trends = signal<Trend[]>([]);
   suggestedUsers = signal<SuggestedUser[]>([]);
   relatedPosts = signal<Post[]>([]);
+  relatedEvents = signal<UniversityEvent[]>([]);
+  relatedPapers = signal<ResearchPaper[]>([]);
   selectedTrend = signal<string | null>(null);
   showAllTrends = signal(false);
   featuredPost = signal<Post | null>(null);
@@ -73,6 +78,24 @@ export abstract class ExplorePageBase implements OnInit {
         },
         error: () => this.loading.set(false)
       });
+
+    this.feedService.searchEvents(query, 20, 0)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (events) => this.relatedEvents.set(events),
+        error: (_err: unknown) => this.relatedEvents.set([])
+      });
+
+    this.feedService.searchPapers(query, 20, 0)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (papers) => this.relatedPapers.set(papers),
+        error: (_err: unknown) => this.relatedPapers.set([])
+      });
+  }
+
+  setSearchType(type: 'posts' | 'events' | 'papers'): void {
+    this.searchType.set(type);
   }
 
   private loadInitialData(): void {
