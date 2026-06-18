@@ -10,6 +10,7 @@ export const RESEARCH_PAPERS_MOCK: ResearchPaper[] = [
     summary: 'Un estudio sobre la eficiencia de redes neuronales en entornos de baja computación.',
     views: 1250,
     author: {
+        id: 'user-1',
         fullName: 'Juan Pérez',
         avatarUrl: ''
     }
@@ -23,6 +24,7 @@ export const RESEARCH_PAPERS_MOCK: ResearchPaper[] = [
     summary: 'Propuesta de materiales biodegradables para construcciones urbanas.',
     views: 890,
     author: {
+        id: 'user-2',
         fullName: 'María Garcia',
         avatarUrl: ''
     }
@@ -36,6 +38,7 @@ export const RESEARCH_PAPERS_MOCK: ResearchPaper[] = [
     summary: 'Análisis de tendencias en redes sociales para el sector retail en Perú. Este estudio abarca más de 500 empresas.',
     views: 2100,
     author: {
+        id: 'user-3',
         fullName: 'Carlos Ruiz',
         avatarUrl: ''
     }
@@ -49,6 +52,7 @@ export const RESEARCH_PAPERS_MOCK: ResearchPaper[] = [
     summary: 'Resumen corto.',
     views: 10,
     author: {
+        id: 'user-4',
         fullName: 'Anónimo',
         avatarUrl: ''
     }

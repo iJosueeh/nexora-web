@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { ApiClientService } from '../../../../../shared/services/api-client.service';
-import { ResearchPaper } from '../interfaces/research-paper.model';
+import { ResearchPaper, CreateResearchPaperInput, UpdateResearchPaperInput } from '../interfaces/research-paper.model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +20,7 @@ export class ResearchService {
           faculty
           views
           author {
+            id
             fullName
             avatarUrl
           }
@@ -45,6 +46,7 @@ export class ResearchService {
           faculty
           views
           author {
+            id
             fullName
             avatarUrl
           }
@@ -60,10 +62,10 @@ export class ResearchService {
     }).pipe(map(res => res.data.researchBySlug));
   }
 
-  getDebateDelDia(): Observable<ResearchPaper | null> {
-    const query = `
-      query DebateDelDia {
-        debateDelDia {
+  createPaper(input: CreateResearchPaperInput): Observable<ResearchPaper> {
+    const mutation = `
+      mutation CrearRecurso($input: CreateResearchPaperInput!) {
+        crearRecurso(input: $input) {
           id
           slug
           title
@@ -72,7 +74,6 @@ export class ResearchService {
           views
           author {
             id
-            username
             fullName
             avatarUrl
           }
@@ -82,8 +83,49 @@ export class ResearchService {
       }
     `;
 
-    return this.api.post<{ data: { debateDelDia: ResearchPaper | null } }>('/graphql', {
-      query
-    }).pipe(map(res => res.data.debateDelDia ?? null));
+    return this.api.post<{ data: { crearRecurso: ResearchPaper } }>('/graphql', {
+      query: mutation,
+      variables: { input }
+    }).pipe(map(res => res.data.crearRecurso));
+  }
+
+  updatePaper(paperId: string, input: UpdateResearchPaperInput): Observable<ResearchPaper> {
+    const mutation = `
+      mutation EditarRecurso($paperId: ID!, $input: UpdateResearchPaperInput!) {
+        editarRecurso(paperId: $paperId, input: $input) {
+          id
+          slug
+          title
+          summary
+          faculty
+          views
+          author {
+            id
+            fullName
+            avatarUrl
+          }
+          createdAt
+          pdfUrl
+        }
+      }
+    `;
+
+    return this.api.post<{ data: { editarRecurso: ResearchPaper } }>('/graphql', {
+      query: mutation,
+      variables: { paperId, input }
+    }).pipe(map(res => res.data.editarRecurso));
+  }
+
+  deletePaper(paperId: string): Observable<boolean> {
+    const mutation = `
+      mutation EliminarRecurso($paperId: ID!) {
+        eliminarRecurso(paperId: $paperId)
+      }
+    `;
+
+    return this.api.post<{ data: { eliminarRecurso: boolean } }>('/graphql', {
+      query: mutation,
+      variables: { paperId }
+    }).pipe(map(res => res.data.eliminarRecurso));
   }
 }
