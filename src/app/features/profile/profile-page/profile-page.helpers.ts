@@ -2,7 +2,7 @@ import { AuthUser } from '../../../interfaces/auth';
 import { Post } from '../../../interfaces/feed';
 import { formatRelativeTime } from '../../../utils/date.util';
 
-export type ProfileTab = 'posts' | 'media' | 'likes';
+export type ProfileTab = 'posts' | 'media' | 'likes' | 'bookmarks';
 
 export interface ProfileCard {
   id: string;

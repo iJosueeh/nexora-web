@@ -52,6 +52,16 @@ export const routes: Routes = [
                 canActivate: [authGuard]
             },
             {
+                path: 'groups',
+                loadComponent: () => import('./features/groups/groups-page').then(m => m.GroupsPage),
+                canActivate: [authGuard]
+            },
+            {
+                path: 'groups/:slug',
+                loadComponent: () => import('./features/groups/components/group-detail/group-detail').then(m => m.GroupDetailPage),
+                canActivate: [authGuard]
+            },
+            {
                 path: 'feed',
                 loadComponent: () => import('./features/feed/pages/feed-page/feed-page').then(m => m.FeedPage),
                 canActivate: [authGuard]

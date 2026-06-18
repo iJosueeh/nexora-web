@@ -219,28 +219,62 @@
                 <span class="absolute bottom-0 left-0 h-0.5 w-full bg-white/80"></span>
               }
             </button>
+            @if (state.isOwnProfile()) {
+              <button type="button" (click)="state.setTab('bookmarks')" class="relative pb-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200" [class.text-white]="state.activeTab() === 'bookmarks'" [class.text-white/40]="state.activeTab() !== 'bookmarks'" [class.hover:text-white/70]="state.activeTab() !== 'bookmarks'">
+                Guardados
+                @if (state.activeTab() === 'bookmarks') {
+                  <span class="absolute bottom-0 left-0 h-0.5 w-full bg-white/80"></span>
+                }
+              </button>
+            }
           </section>
         }
 
-        <section class="grid gap-5 xl:grid-cols-2">
-          @for (card of visibleCards(); track card.id) {
-            <app-profile-post-card
-              [card]="card"
-              [featured]="$first && card.variant === 'text'"
-            ></app-profile-post-card>
-          }
+        @if (state.activeTab() === 'bookmarks') {
+          <section class="grid gap-5 xl:grid-cols-2">
+            @if (state.isLoadingBookmarks()) {
+              @for (i of [1, 2, 3]; track i) {
+                <div class="animate-pulse rounded-2xl border border-white/5 bg-white/[0.02] p-6">
+                  <div class="mb-3 h-4 w-3/4 rounded bg-white/10"></div>
+                  <div class="h-3 w-1/2 rounded bg-white/10"></div>
+                </div>
+              }
+            } @else if (state.bookmarks().length === 0) {
+              <article class="col-span-full flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/[0.02] p-12 text-center">
+                <div class="mb-6 text-white/10">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+                </div>
+                <p class="text-sm text-white/40 max-w-xs leading-6">Aún no hay publicaciones guardadas.</p>
+              </article>
+            } @else {
+              @for (card of state.bookmarks(); track card.id) {
+                <app-profile-post-card
+                  [card]="card"
+                  [featured]="$first && card.variant === 'text'"
+                ></app-profile-post-card>
+              }
+            }
+          </section>
+        } @else {
+          <section class="grid gap-5 xl:grid-cols-2">
+            @for (card of visibleCards(); track card.id) {
+              <app-profile-post-card
+                [card]="card"
+                [featured]="$first && card.variant === 'text'"
+              ></app-profile-post-card>
+            }
 
-          @if (visibleCards().length === 0) {
-            <article class="col-span-full flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/[0.02] p-12 text-center">
-              <div class="mb-6 text-white/10">
-                <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="12" y1="18" x2="12" y2="12"></line>
-                  <line x1="9" y1="15" x2="15" y2="15"></line>
-                </svg>
-              </div>
-              <p class="text-sm text-white/40 max-w-xs leading-6">Aún no hay publicaciones en este perfil.</p>
+            @if (visibleCards().length === 0) {
+              <article class="col-span-full flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/[0.02] p-12 text-center">
+                <div class="mb-6 text-white/10">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                  </svg>
+                </div>
+                <p class="text-sm text-white/40 max-w-xs leading-6">Aún no hay publicaciones en este perfil.</p>
               @if (state.isOwnProfile()) {
                 <button
                   type="button"
@@ -253,6 +287,7 @@
             </article>
           }
         </section>
+        }
 
         @if (!state.isAnonymousPreview() && state.hasMorePosts()) {
           <section class="flex justify-center pt-2">
