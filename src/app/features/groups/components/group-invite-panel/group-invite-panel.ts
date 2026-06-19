@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { InvitationService } from '../../services/invitation.service';
