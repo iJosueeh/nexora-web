@@ -1,0 +1,42 @@
+<div class="rounded-2xl border border-white/5 bg-white/[0.02] p-4">
+  <div class="flex items-center gap-2 mb-3">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#df3432]"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+    <span class="text-sm font-semibold text-white">Invitar miembro</span>
+  </div>
+
+  <div class="flex gap-2">
+    <input
+      type="text"
+      [ngModel]="searchUsername()"
+      (ngModelChange)="searchUsername.set($event); clearMessages()"
+      placeholder="Nombre de usuario"
+      class="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-zinc-500 outline-none transition-all focus:border-[#df3432]/60"
+      [disabled]="isSubmitting()"
+      (keyup.enter)="inviteUser()"
+    />
+    <button
+      type="button"
+      (click)="inviteUser()"
+      [disabled]="isSubmitting() || !searchUsername().trim()"
+      class="rounded-xl bg-gradient-to-br from-[#df3432] to-[#b82829] px-4 py-2 text-sm font-bold text-white shadow-[0_0_10px_rgba(223,52,50,0.2)] transition-all hover:shadow-[0_0_15px_rgba(223,52,50,0.35)] hover:brightness-110 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      @if (isSubmitting()) {
+        <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></span>
+      } @else {
+        Invitar
+      }
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="mt-3 rounded-lg bg-red-500/10 border border-red-500/20 px-3 py-2 text-xs text-red-400">
+      {{ error() }}
+    </div>
+  }
+
+  @if (successMessage()) {
+    <div class="mt-3 rounded-lg bg-green-500/10 border border-green-500/20 px-3 py-2 text-xs text-green-400">
+      {{ successMessage() }}
+    </div>
+  }
+</div>

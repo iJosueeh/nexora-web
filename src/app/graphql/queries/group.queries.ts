@@ -167,3 +167,54 @@ export const REMOVE_MEMBER_MUTATION = gql`
     removerMiembro(groupId: $groupId, targetUserId: $targetUserId)
   }
 `;
+
+export const INVITATIONS_RECEIVED_QUERY = gql`
+  query GetInvitationsReceived($status: String) {
+    invitationsReceived(status: $status) {
+      invitationId
+      groupId
+      groupName
+      groupSlug
+      inviterUsername
+      inviterFullName
+      inviterAvatarUrl
+      status
+      invitedUserId
+    }
+  }
+`;
+
+export const INVITE_MEMBER_MUTATION = gql`
+  mutation InviteMember($groupId: ID!, $username: String!) {
+    invitarMiembro(groupId: $groupId, username: $username) {
+      invitationId
+      groupId
+      groupName
+      groupSlug
+      inviterUsername
+      inviterFullName
+      inviterAvatarUrl
+      status
+      invitedUserId
+    }
+  }
+`;
+
+export const ACCEPT_INVITATION_MUTATION = gql`
+  mutation AcceptInvitation($invitationId: ID!) {
+    aceptarInvitacion(invitationId: $invitationId) {
+      id
+      groupId
+      userId
+      role
+      status
+      createdAt
+    }
+  }
+`;
+
+export const REJECT_INVITATION_MUTATION = gql`
+  mutation RejectInvitation($invitationId: ID!) {
+    rechazarInvitacion(invitationId: $invitationId)
+  }
+`;

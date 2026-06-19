@@ -219,12 +219,22 @@
                     [class.border-[#df3432]]="membersTab() === 'pending'">
                     Solicitudes
                   </button>
+                  <button type="button" (click)="setMembersTab('invite')"
+                    class="flex-1 px-6 py-3 text-center text-sm font-semibold transition-colors"
+                    [class.text-white]="membersTab() === 'invite'"
+                    [class.text-white/40]="membersTab() !== 'invite'"
+                    [class.border-b-2]="membersTab() === 'invite'"
+                    [class.border-[#df3432]]="membersTab() === 'invite'">
+                    Invitar
+                  </button>
                 </div>
                 <div class="p-4">
                   @if (membersTab() === 'members') {
                     <app-group-members-list [groupId]="g.id" [currentUserId]="currentUserId()" />
-                  } @else {
+                  } @else if (membersTab() === 'pending') {
                     <app-group-pending-list [groupId]="g.id" />
+                  } @else {
+                    <app-group-invite-panel [groupId]="g.id" [inviterUserId]="currentUserId()" />
                   }
                 </div>
               </div>

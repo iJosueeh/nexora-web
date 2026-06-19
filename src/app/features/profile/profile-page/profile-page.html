@@ -226,6 +226,12 @@
                   <span class="absolute bottom-0 left-0 h-0.5 w-full bg-white/80"></span>
                 }
               </button>
+              <button type="button" (click)="state.setTab('invitations')" class="relative pb-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200" [class.text-white]="state.activeTab() === 'invitations'" [class.text-white/40]="state.activeTab() !== 'invitations'" [class.hover:text-white/70]="state.activeTab() !== 'invitations'">
+                Invitaciones
+                @if (state.activeTab() === 'invitations') {
+                  <span class="absolute bottom-0 left-0 h-0.5 w-full bg-white/80"></span>
+                }
+              </button>
             }
           </section>
         }
@@ -254,6 +260,10 @@
                 ></app-profile-post-card>
               }
             }
+          </section>
+        } @else if (state.activeTab() === 'invitations') {
+          <section>
+            <app-invitations-list></app-invitations-list>
           </section>
         } @else {
           <section class="grid gap-5 xl:grid-cols-2">

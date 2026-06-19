@@ -11,6 +11,7 @@ import { ProfileMenu } from './components/profile-menu/profile-menu';
 import { FollowModal } from './components/follow-modal/follow-modal';
 import { ProfilePostCard } from './components/profile-post-card/profile-post-card';
 import { ProfileSkeleton } from './components/profile-skeleton/profile-skeleton';
+import { InvitationsListComponent } from '../../groups/components/invitations-list/invitations-list';
 import { ProfilePageState } from './profile-page.state';
 import {
   ProfileCard,
@@ -24,7 +25,7 @@ import {
 @Component({
   selector: 'app-profile-page',
   standalone: true,
-  imports: [CommonModule, FeedSidebar, ShellLayout, ProfileMenu, FollowModal, ProfilePostCard, ProfileSkeleton],
+  imports: [CommonModule, FeedSidebar, ShellLayout, ProfileMenu, FollowModal, ProfilePostCard, ProfileSkeleton, InvitationsListComponent],
   providers: [ProfilePageState],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './profile-page.html',

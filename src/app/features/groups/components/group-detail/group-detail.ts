@@ -10,12 +10,13 @@ import { ShellLayout } from '../../../../shared/components/shell-layout/shell-la
 import { GroupService } from '../../services/group.service';
 import { GroupMembersListComponent } from '../group-members-list/group-members-list';
 import { GroupPendingListComponent } from '../group-pending-list/group-pending-list';
+import { GroupInvitePanelComponent } from '../group-invite-panel/group-invite-panel';
 import { StudyGroup, UpdateStudyGroupInput } from '../../interfaces/group.model';
 
 @Component({
   selector: 'app-group-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, FeedSidebar, ShellLayout, GroupMembersListComponent, GroupPendingListComponent],
+  imports: [CommonModule, FormsModule, FeedSidebar, ShellLayout, GroupMembersListComponent, GroupPendingListComponent, GroupInvitePanelComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './group-detail.html',
   styleUrl: './group-detail.css',
@@ -34,7 +35,7 @@ export class GroupDetailPage implements OnInit {
   readonly isEditing = signal(false);
   readonly showDeleteConfirm = signal(false);
   readonly showMembers = signal(false);
-  readonly membersTab = signal<'members' | 'pending'>('members');
+  readonly membersTab = signal<'members' | 'pending' | 'invite'>('members');
   readonly error = signal('');
 
   readonly editName = signal('');
@@ -221,7 +222,7 @@ export class GroupDetailPage implements OnInit {
     this.error.set('');
   }
 
-  setMembersTab(tab: 'members' | 'pending'): void {
+  setMembersTab(tab: 'members' | 'pending' | 'invite'): void {
     this.membersTab.set(tab);
   }
 
