@@ -219,6 +219,28 @@ export const REJECT_INVITATION_MUTATION = gql`
   }
 `;
 
+export const GROUP_INVITATIONS_QUERY = gql`
+  query GetGroupInvitations($groupId: ID!) {
+    groupInvitations(groupId: $groupId) {
+      invitationId
+      groupId
+      groupName
+      groupSlug
+      inviterUsername
+      inviterFullName
+      inviterAvatarUrl
+      status
+      invitedUserId
+    }
+  }
+`;
+
+export const CANCEL_INVITATION_MUTATION = gql`
+  mutation CancelInvitation($invitationId: ID!) {
+    cancelarInvitacion(invitationId: $invitationId)
+  }
+`;
+
 export const SEARCH_USERS_QUERY = gql`
   query SearchUsers($query: String!) {
     searchUsers(query: $query) {

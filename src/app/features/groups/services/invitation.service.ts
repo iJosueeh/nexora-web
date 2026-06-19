@@ -7,6 +7,8 @@ import {
   INVITE_MEMBER_MUTATION,
   ACCEPT_INVITATION_MUTATION,
   REJECT_INVITATION_MUTATION,
+  GROUP_INVITATIONS_QUERY,
+  CANCEL_INVITATION_MUTATION,
   SEARCH_USERS_QUERY,
 } from '../../../graphql/graphql.queries';
 
@@ -33,6 +35,10 @@ interface InvitationsQueryResponse {
   invitationsReceived: GroupInvitation[];
 }
 
+interface GroupInvitationsQueryResponse {
+  groupInvitations: GroupInvitation[];
+}
+
 interface SearchUsersQueryResponse {
   searchUsers: UserSearchResult[];
 }
@@ -47,6 +53,10 @@ interface AcceptInvitationMutationResponse {
 
 interface RejectInvitationMutationResponse {
   rechazarInvitacion: boolean;
+}
+
+interface CancelInvitationMutationResponse {
+  cancelarInvitacion: boolean;
 }
 
 @Injectable({
@@ -125,6 +135,31 @@ export class InvitationService {
       })
       .pipe(
         map((result) => result.data?.rechazarInvitacion ?? false),
+        catchError(() => of(false))
+      );
+  }
+
+  getGroupInvitations(groupId: string): Observable<GroupInvitation[]> {
+    return this.apollo
+      .query<GroupInvitationsQueryResponse>({
+        query: GROUP_INVITATIONS_QUERY,
+        variables: { groupId },
+        fetchPolicy: 'network-only',
+      })
+      .pipe(
+        map((result) => result.data?.groupInvitations ?? []),
+        catchError(() => of([]))
+      );
+  }
+
+  cancelInvitation(invitationId: string): Observable<boolean> {
+    return this.apollo
+      .mutate<CancelInvitationMutationResponse>({
+        mutation: CANCEL_INVITATION_MUTATION,
+        variables: { invitationId },
+      })
+      .pipe(
+        map((result) => result.data?.cancelarInvitacion ?? false),
         catchError(() => of(false))
       );
   }

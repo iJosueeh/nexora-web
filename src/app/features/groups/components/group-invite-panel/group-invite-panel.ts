@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal, input, 
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { InvitationService, UserSearchResult } from '../../services/invitation.service';
+import { InvitationService, GroupInvitation, UserSearchResult } from '../../services/invitation.service';
 
 @Component({
   selector: 'app-group-invite-panel',
@@ -17,12 +17,14 @@ export class GroupInvitePanelComponent implements OnInit {
   readonly groupId = input.required<string>();
   readonly inviterUserId = input<string>('');
 
+  readonly pendingInvitations = signal<GroupInvitation[]>([]);
   readonly searchQuery = signal('');
   readonly searchResults = signal<UserSearchResult[]>([]);
   readonly isSearching = signal(false);
   readonly selectedUser = signal<UserSearchResult | null>(null);
   readonly showDropdown = signal(false);
   readonly isSubmitting = signal(false);
+  readonly isCancelling = signal(false);
   readonly error = signal('');
   readonly successMessage = signal('');
 
@@ -31,6 +33,8 @@ export class GroupInvitePanelComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
+    this.loadPendingInvitations();
+
     this.invitationService.searchUsersDebounced(this.searchInput$)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -41,6 +45,16 @@ export class GroupInvitePanelComponent implements OnInit {
         },
         error: () => {
           this.isSearching.set(false);
+        },
+      });
+  }
+
+  loadPendingInvitations(): void {
+    this.invitationService.getGroupInvitations(this.groupId())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (invitations) => {
+          this.pendingInvitations.set(invitations.filter(i => i.status === 'PENDING'));
         },
       });
   }
@@ -97,22 +111,36 @@ export class GroupInvitePanelComponent implements OnInit {
           if (invitation) {
             this.successMessage.set(`Invitación enviada a @${user.username}`);
             this.clearSelection();
+            this.loadPendingInvitations();
           } else {
             this.error.set('No se pudo enviar la invitación');
           }
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          const message = err?.message || 'Error al enviar la invitación';
-          if (message.includes('no encontrado')) {
-            this.error.set('Usuario no encontrado');
-          } else if (message.includes('ya es miembro')) {
-            this.error.set('El usuario ya es miembro del grupo');
-          } else if (message.includes('ya existe')) {
-            this.error.set('Ya existe una invitación para este usuario');
+          this.error.set(err?.message || 'Error al enviar la invitación');
+        },
+      });
+  }
+
+  cancelInvitation(invitation: GroupInvitation): void {
+    this.isCancelling.set(true);
+    this.error.set('');
+
+    this.invitationService.cancelInvitation(invitation.invitationId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (success) => {
+          this.isCancelling.set(false);
+          if (success) {
+            this.loadPendingInvitations();
           } else {
-            this.error.set(message);
+            this.error.set('Error al cancelar la invitación');
           }
+        },
+        error: (err) => {
+          this.isCancelling.set(false);
+          this.error.set(err?.message || 'Error al cancelar la invitación');
         },
       });
   }
