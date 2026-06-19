@@ -10,7 +10,6 @@ import {
   DELETE_GROUP_MUTATION,
   JOIN_GROUP_MUTATION,
   LEAVE_GROUP_MUTATION,
-  APPROVE_MEMBERSHIP_MUTATION,
 } from '../../../graphql/graphql.queries';
 import { StudyGroup, CreateStudyGroupInput, UpdateStudyGroupInput, GroupMembership } from '../interfaces/group.model';
 
@@ -44,10 +43,6 @@ interface JoinGroupMutationResponse {
 
 interface LeaveGroupMutationResponse {
   salirGrupo: boolean;
-}
-
-interface ApproveMembershipMutationResponse {
-  aprobarMembresia: GroupMembership;
 }
 
 @Injectable({
@@ -102,7 +97,10 @@ export class GroupService {
       })
       .pipe(
         map((result) => result.data?.crearGrupo ?? null),
-        catchError(() => of(null))
+        catchError((err) => {
+          console.error('Error creating group:', err);
+          return of(null);
+        })
       );
   }
 
@@ -151,18 +149,6 @@ export class GroupService {
       .pipe(
         map((result) => result.data?.salirGrupo ?? false),
         catchError(() => of(false))
-      );
-  }
-
-  approveMembership(groupId: string, membershipId: string): Observable<GroupMembership | null> {
-    return this.apollo
-      .mutate<ApproveMembershipMutationResponse>({
-        mutation: APPROVE_MEMBERSHIP_MUTATION,
-        variables: { groupId, membershipId },
-      })
-      .pipe(
-        map((result) => result.data?.aprobarMembresia ?? null),
-        catchError(() => of(null))
       );
   }
 }

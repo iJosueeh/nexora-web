@@ -1,94 +1,241 @@
-<app-shell-layout>
-  <div class="flex w-full gap-6 px-4 py-6 lg:px-8">
-    <div class="hidden w-64 shrink-0 lg:block">
-      <app-feed-sidebar />
-    </div>
+<app-shell-layout [showRight]="false">
+  <div shell-left>
+    <app-feed-sidebar />
+  </div>
 
-    <main class="min-w-0 flex-1">
-      <button
-        type="button"
-        (click)="goBack()"
-        class="mb-6 flex items-center gap-2 text-sm text-white/40 transition-colors hover:text-white/70"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-        Volver a grupos
-      </button>
+  <div shell-main>
+    <button
+      type="button"
+      (click)="goBack()"
+      class="mb-6 flex items-center gap-2 text-sm text-white/40 transition-colors hover:text-white/70"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      Volver a grupos
+    </button>
 
-      @if (isLoading()) {
-        <div class="animate-pulse rounded-2xl border border-white/5 bg-white/[0.02] p-8">
-          <div class="mb-4 h-6 w-1/3 rounded bg-white/10"></div>
-          <div class="mb-3 h-4 w-1/2 rounded bg-white/10"></div>
-          <div class="h-4 w-2/3 rounded bg-white/10"></div>
-        </div>
-      } @else if (group(); as g) {
-        <div class="rounded-2xl border border-white/5 bg-white/[0.02] p-8">
-          <div class="mb-6 flex items-start justify-between">
+    @if (isLoading()) {
+      <div class="animate-pulse rounded-2xl border border-white/5 bg-white/[0.02] p-8">
+        <div class="mb-4 h-6 w-1/3 rounded bg-white/10"></div>
+        <div class="mb-3 h-4 w-1/2 rounded bg-white/10"></div>
+        <div class="h-4 w-2/3 rounded bg-white/10"></div>
+      </div>
+    } @else if (group(); as g) {
+      @if (isEditing()) {
+        <div class="rounded-2xl border border-white/10 bg-gradient-to-br from-[#0d0e12] via-[#13141c] to-[#0d0e12] p-6">
+          <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-xl font-bold text-white">Editar grupo</h2>
+            <button type="button" (click)="cancelEditing()" class="text-white/40 hover:text-white/70 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+
+          <div class="space-y-5">
             <div>
-              <div class="flex items-center gap-3">
-                <h1 class="text-2xl font-bold text-white">{{ g.name }}</h1>
-                @if (g.isMember) {
-                  <span class="rounded-full bg-[#df3432]/10 px-3 py-1 text-xs font-bold text-[#df3432]">Miembro</span>
-                }
-              </div>
-              <p class="mt-1 text-sm text-white/40">{{ g.category }}</p>
+              <label class="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-zinc-400">Nombre del grupo *</label>
+              <input type="text" [ngModel]="editName()" (ngModelChange)="editName.set($event)" maxlength="100"
+                class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-all focus:border-[#df3432]/60 focus:bg-white/[0.07]"
+                placeholder="Ej: Grupo de Cálculo" />
             </div>
-          </div>
-
-          @if (g.description) {
-            <p class="mb-6 text-sm leading-relaxed text-white/60">{{ g.description }}</p>
-          }
-
-          <div class="mb-6 flex items-center gap-6 text-sm text-white/50">
-            <span class="flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-              {{ g.memberCount }}/{{ g.maxMembers }} miembros
-            </span>
-            @if (g.myRole) {
-              <span class="rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-white/50">Tu rol: {{ g.myRole }}</span>
-            }
-          </div>
-
-          @if (error()) {
-            <div class="mb-4 rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">{{ error() }}</div>
-          }
-
-          <div class="flex gap-3">
-            @if (g.isMember) {
-              @if (g.myRole !== 'OWNER') {
-                <button
-                  type="button"
-                  (click)="leaveGroup()"
-                  [disabled]="isSubmitting()"
-                  class="rounded-xl border border-white/10 bg-white/5 px-6 py-2.5 text-sm font-semibold text-white/60 transition-all duration-200 hover:border-white/20 hover:bg-white/10 hover:text-white disabled:opacity-50"
-                >
-                  @if (isSubmitting()) {
-                    <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></span>
-                  } @else {
-                    Salir del grupo
+            <div>
+              <label class="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-zinc-400">Descripción</label>
+              <textarea [ngModel]="editDescription()" (ngModelChange)="editDescription.set($event)" rows="3"
+                class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-all focus:border-[#df3432]/60 focus:bg-white/[0.07] resize-none"
+                placeholder="Describe el propósito del grupo..."></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-zinc-400">Categoría</label>
+                <select [ngModel]="editCategory()" (ngModelChange)="editCategory.set($event)"
+                  class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-all focus:border-[#df3432]/60">
+                  @for (cat of categories(); track cat) {
+                    <option [value]="cat">{{ cat }}</option>
                   }
-                </button>
-              }
-            } @else {
-              <button
-                type="button"
-                (click)="joinGroup()"
-                [disabled]="isSubmitting()"
-                class="rounded-xl bg-gradient-to-br from-[#df3432] to-[#b82829] px-6 py-2.5 text-sm font-bold text-white shadow-[0_0_15px_rgba(223,52,50,0.3)] transition-all duration-200 hover:shadow-[0_0_20px_rgba(223,52,50,0.45)] hover:brightness-110 active:scale-[0.97] disabled:opacity-50"
-              >
+                </select>
+              </div>
+              <div>
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-zinc-400">Límite de miembros</label>
+                <input type="number" [ngModel]="editMaxMembers()" (ngModelChange)="editMaxMembers.set($event)" min="2" max="100"
+                  class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-all focus:border-[#df3432]/60" />
+              </div>
+            </div>
+
+            @if (error()) {
+              <div class="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">{{ error() }}</div>
+            }
+
+            <div class="flex items-center gap-3 pt-2">
+              <button type="button" (click)="cancelEditing()"
+                class="rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/60 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white">
+                Cancelar
+              </button>
+              <button type="button" (click)="saveEdit()" [disabled]="isSubmitting()"
+                class="rounded-xl bg-gradient-to-br from-[#df3432] to-[#b82829] px-6 py-2.5 text-sm font-bold text-white shadow-[0_0_15px_rgba(223,52,50,0.3)] transition-all hover:shadow-[0_0_20px_rgba(223,52,50,0.45)] hover:brightness-110 active:scale-[0.97] disabled:opacity-50">
                 @if (isSubmitting()) {
                   <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></span>
                 } @else {
-                  Unirse al grupo
+                  Guardar cambios
                 }
               </button>
-            }
+            </div>
+          </div>
+        </div>
+      } @else if (showDeleteConfirm()) {
+        <div class="rounded-2xl border border-red-500/20 bg-gradient-to-br from-red-500/5 via-[#0d0e12] to-[#0d0e12] p-8 text-center">
+          <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-500/10">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-400"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+          </div>
+          <h3 class="mb-2 text-lg font-bold text-white">Eliminar grupo</h3>
+          <p class="mb-6 text-sm text-zinc-400">¿Estás seguro de eliminar "<span class="text-white">{{ g.name }}</span>"? No se puede deshacer.</p>
+          <div class="flex justify-center gap-3">
+            <button type="button" (click)="cancelDelete()"
+              class="rounded-xl border border-white/10 bg-white/5 px-6 py-2.5 text-sm font-semibold text-white/60 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white">
+              Cancelar
+            </button>
+            <button type="button" (click)="executeDelete()" [disabled]="isSubmitting()"
+              class="rounded-xl bg-red-500/20 border border-red-500/20 px-6 py-2.5 text-sm font-bold text-red-400 transition-all hover:bg-red-500/30 disabled:opacity-50">
+              @if (isSubmitting()) { Eliminando... } @else { Sí, eliminar }
+            </button>
           </div>
         </div>
       } @else {
-        <div class="flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/[0.02] p-16 text-center">
-          <p class="text-sm text-white/40">Grupo no encontrado</p>
+        <div class="rounded-2xl border border-white/5 bg-gradient-to-br from-[#0d0e12] via-[#13141c] to-[#0d0e12] overflow-hidden">
+          <div class="relative bg-gradient-to-r from-[#df3432]/10 via-transparent to-transparent px-8 py-8">
+            <div class="absolute right-6 top-6 flex gap-2">
+              @if (g.myRole === 'OWNER') {
+                <button type="button" (click)="startEditing()"
+                  class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-white/60 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                  Editar
+                </button>
+                <button type="button" (click)="confirmDelete()"
+                  class="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2 text-xs font-semibold text-red-400 transition-all hover:bg-red-500/20 hover:text-red-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>
+                  Eliminar
+                </button>
+              }
+            </div>
+            <div class="flex items-start gap-4">
+              <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#df3432]/20 to-[#b82829]/20 text-2xl font-black text-[#df3432]">
+                {{ g.name.charAt(0).toUpperCase() }}
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h1 class="text-2xl font-black text-white">{{ g.name }}</h1>
+                  @if (g.isMember) {
+                    <span class="inline-flex items-center gap-1 rounded-full bg-[#df3432]/10 px-2.5 py-0.5 text-xs font-bold text-[#df3432]">
+                      <span class="h-1.5 w-1.5 rounded-full bg-[#df3432]"></span> Miembro
+                    </span>
+                  }
+                </div>
+                <p class="mt-0.5 text-sm text-zinc-400">{{ g.category }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-8 py-6">
+            @if (g.description) {
+              <p class="mb-6 text-sm leading-relaxed text-zinc-300">{{ g.description }}</p>
+            }
+
+            <div class="mb-6 flex flex-wrap items-center gap-4">
+              <div class="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.03] px-4 py-2.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#df3432]"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span class="text-sm font-semibold text-white">{{ g.memberCount }}</span>
+                <span class="text-xs text-zinc-500">/ {{ g.maxMembers }} miembros</span>
+                <div class="h-1.5 min-w-[60px] rounded-full bg-white/5">
+                  <div class="h-full rounded-full bg-gradient-to-r from-[#df3432] to-[#b82829]" [style.width.%]="g.maxMembers > 0 ? Math.min((g.memberCount / g.maxMembers) * 100, 100) : 0"></div>
+                </div>
+              </div>
+              @if (g.myRole) {
+                <div class="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.03] px-4 py-2.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-500"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <span class="text-xs font-medium text-zinc-400">Tu rol:</span>
+                  <span class="text-xs font-bold" [class.text-[#df3432]]="g.myRole === 'OWNER'" [class.text-yellow-400]="g.myRole === 'MODERATOR'" [class.text-white/60]="g.myRole === 'MEMBER'">{{ g.myRole }}</span>
+                </div>
+              }
+            </div>
+
+            @if (error()) {
+              <div class="mb-4 rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">{{ error() }}</div>
+            }
+
+            <div class="flex flex-wrap gap-3">
+              @if (g.isMember) {
+                @if (g.myRole !== 'OWNER') {
+                  <button type="button" (click)="leaveGroup()" [disabled]="isSubmitting()"
+                    class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/60 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white disabled:opacity-50">
+                    @if (isSubmitting()) {
+                      <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></span>
+                    } @else {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                      Salir del grupo
+                    }
+                  </button>
+                }
+              } @else {
+                <button type="button" (click)="joinGroup()" [disabled]="isSubmitting()"
+                  class="flex items-center gap-2 rounded-xl bg-gradient-to-br from-[#df3432] to-[#b82829] px-6 py-2.5 text-sm font-bold text-white shadow-[0_0_15px_rgba(223,52,50,0.3)] transition-all hover:shadow-[0_0_20px_rgba(223,52,50,0.45)] hover:brightness-110 active:scale-[0.97] disabled:opacity-50">
+                  @if (isSubmitting()) {
+                    <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></span>
+                  } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/></svg>
+                    Unirse al grupo
+                  }
+                </button>
+              }
+            </div>
+          </div>
         </div>
+
+        @if (g.isMember && (g.myRole === 'OWNER' || g.myRole === 'MODERATOR')) {
+          <div class="border-t border-white/5 px-8 py-4">
+            <button type="button" (click)="toggleMembers()"
+              class="mb-4 flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/60 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              {{ showMembers() ? 'Ocultar gestión' : 'Gestionar miembros' }}
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                [class.rotate-180]="showMembers()"
+                class="transition-transform duration-200">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </button>
+
+            @if (showMembers()) {
+              <div class="rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden">
+                <div class="flex border-b border-white/5">
+                  <button type="button" (click)="setMembersTab('members')"
+                    class="flex-1 px-6 py-3 text-center text-sm font-semibold transition-colors"
+                    [class.text-white]="membersTab() === 'members'"
+                    [class.text-white/40]="membersTab() !== 'members'"
+                    [class.border-b-2]="membersTab() === 'members'"
+                    [class.border-[#df3432]]="membersTab() === 'members'">
+                    Miembros
+                  </button>
+                  <button type="button" (click)="setMembersTab('pending')"
+                    class="flex-1 px-6 py-3 text-center text-sm font-semibold transition-colors"
+                    [class.text-white]="membersTab() === 'pending'"
+                    [class.text-white/40]="membersTab() !== 'pending'"
+                    [class.border-b-2]="membersTab() === 'pending'"
+                    [class.border-[#df3432]]="membersTab() === 'pending'">
+                    Solicitudes
+                  </button>
+                </div>
+                <div class="p-4">
+                  @if (membersTab() === 'members') {
+                    <app-group-members-list [groupId]="g.id" [currentUserId]="currentUserId()" />
+                  } @else {
+                    <app-group-pending-list [groupId]="g.id" />
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
       }
-    </main>
+    } @else {
+      <div class="flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/[0.02] p-16 text-center">
+        <p class="text-sm text-white/40">Grupo no encontrado</p>
+      </div>
+    }
   </div>
 </app-shell-layout>

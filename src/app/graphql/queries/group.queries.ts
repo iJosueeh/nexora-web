@@ -122,3 +122,48 @@ export const APPROVE_MEMBERSHIP_MUTATION = gql`
     }
   }
 `;
+
+export const GROUP_MEMBERS_QUERY = gql`
+  query GetGroupMembers($groupId: ID!) {
+    groupMembers(groupId: $groupId) {
+      userId
+      username
+      fullName
+      avatarUrl
+      role
+      status
+    }
+  }
+`;
+
+export const PENDING_MEMBERS_QUERY = gql`
+  query GetPendingMembers($groupId: ID!) {
+    pendingMembers(groupId: $groupId) {
+      membershipId
+      userId
+      username
+      fullName
+      avatarUrl
+      status
+      role
+    }
+  }
+`;
+
+export const UPDATE_MEMBER_ROLE_MUTATION = gql`
+  mutation UpdateMemberRole($groupId: ID!, $targetUserId: ID!, $role: GroupRole!) {
+    actualizarRolMiembro(groupId: $groupId, targetUserId: $targetUserId, role: $role) {
+      id
+      groupId
+      userId
+      role
+      status
+    }
+  }
+`;
+
+export const REMOVE_MEMBER_MUTATION = gql`
+  mutation RemoveMember($groupId: ID!, $targetUserId: ID!) {
+    removerMiembro(groupId: $groupId, targetUserId: $targetUserId)
+  }
+`;
