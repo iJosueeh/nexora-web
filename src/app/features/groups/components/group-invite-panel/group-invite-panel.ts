@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal, input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { InvitationService } from '../../services/invitation.service';
+import { InvitationService, UserSearchResult } from '../../services/invitation.service';
 
 @Component({
   selector: 'app-group-invite-panel',
@@ -12,28 +13,75 @@ import { InvitationService } from '../../services/invitation.service';
   templateUrl: './group-invite-panel.html',
   styleUrl: './group-invite-panel.css',
 })
-export class GroupInvitePanelComponent {
+export class GroupInvitePanelComponent implements OnInit {
   readonly groupId = input.required<string>();
   readonly inviterUserId = input<string>('');
 
-  readonly inviteSent = signal(false);
+  readonly searchQuery = signal('');
+  readonly searchResults = signal<UserSearchResult[]>([]);
+  readonly isSearching = signal(false);
+  readonly selectedUser = signal<UserSearchResult | null>(null);
+  readonly showDropdown = signal(false);
   readonly isSubmitting = signal(false);
-  readonly searchUsername = signal('');
   readonly error = signal('');
   readonly successMessage = signal('');
 
+  private readonly searchInput$ = new Subject<string>();
   private readonly invitationService = inject(InvitationService);
   private readonly destroyRef = inject(DestroyRef);
 
-  inviteUser(): void {
-    const username = this.searchUsername().trim();
-    if (!username) {
-      this.error.set('Ingresa un nombre de usuario');
-      return;
-    }
+  ngOnInit(): void {
+    this.invitationService.searchUsersDebounced(this.searchInput$)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (results) => {
+          this.searchResults.set(results);
+          this.isSearching.set(false);
+          this.showDropdown.set(results.length > 0 && !this.selectedUser());
+        },
+        error: () => {
+          this.isSearching.set(false);
+        },
+      });
+  }
 
-    if (username.length < 3) {
-      this.error.set('El nombre de usuario debe tener al menos 3 caracteres');
+  onSearchInput(value: string): void {
+    this.searchQuery.set(value);
+    this.selectedUser.set(null);
+    this.error.set('');
+    this.successMessage.set('');
+
+    const trimmed = value.trim();
+    if (trimmed.length >= 2) {
+      this.isSearching.set(true);
+      this.searchInput$.next(trimmed);
+    } else {
+      this.searchResults.set([]);
+      this.showDropdown.set(false);
+    }
+  }
+
+  selectUser(user: UserSearchResult): void {
+    this.selectedUser.set(user);
+    this.searchQuery.set(user.username);
+    this.showDropdown.set(false);
+    this.searchResults.set([]);
+    this.error.set('');
+  }
+
+  clearSelection(): void {
+    this.selectedUser.set(null);
+    this.searchQuery.set('');
+    this.searchResults.set([]);
+    this.showDropdown.set(false);
+    this.error.set('');
+    this.successMessage.set('');
+  }
+
+  inviteUser(): void {
+    const user = this.selectedUser();
+    if (!user) {
+      this.error.set('Selecciona un usuario de la lista');
       return;
     }
 
@@ -41,15 +89,14 @@ export class GroupInvitePanelComponent {
     this.error.set('');
     this.successMessage.set('');
 
-    this.invitationService.inviteMember(this.groupId(), username)
+    this.invitationService.inviteMember(this.groupId(), user.username)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (invitation) => {
           this.isSubmitting.set(false);
           if (invitation) {
-            this.successMessage.set(`Invitación enviada a @${username}`);
-            this.searchUsername.set('');
-            this.inviteSent.set(true);
+            this.successMessage.set(`Invitación enviada a @${user.username}`);
+            this.clearSelection();
           } else {
             this.error.set('No se pudo enviar la invitación');
           }
@@ -70,9 +117,11 @@ export class GroupInvitePanelComponent {
       });
   }
 
-  clearMessages(): void {
-    this.error.set('');
-    this.successMessage.set('');
-    this.inviteSent.set(false);
+  onBlur(): void {
+    setTimeout(() => this.showDropdown.set(false), 200);
+  }
+
+  buildAvatarUrl(username: string): string {
+    return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(username)}`;
   }
 }

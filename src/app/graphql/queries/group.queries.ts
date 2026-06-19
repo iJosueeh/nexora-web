@@ -218,3 +218,14 @@ export const REJECT_INVITATION_MUTATION = gql`
     rechazarInvitacion(invitationId: $invitationId)
   }
 `;
+
+export const SEARCH_USERS_QUERY = gql`
+  query SearchUsers($query: String!) {
+    searchUsers(query: $query) {
+      userId
+      username
+      fullName
+      avatarUrl
+    }
+  }
+`;

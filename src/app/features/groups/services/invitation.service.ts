@@ -1,11 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { map, Observable, catchError, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import {
   INVITATIONS_RECEIVED_QUERY,
   INVITE_MEMBER_MUTATION,
   ACCEPT_INVITATION_MUTATION,
   REJECT_INVITATION_MUTATION,
+  SEARCH_USERS_QUERY,
 } from '../../../graphql/graphql.queries';
 
 export interface GroupInvitation {
@@ -20,8 +22,19 @@ export interface GroupInvitation {
   invitedUserId: string;
 }
 
+export interface UserSearchResult {
+  userId: string;
+  username: string;
+  fullName: string | null;
+  avatarUrl: string | null;
+}
+
 interface InvitationsQueryResponse {
   invitationsReceived: GroupInvitation[];
+}
+
+interface SearchUsersQueryResponse {
+  searchUsers: UserSearchResult[];
 }
 
 interface InviteMutationResponse {
@@ -53,6 +66,28 @@ export class InvitationService {
         map((result) => result.data?.invitationsReceived ?? []),
         catchError(() => of([]))
       );
+  }
+
+  searchUsers(query: string): Observable<UserSearchResult[]> {
+    if (query.trim().length < 2) return of([]);
+    return this.apollo
+      .query<SearchUsersQueryResponse>({
+        query: SEARCH_USERS_QUERY,
+        variables: { query },
+        fetchPolicy: 'network-only',
+      })
+      .pipe(
+        map((result) => result.data?.searchUsers ?? []),
+        catchError(() => of([]))
+      );
+  }
+
+  searchUsersDebounced(input$: Observable<string>): Observable<UserSearchResult[]> {
+    return input$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((query) => this.searchUsers(query)),
+    );
   }
 
   inviteMember(groupId: string, username: string): Observable<GroupInvitation | null> {

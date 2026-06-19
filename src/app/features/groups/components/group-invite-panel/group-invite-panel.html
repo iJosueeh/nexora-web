@@ -1,31 +1,81 @@
 <div class="rounded-2xl border border-white/5 bg-white/[0.02] p-4">
-  <div class="flex items-center gap-2 mb-3">
+  <div class="mb-3 flex items-center gap-2">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#df3432]"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
     <span class="text-sm font-semibold text-white">Invitar miembro</span>
   </div>
 
-  <div class="flex gap-2">
-    <input
-      type="text"
-      [ngModel]="searchUsername()"
-      (ngModelChange)="searchUsername.set($event); clearMessages()"
-      placeholder="Nombre de usuario"
-      class="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-zinc-500 outline-none transition-all focus:border-[#df3432]/60"
-      [disabled]="isSubmitting()"
-      (keyup.enter)="inviteUser()"
-    />
-    <button
-      type="button"
-      (click)="inviteUser()"
-      [disabled]="isSubmitting() || !searchUsername().trim()"
-      class="rounded-xl bg-gradient-to-br from-[#df3432] to-[#b82829] px-4 py-2 text-sm font-bold text-white shadow-[0_0_10px_rgba(223,52,50,0.2)] transition-all hover:shadow-[0_0_15px_rgba(223,52,50,0.35)] hover:brightness-110 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-      @if (isSubmitting()) {
-        <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></span>
-      } @else {
-        Invitar
-      }
-    </button>
+  <div class="relative">
+    <div class="flex gap-2">
+      <div class="relative flex-1">
+        @if (selectedUser()) {
+          <div class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+            <img
+              [src]="selectedUser()!.avatarUrl || buildAvatarUrl(selectedUser()!.username)"
+              class="h-6 w-6 rounded-full bg-white/10 object-cover"
+              alt=""
+            />
+            <span class="flex-1 text-sm text-white">@{{ selectedUser()!.username }}</span>
+            <button type="button" (click)="clearSelection()" class="text-white/40 hover:text-white/70 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+        } @else {
+          <input
+            type="text"
+            [ngModel]="searchQuery()"
+            (ngModelChange)="onSearchInput($event)"
+            placeholder="Buscar usuario..."
+            class="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-zinc-500 outline-none transition-all focus:border-[#df3432]/60"
+            [disabled]="isSubmitting()"
+            (focus)="showDropdown.set(searchResults().length > 0)"
+            (blur)="onBlur()"
+          />
+
+          @if (showDropdown()) {
+            <div class="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-xl border border-white/10 bg-[#1a1b23] shadow-2xl">
+              @if (isSearching()) {
+                <div class="flex items-center justify-center px-4 py-3">
+                  <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></span>
+                </div>
+              } @else {
+                @for (user of searchResults(); track user.userId) {
+                  <button
+                    type="button"
+                    (mousedown)="selectUser(user)"
+                    class="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors hover:bg-white/5"
+                  >
+                    <img
+                      [src]="user.avatarUrl || buildAvatarUrl(user.username)"
+                      class="h-8 w-8 shrink-0 rounded-full bg-white/10 object-cover"
+                      alt=""
+                    />
+                    <div class="min-w-0">
+                      <span class="font-medium text-white">@{{ user.username }}</span>
+                      @if (user.fullName) {
+                        <p class="text-xs text-white/40 truncate">{{ user.fullName }}</p>
+                      }
+                    </div>
+                  </button>
+                }
+              }
+            </div>
+          }
+        }
+      </div>
+
+      <button
+        type="button"
+        (click)="inviteUser()"
+        [disabled]="isSubmitting() || !selectedUser()"
+        class="rounded-xl bg-gradient-to-br from-[#df3432] to-[#b82829] px-4 py-2 text-sm font-bold text-white shadow-[0_0_10px_rgba(223,52,50,0.2)] transition-all hover:shadow-[0_0_15px_rgba(223,52,50,0.35)] hover:brightness-110 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        @if (isSubmitting()) {
+          <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></span>
+        } @else {
+          Invitar
+        }
+      </button>
+    </div>
   </div>
 
   @if (error()) {
