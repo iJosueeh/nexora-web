@@ -1,10 +1,4 @@
-<app-shell-layout mode="feed" [showRight]="false">
-  <div shell-left>
-    <app-feed-sidebar></app-feed-sidebar>
-  </div>
-
-  <div shell-main>
-    <section class="px-5 py-4">
+<section class="px-5 py-4">
       <div class="mx-auto flex w-full max-w-[920px] flex-col gap-6">
         <header class="space-y-2 pt-3">
           <h1 class="text-[clamp(2rem,3.6vw,3rem)] font-semibold tracking-[-0.05em] text-[var(--brand-text)]">
@@ -18,5 +12,4 @@
         <app-publication-composer (published)="onPublished($event)" />
       </div>
     </section>
-  </div>
-</app-shell-layout>
+

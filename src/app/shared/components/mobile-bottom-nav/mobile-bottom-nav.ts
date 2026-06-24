@@ -45,6 +45,6 @@ export class MobileBottomNavComponent {
 
   goToPublication(event: MouseEvent): void {
     event.preventDefault();
-    void this.router.navigate(['/publicar']);
+    void this.router.navigate(['/feed', 'publicar']);
   }
 }

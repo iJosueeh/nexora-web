@@ -175,19 +175,19 @@ export const GET_ADMIN_EVENTS = `
 `;
 
 export const CREATE_EVENT_MUTATION = `
-  mutation CreateEvent($input: CreateEventInput!) {
-    createEvent(input: $input) { id title }
+  mutation CrearEvento($input: CreateEventInput!) {
+    crearEvento(input: $input) { id title }
   }
 `;
 
 export const UPDATE_EVENT_MUTATION = `
-  mutation UpdateEvent($id: ID!, $input: UpdateEventInput!) {
-    updateEvent(id: $id, input: $input) { id title }
+  mutation EditarEvento($id: ID!, $input: UpdateEventInput!) {
+    editarEvento(eventId: $id, input: $input) { id title }
   }
 `;
 
 export const DELETE_EVENT_MUTATION = `
-  mutation DeleteEvent($id: ID!) {
-    deleteEvent(id: $id)
+  mutation EliminarEvento($id: ID!) {
+    eliminarEvento(eventId: $id)
   }
 `;

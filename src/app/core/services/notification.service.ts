@@ -1,4 +1,5 @@
-import { Injectable, inject, signal, effect, NgZone } from '@angular/core';
+import { Injectable, inject, signal, effect, NgZone, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Apollo } from 'apollo-angular';
 import { SupabaseAuthService } from './supabase-auth.service';
 import { AuthSession } from './auth-session';
@@ -33,6 +34,7 @@ export class NotificationService {
   private readonly authSession = inject(AuthSession);
   private readonly toastr = inject(ToastrService);
   private readonly ngZone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly notificationsSignal = signal<Notification[]>([]);
   private readonly unreadCountSignal = signal<number>(0);
@@ -48,21 +50,25 @@ export class NotificationService {
       const userId = user?.id;
       
       if (userId && !isTest) {
-        setTimeout(() => void this.initRealtime(userId), 200);
-        this.loadInitialData();
-      } else if (userId && isTest) {
-        // En tests solo cargamos datos iniciales, no iniciamos realtime real
-        this.loadInitialData();
+        queueMicrotask(() => this.initRealtime(userId));
       } else {
         this.cleanup();
       }
-    }, { allowSignalWrites: true });
+    });
+
+    effect(() => {
+      const user = this.authSession.user();
+      if (user?.id) {
+        queueMicrotask(() => this.loadInitialData());
+      }
+    });
   }
 
   private cleanup(): void {
     if (this.currentChannel) {
-      void this.supabase.getClient().removeChannel(this.currentChannel);
+      const ch = this.currentChannel;
       this.currentChannel = null;
+      this.supabase.getClient().removeChannel(ch).catch(() => undefined);
     }
     this.notificationsSignal.set([]);
     this.unreadCountSignal.set(0);
@@ -82,11 +88,12 @@ export class NotificationService {
 
     this.currentChannel = this.supabase.getClient()
       .channel(`notif-realtime-${cleanUserId}`)
-      .on('postgres_changes' as any, { 
-        event: '*', 
+      .on('postgres_changes' as const, { 
+        event: '*' as const, 
         schema: 'public', 
         table: 'notifications'
-      }, (payload: NotificationPayload) => {
+      // ponytail: supabase types not matching overload, use any
+      } as never, (payload: NotificationPayload) => {
         this.ngZone.run(() => {
           const data = payload.new;
           if (data) {
@@ -101,6 +108,12 @@ export class NotificationService {
               if (payload.eventType === 'INSERT' && !data.is_read) {
                 if (data.type === 'FOLLOW') {
                   this.toastr.info('¡Tienes un nuevo seguidor!', 'Nexora Social', {
+                    timeOut: 5000,
+                    progressBar: true,
+                    positionClass: 'toast-top-right',
+                  });
+                } else if (data.type === 'GROUP_INVITATION') {
+                  this.toastr.info('¡Te invitaron a un grupo de estudio!', 'Nexora Académico', {
                     timeOut: 5000,
                     progressBar: true,
                     positionClass: 'toast-top-right',
@@ -125,7 +138,7 @@ export class NotificationService {
       query: NOTIFICATION_HISTORY_QUERY,
       variables: { limit, offset },
       fetchPolicy: 'network-only'
-    }).subscribe({
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
         if (result.data) {
           this.notificationsSignal.set(result.data.notificationHistory);
@@ -139,7 +152,7 @@ export class NotificationService {
     this.apollo.query<{ unreadNotificationsCount: number }>({
       query: UNREAD_NOTIFICATIONS_COUNT_QUERY,
       fetchPolicy: 'network-only'
-    }).subscribe({
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
         if (result.data) {
           this.unreadCountSignal.set(result.data.unreadNotificationsCount);
@@ -153,7 +166,7 @@ export class NotificationService {
     this.apollo.mutate({
       mutation: MARK_NOTIFICATION_AS_READ_MUTATION,
       variables: { notificationId }
-    }).subscribe({
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.notificationsSignal.update(list => 
           list.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
@@ -167,7 +180,7 @@ export class NotificationService {
   markAllAsRead(): void {
     this.apollo.mutate({
       mutation: MARK_ALL_NOTIFICATIONS_AS_READ_MUTATION
-    }).subscribe({
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.notificationsSignal.update(list => 
           list.map(n => ({ ...n, isRead: true }))

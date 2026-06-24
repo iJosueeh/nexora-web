@@ -19,3 +19,31 @@ export interface UniversityEvent {
     discord?: string;
   };
 }
+
+export interface CreateEventInput {
+  title: string;
+  description?: string;
+  date: string;
+  location?: string;
+  category: string;
+  image?: string;
+  organizerName?: string;
+  organizerRole?: string;
+  whatsapp?: string;
+  telegram?: string;
+  discord?: string;
+}
+
+export interface UpdateEventInput {
+  title?: string;
+  description?: string;
+  date?: string;
+  location?: string;
+  category?: string;
+  image?: string;
+  organizerName?: string;
+  organizerRole?: string;
+  whatsapp?: string;
+  telegram?: string;
+  discord?: string;
+}

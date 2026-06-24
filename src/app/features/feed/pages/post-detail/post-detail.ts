@@ -5,8 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Apollo } from 'apollo-angular';
 
-import { ShellLayout } from '../../../../shared/components/shell-layout/shell-layout';
-import { FeedSidebar } from '../../components/feed-sidebar/feed-sidebar';
+import { RichTextEditorComponent } from '../../../../shared/components/rich-text-editor/rich-text-editor';
 import { CommentThreadListComponent } from '../../components/comment-thread-list/comment-thread-list';
 import { FeedService } from '../../services/feed.service';
 import { CommentService } from '../../services/comment.service';
@@ -48,6 +47,8 @@ export abstract class PostDetailPageBase implements OnInit {
     const user = this.authSession.user();
     return user?.avatarUrl || buildAvatarUrl(user?.username || user?.email || 'nexora');
   });
+
+  isLiked = computed(() => this.post()?.isLiked ?? false);
 
   isOwner = computed(() => {
     const user = this.authSession.getUser();
@@ -223,9 +224,8 @@ export abstract class PostDetailPageBase implements OnInit {
   imports: [
     CommonModule,
     FormsModule,
-    ShellLayout,
-    FeedSidebar,
     CommentThreadListComponent,
+    RichTextEditorComponent,
     BreadcrumbComponent
   ],
   templateUrl: './post-detail.html',

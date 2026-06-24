@@ -1,5 +1,6 @@
 import { Component, signal, inject, OnInit, DestroyRef, Directive, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
 
@@ -8,9 +9,9 @@ import { FeedService } from '../../services/feed.service';
 import { FeedPaginationQueueService } from '../../services/feed-pagination-queue.service';
 import { Trend, SuggestedUser } from '../../models/trend.model';
 import { Post } from '../../../../interfaces/feed';
+import { UniversityEvent } from '../../../home/components/eventos/interfaces/event.model';
+import { ResearchPaper } from '../../../home/components/explorar/interfaces/research-paper.model';
 import { PostCardComponent } from '../../components/post-card/post-card';
-import { ShellLayout } from '../../../../shared/components/shell-layout/shell-layout';
-import { FeedSidebar } from '../../components/feed-sidebar/feed-sidebar';
 import { AuthSession } from '../../../../core/services/auth-session';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { UserSuggestCard } from '../../../../features/home/components/explorar/components/user-suggest-card/user-suggest-card';
@@ -23,15 +24,20 @@ export abstract class ExplorePageBase implements OnInit {
   protected readonly authSession = inject(AuthSession);
   protected readonly profileService = inject(ProfileService);
   protected readonly destroyRef = inject(DestroyRef);
+  protected readonly route = inject(ActivatedRoute);
 
   activeTab = signal<'todos' | 'multimedia' | 'articulos'>('todos');
+  searchType = signal<'posts' | 'events' | 'papers'>('posts');
   loading = signal(true);
   trends = signal<Trend[]>([]);
   suggestedUsers = signal<SuggestedUser[]>([]);
   relatedPosts = signal<Post[]>([]);
+  relatedEvents = signal<UniversityEvent[]>([]);
+  relatedPapers = signal<ResearchPaper[]>([]);
   selectedTrend = signal<string | null>(null);
   showAllTrends = signal(false);
   featuredPost = signal<Post | null>(null);
+  searchQuery = signal<string | null>(null);
 
   filteredPosts = computed(() => {
     const tab = this.activeTab();
@@ -47,7 +53,47 @@ export abstract class ExplorePageBase implements OnInit {
   });
 
   ngOnInit(): void {
-    this.loadInitialData();
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+      const q = params['q'];
+      if (q && q.trim()) {
+        this.searchQuery.set(q.trim());
+        this.performSearch(q.trim());
+      } else {
+        this.searchQuery.set(null);
+        this.loadInitialData();
+      }
+    });
+  }
+
+  performSearch(query: string): void {
+    this.loading.set(true);
+    this.feedService.searchPosts(query, 20, 0)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (posts) => {
+          this.relatedPosts.set(posts);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false)
+      });
+
+    this.feedService.searchEvents(query, 20, 0)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (events) => this.relatedEvents.set(events),
+        error: (_err: unknown) => this.relatedEvents.set([])
+      });
+
+    this.feedService.searchPapers(query, 20, 0)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (papers) => this.relatedPapers.set(papers),
+        error: (_err: unknown) => this.relatedPapers.set([])
+      });
+  }
+
+  setSearchType(type: 'posts' | 'events' | 'papers'): void {
+    this.searchType.set(type);
   }
 
   private loadInitialData(): void {
@@ -155,7 +201,7 @@ export abstract class ExplorePageBase implements OnInit {
 @Component({
   selector: 'app-explore-page',
   standalone: true,
-  imports: [CommonModule, PostCardComponent, ShellLayout, FeedSidebar, UserSuggestCard],
+  imports: [CommonModule, PostCardComponent, UserSuggestCard],
   templateUrl: './explore-page.html',
   styleUrl: './explore-page.css'
 })

@@ -1,0 +1,7 @@
+:host {
+  display: block;
+}
+
+.group-card:hover .group {
+  transform: translateY(-2px);
+}

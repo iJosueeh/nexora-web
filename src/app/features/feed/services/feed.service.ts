@@ -2,8 +2,10 @@ import { Injectable, inject } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { catchError, map, Observable, of } from 'rxjs';
 
-import { FEED_POSTS_QUERY, PROFILE_POSTS_QUERY, POST_BY_ID_QUERY, EDIT_POST_MUTATION } from '../../../graphql/graphql.queries';
+import { FEED_POSTS_QUERY, PROFILE_POSTS_QUERY, POST_BY_ID_QUERY, EDIT_POST_MUTATION, SEARCH_POSTS_QUERY, SEARCH_EVENTS_QUERY, SEARCH_PAPERS_QUERY } from '../../../graphql/graphql.queries';
 import { Post } from '../../../interfaces/feed';
+import { UniversityEvent } from '../../home/components/eventos/interfaces/event.model';
+import { ResearchPaper } from '../../home/components/explorar/interfaces/research-paper.model';
 
 interface FeedAuthorQueryModel {
   id: string;
@@ -43,6 +45,14 @@ interface EditPostQueryResponse {
   editarPublicacion: FeedPostQueryModel;
 }
 
+interface SearchEventsQueryResponse {
+  searchEvents: UniversityEvent[];
+}
+
+interface SearchPapersQueryResponse {
+  searchPapers: ResearchPaper[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -77,7 +87,7 @@ export class FeedService {
       );
   }
 
-  editPost(postId: string, input: any): Observable<Post | null> {
+  editPost(postId: string, input: Record<string, unknown>): Observable<Post | null> {
     return this.apollo
       .mutate<EditPostQueryResponse>({
         mutation: EDIT_POST_MUTATION,
@@ -92,6 +102,45 @@ export class FeedService {
           console.error('Error editing post:', err);
           return of(null);
         })
+      );
+  }
+
+  searchPosts(query: string, limit = 20, offset = 0): Observable<Post[]> {
+    return this.apollo
+      .query<FeedPostsQueryResponse>({
+        query: SEARCH_POSTS_QUERY,
+        variables: { query, limit, offset },
+        fetchPolicy: 'network-only'
+      })
+      .pipe(
+        map((result) => (result.data?.obtenerFeedPrincipal ?? []).map((post) => this.mapPost(post))),
+        catchError(() => of([]))
+      );
+  }
+
+  searchEvents(query: string, limit = 20, offset = 0): Observable<UniversityEvent[]> {
+    return this.apollo
+      .query<SearchEventsQueryResponse>({
+        query: SEARCH_EVENTS_QUERY,
+        variables: { query, limit, offset },
+        fetchPolicy: 'network-only'
+      })
+      .pipe(
+        map((result) => result.data?.searchEvents ?? []),
+        catchError(() => of([]))
+      );
+  }
+
+  searchPapers(query: string, limit = 20, offset = 0): Observable<ResearchPaper[]> {
+    return this.apollo
+      .query<SearchPapersQueryResponse>({
+        query: SEARCH_PAPERS_QUERY,
+        variables: { query, limit, offset },
+        fetchPolicy: 'network-only'
+      })
+      .pipe(
+        map((result) => result.data?.searchPapers ?? []),
+        catchError(() => of([]))
       );
   }
 

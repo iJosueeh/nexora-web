@@ -7,6 +7,7 @@ import { Post } from '../../../../interfaces/feed';
 import { DELETE_POST_MUTATION, TOGGLE_LIKE_MUTATION } from '../../../../graphql/graphql.queries';
 import { AuthSession } from '../../../../core/services/auth-session';
 import { FeedInteractionService } from '../../services/feed-interaction.service';
+import { BookmarksService } from '../../services/bookmarks.service';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
 import { SanitizeHtmlService } from '../../../../shared/services/sanitize-html.service';
@@ -27,6 +28,7 @@ import { getRelativeDate, canDeletePost } from './post-card.helpers';
 export class PostCardComponent implements OnInit {
 	private readonly apollo = inject(Apollo);
 	private readonly interactionService = inject(FeedInteractionService);
+	private readonly bookmarksService = inject(BookmarksService);
 	public readonly authSession = inject(AuthSession);
 	private readonly toastr = inject(ToastrService);
 	private readonly destroyRef = inject(DestroyRef);
@@ -38,6 +40,7 @@ export class PostCardComponent implements OnInit {
 
 	readonly isLiked = signal(false);
 	readonly likesCount = signal(0);
+	readonly isBookmarked = signal(false);
 	readonly isDeleted = signal(false);
 	readonly showConfirmModal = signal(false);
 	readonly isDeleting = signal(false);
@@ -50,6 +53,12 @@ export class PostCardComponent implements OnInit {
 	ngOnInit(): void {
 		this.isLiked.set(this.post().isLiked ?? false);
 		this.likesCount.set(this.post().likesCount);
+
+		if (this.authSession.isAuthenticated()) {
+			this.bookmarksService.isBookmarked(this.post().id).subscribe({
+				next: (val) => this.isBookmarked.set(val)
+			});
+		}
 
 		this.interactionService.likeUpdates$
 			.pipe(takeUntilDestroyed(this.destroyRef))
@@ -77,6 +86,19 @@ export class PostCardComponent implements OnInit {
 				this.isLiked.set(previousLiked);
 				this.likesCount.set(previousCount);
 			}
+		});
+	}
+
+	toggleBookmark(event: MouseEvent): void {
+		event.stopPropagation();
+		if (!this.authSession.isAuthenticated()) {
+			void this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+			return;
+		}
+		const previous = this.isBookmarked();
+		this.isBookmarked.set(!previous);
+		this.bookmarksService.toggleBookmark(this.post().id).subscribe({
+			error: () => this.isBookmarked.set(previous)
 		});
 	}
 

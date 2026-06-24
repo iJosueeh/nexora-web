@@ -40,7 +40,7 @@ export class AuthSession {
     if (userPatch.bannerUrl === null || userPatch.bannerUrl === '') mergedUser.bannerUrl = undefined;
 
     const payload: SessionPayload = {
-      user: mergedUser as AuthUser,
+      user: mergedUser.id ? mergedUser as AuthUser : { ...mergedUser, id: '' } as AuthUser,
       tokens: current?.tokens,
     };
 
@@ -120,7 +120,8 @@ export class AuthSession {
 
       const userRecord = user as Record<string, unknown>;
       const email = userRecord['email'];
-      if (typeof email !== 'string' || !email.trim()) {
+      const id = userRecord['id'];
+      if (typeof email !== 'string' || !email.trim() || typeof id !== 'string') {
         return null;
       }
 
@@ -128,6 +129,7 @@ export class AuthSession {
         user: {
           ...userRecord,
           email,
+          id,
         } as AuthUser,
         tokens: (record['tokens'] as AuthTokens | undefined) ?? undefined,
       };

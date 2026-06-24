@@ -6,6 +6,7 @@ import { AuthSession } from '../../../core/services/auth-session';
 import { AuthApiService } from '../../auth/services/auth-api.service';
 import { FeedService } from '../../feed/services/feed.service';
 import { ProfileService } from '../services/profile.service';
+import { BookmarksService } from '../../feed/services/bookmarks.service';
 import {
   ProfileCard,
   ProfileTab,
@@ -24,6 +25,7 @@ export class ProfilePageState {
   private readonly authApiService = inject(AuthApiService);
   private readonly feedService = inject(FeedService);
   private readonly profileService = inject(ProfileService);
+  private readonly bookmarksService = inject(BookmarksService);
 
   readonly isLoading = signal(true);
   readonly isGuest = signal(false);
@@ -36,6 +38,8 @@ export class ProfilePageState {
   readonly activeTab = signal<ProfileTab>('posts');
   readonly profile = signal<ProfileViewModel | null>(null);
   readonly posts = signal<ProfileCard[]>([]);
+  readonly bookmarks = signal<ProfileCard[]>([]);
+  readonly isLoadingBookmarks = signal(false);
 
   readonly isAuthenticated = computed(() => this.authSession.isAuthenticated());
   readonly isAnonymousPreview = computed(() => this.isPublicView() && !this.isAuthenticated());
@@ -43,6 +47,9 @@ export class ProfilePageState {
   setTab(tab: ProfileTab): void {
     if (this.isAnonymousPreview()) return;
     this.activeTab.set(tab);
+    if (tab === 'bookmarks' && this.bookmarks().length === 0) {
+      this.loadBookmarks();
+    }
   }
 
   loadFromSession(): void {
@@ -179,6 +186,16 @@ export class ProfilePageState {
 
         this.isLoading.set(false);
         this.isLoadingMorePosts.set(false);
+      });
+  }
+
+  private loadBookmarks(): void {
+    this.isLoadingBookmarks.set(true);
+    this.bookmarksService.getBookmarks(20, 0)
+      .pipe(catchError(() => of([])))
+      .subscribe((posts) => {
+        this.bookmarks.set(mapFeedPostsToProfileCards(posts));
+        this.isLoadingBookmarks.set(false);
       });
   }
 }

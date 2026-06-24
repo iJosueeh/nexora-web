@@ -13,6 +13,7 @@ import { AuthSession } from '../../../core/services/auth-session';
 import { SupabaseStorageService } from '../../../core/services/supabase-storage.service';
 import { UPDATE_PROFILE_MUTATION } from '../../../graphql/graphql.queries';
 import { AuthApiService } from '../../auth/services/auth-api.service';
+import { RegisterCatalogsResponse, UpdateProfileResponse } from '../../../interfaces/auth';
 
 @Component({
   selector: 'app-profile-settings',
@@ -97,7 +98,7 @@ export class ProfileSettingsPage {
 
   async loadCatalogs(): Promise<void> {
     try {
-      const catalogs: any = await firstValueFrom(this.authApi.getRegistrationCatalogs());
+      const catalogs: RegisterCatalogsResponse = await firstValueFrom(this.authApi.getRegistrationCatalogs());
       if (catalogs.careers) this.careerOptions.set(catalogs.careers);
       if (catalogs.academicInterests) this.interestOptions.set(catalogs.academicInterests);
     } catch (e) {
@@ -182,7 +183,7 @@ export class ProfileSettingsPage {
     this.isSaving.set(true);
     const formValue = this.form.value;
 
-    this.apollo.mutate<any>({
+    this.apollo.mutate<UpdateProfileResponse>({
       mutation: UPDATE_PROFILE_MUTATION,
       variables: {
         input: {
@@ -197,8 +198,8 @@ export class ProfileSettingsPage {
       }
     }).subscribe({
       next: (result) => {
-        const updatedProfile = result.data.actualizarPerfil;
-        this.authSession.mergeUser(updatedProfile);
+        const updatedProfile = result.data?.actualizarPerfil;
+        if (updatedProfile) this.authSession.mergeUser(updatedProfile);
         this.toastr.success('Perfil actualizado correctamente');
         this.isSaving.set(false);
       },

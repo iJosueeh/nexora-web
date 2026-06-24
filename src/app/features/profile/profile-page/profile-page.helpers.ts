@@ -2,7 +2,7 @@ import { AuthUser } from '../../../interfaces/auth';
 import { Post } from '../../../interfaces/feed';
 import { formatRelativeTime } from '../../../utils/date.util';
 
-export type ProfileTab = 'posts' | 'media' | 'likes';
+export type ProfileTab = 'posts' | 'media' | 'likes' | 'bookmarks' | 'invitations';
 
 export interface ProfileCard {
   id: string;
@@ -55,7 +55,7 @@ export function buildProfileViewModel(user: AuthUser | null | undefined): Profil
   const handle = `@${(user?.username?.trim() || email.split('@')[0] || 'nexora').toLowerCase()}`;
 
   return {
-    ...(user ?? { email }),
+    ...(user ?? { id: '', email }),
     email,
     displayName: baseName,
     handle,

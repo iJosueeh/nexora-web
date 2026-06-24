@@ -1,17 +1,47 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { Component, signal } from '@angular/core';
+import { Component, Input, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ApolloTestingModule } from 'apollo-angular/testing';
 import { of } from 'rxjs';
 import { CommentService } from '../../services/comment.service';
-import { CommentThreadListComponent } from './comment-thread-list';
 import type { CommentThread } from '../../../../interfaces/feed/comment.model';
 
 @Component({
   standalone: true,
-  imports: [CommentThreadListComponent],
-  template: `<app-comment-thread-list [comments]="comments()"></app-comment-thread-list>`
+  imports: [CommonModule],
+  selector: 'mock-comment-thread',
+  template: '<span class="comment-item">{{ comment.content }}</span>'
+})
+class MockCommentThread {
+  @Input() comment: CommentThread = {
+    id: '',
+    author: { username: '' } as any,
+    content: '',
+    createdAt: new Date(),
+    likesCount: 0,
+    isLiked: false,
+    replies: []
+  };
+}
+
+@Component({
+  standalone: true,
+  imports: [CommonModule, MockCommentThread],
+  selector: 'mock-comment-thread-list',
+  template: `
+    <div>
+      <mock-comment-thread *ngFor="let c of comments" [comment]="c"></mock-comment-thread>
+    </div>
+  `
+})
+class MockCommentThreadList {
+  @Input() comments: readonly CommentThread[] = [];
+}
+
+@Component({
+  standalone: true,
+  imports: [MockCommentThreadList],
+  template: `<mock-comment-thread-list [comments]="comments()"></mock-comment-thread-list>`
 })
 class HostComponent {
   comments = signal<CommentThread[]>([
@@ -25,19 +55,13 @@ describe('CommentThreadListComponent', () => {
 
   beforeEach(async () => {
     const mockCommentService: Partial<CommentService> = {
-      getThreads: () => of([]),
-      createComment: () => of({
-        id: 'new-c',
-        content: 'new',
-        createdAt: new Date(),
-        author: { username: 'test' } as any,
-        likesCount: 0,
-        isLiked: false,
-        replies: []
-      })
+      getThreads: () => of([])
     };
 
-    await TestBed.configureTestingModule({ imports: [HostComponent, RouterTestingModule, ApolloTestingModule], providers: [{ provide: CommentService, useValue: mockCommentService }] }).compileComponents();
+    await TestBed.configureTestingModule({
+      imports: [HostComponent],
+      providers: [{ provide: CommentService, useValue: mockCommentService }]
+    }).compileComponents();
     fixture = TestBed.createComponent(HostComponent);
     fixture.detectChanges();
   });

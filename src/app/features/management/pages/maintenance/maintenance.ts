@@ -25,7 +25,7 @@ export class MaintenancePage implements OnInit {
   // Modal State
   isModalOpen = signal(false);
   modalMode = signal<'create' | 'edit' | 'delete'>('create');
-  selectedItem = signal<any>(null);
+  selectedItem = signal<Faculty | Course | AcademicInterest | null>(null);
   
   // Form values
   itemName = signal('');
@@ -39,11 +39,11 @@ export class MaintenancePage implements OnInit {
     this.activeTab.set(tab);
   }
 
-  openModal(mode: 'create' | 'edit', item?: any) {
+  openModal(mode: 'create' | 'edit', item?: Faculty | Course | AcademicInterest) {
     this.modalMode.set(mode);
     this.selectedItem.set(item || null);
     this.itemName.set(item?.name || '');
-    this.selectedFacultyId.set(item?.faculty?.id || '');
+    this.selectedFacultyId.set(item && 'faculty' in item ? item.faculty.id : '');
     this.isModalOpen.set(true);
   }
 
@@ -65,7 +65,7 @@ export class MaintenancePage implements OnInit {
           error: (err) => this.toast.show(err.message || 'Error al crear facultad', 'error')
         });
       } else {
-        this.managementService.updateFaculty(this.selectedItem().id, name).subscribe({
+        this.managementService.updateFaculty(this.selectedItem()!.id, name).subscribe({
           next: () => this.onSuccess('Facultad actualizada'),
           error: (err) => this.toast.show(err.message || 'Error al actualizar facultad', 'error')
         });
@@ -82,7 +82,7 @@ export class MaintenancePage implements OnInit {
           error: (err) => this.toast.show(err.message || 'Error al crear carrera', 'error')
         });
       } else {
-        this.managementService.updateCourse(this.selectedItem().id, name, facultyId).subscribe({
+        this.managementService.updateCourse(this.selectedItem()!.id, name, facultyId).subscribe({
           next: () => this.onSuccess('Carrera actualizada'),
           error: (err) => this.toast.show(err.message || 'Error al actualizar carrera', 'error')
         });
@@ -94,7 +94,7 @@ export class MaintenancePage implements OnInit {
           error: (err) => this.toast.show(err.message || 'Error al crear interés', 'error')
         });
       } else {
-        this.managementService.updateInterest(this.selectedItem().id, name).subscribe({
+        this.managementService.updateInterest(this.selectedItem()!.id, name).subscribe({
           next: () => this.onSuccess('Interés actualizado'),
           error: (err) => this.toast.show(err.message || 'Error al actualizar interés', 'error')
         });
@@ -102,7 +102,7 @@ export class MaintenancePage implements OnInit {
     }
   }
 
-  delete(item: any) {
+  delete(item: Faculty | Course | AcademicInterest) {
     this.selectedItem.set(item);
     this.modalMode.set('delete');
     this.isModalOpen.set(true);

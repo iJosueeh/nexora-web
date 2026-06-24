@@ -18,16 +18,12 @@ export class MainLayout {
 
   readonly shouldShowFooter = computed(() => {
     const path = this.currentPath();
-    return !(path.startsWith('/feed') || path.startsWith('/publicar') || 
-             path.startsWith('/settings') || path.startsWith('/profile') || 
-             path.startsWith('/u/'));
+    return !(path.startsWith('/feed') || path.startsWith('/settings') || path.startsWith('/profile') || path.startsWith('/u/'));
   });
 
   readonly shouldShowBottomNav = computed(() => {
     const path = this.currentPath();
-    return path.startsWith('/feed') || path.startsWith('/publicar') || 
-           path.startsWith('/settings') || path.startsWith('/profile') || 
-           path.startsWith('/u/');
+    return path.startsWith('/feed') || path.startsWith('/settings') || path.startsWith('/profile') || path.startsWith('/u/');
   });
 
   constructor() {

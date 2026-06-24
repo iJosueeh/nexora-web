@@ -12,25 +12,6 @@
 
     @switch (mode()) {
       @case ('feed') {
-        <div class="hidden min-w-0 flex-1 md:block">
-          <form (submit)="submitSearch($event)">
-            <label class="relative block w-full max-w-2xl">
-              <span class="sr-only">Buscar debates académicos</span>
-              <svg class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#707887]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <circle cx="11" cy="11" r="7"></circle>
-                <path d="m20 20-3.5-3.5"></path>
-              </svg>
-              <input
-                type="search"
-                [value]="searchQuery()"
-                (input)="onSearch($event)"
-                placeholder="Buscar debates académicos..."
-                class="w-full rounded-full border border-white/6 bg-[#0b0d13] py-3 pl-10 pr-4 text-sm text-[#e4e8ef] outline-none transition-colors placeholder:text-[#707887] focus:border-[#df3432]/50"
-              />
-            </label>
-          </form>
-        </div>
-
         <div class="ml-auto flex items-center gap-2.5">
           <app-notification-center />
 
@@ -68,6 +49,15 @@
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#707887] transition-colors group-hover:text-[#df3432]"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                   Ver Perfil
+                </a>
+
+                <a
+                  routerLink="/feed/bookmarks"
+                  (click)="closeProfileDropdown()"
+                  class="group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-[0.82rem] font-medium text-[#c8cbd3] transition-colors hover:bg-white/5 hover:text-white"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#707887] transition-colors group-hover:text-[#df3432]"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+                  Guardados
                 </a>
 
                 <a
@@ -161,6 +151,15 @@
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#707887] transition-colors group-hover:text-[#df3432]"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                   Ver Perfil
+                </a>
+
+                <a
+                  routerLink="/feed/bookmarks"
+                  (click)="closeProfileDropdown()"
+                  class="group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-[0.82rem] font-medium text-[#c8cbd3] transition-colors hover:bg-white/5 hover:text-white"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#707887] transition-colors group-hover:text-[#df3432]"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+                  Guardados
                 </a>
 
                 <a

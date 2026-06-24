@@ -15,10 +15,12 @@ export class NotificationCenterComponent {
   readonly notificationService = inject(NotificationService);
   
   isOpen = signal(false);
+  private isLoading = signal(false);
 
   toggleDropdown(): void {
     this.isOpen.update(v => !v);
-    if (this.isOpen()) {
+    if (this.isOpen() && !this.isLoading()) {
+      this.isLoading.set(true);
       this.notificationService.fetchHistory(10, 0);
     }
   }
@@ -27,6 +29,7 @@ export class NotificationCenterComponent {
   onClickOutside(event: Event): void {
     if (!this.elementRef.nativeElement.contains(event.target)) {
       this.isOpen.set(false);
+      this.isLoading.set(false);
     }
   }
 

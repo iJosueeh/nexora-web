@@ -1,0 +1,181 @@
+<div class="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-6">
+  <div class="flex items-center justify-between">
+    <h2 class="text-xl font-bold text-white">Crear Evento</h2>
+    <button (click)="cancel()" class="text-zinc-400 hover:text-white transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400">
+      {{ error() }}
+    </div>
+  }
+
+  <form (ngSubmit)="submit()" class="space-y-4">
+    <!-- Título -->
+    <div class="space-y-1.5">
+      <label for="title" class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Título *</label>
+      <input
+        id="title"
+        [ngModel]="title()"
+        (ngModelChange)="title.set($event)"
+        name="title"
+        required
+        placeholder="Ej: Taller de Investigación"
+        class="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors focus:border-[#df3432]/60"
+      />
+    </div>
+
+    <!-- Descripción -->
+    <div class="space-y-1.5">
+      <label for="description" class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Descripción</label>
+      <textarea
+        id="description"
+        [ngModel]="description()"
+        (ngModelChange)="description.set($event)"
+        name="description"
+        rows="3"
+        placeholder="Describe el evento..."
+        class="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors focus:border-[#df3432]/60 resize-none"
+      ></textarea>
+    </div>
+
+    <!-- Fecha y Categoría -->
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1.5">
+        <label for="date" class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Fecha *</label>
+        <input
+          id="date"
+          [ngModel]="date()"
+          (ngModelChange)="date.set($event)"
+          name="date"
+          type="datetime-local"
+          required
+          class="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-[#df3432]/60 [color-scheme:dark]"
+        />
+      </div>
+      <div class="space-y-1.5">
+        <label for="category" class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Categoría</label>
+        <select
+          id="category"
+          [ngModel]="category()"
+          (ngModelChange)="category.set($event)"
+          name="category"
+          class="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-[#df3432]/60"
+        >
+          @for (cat of categories(); track cat) {
+            <option [value]="cat" class="bg-zinc-900">{{ cat }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <!-- Ubicación -->
+    <div class="space-y-1.5">
+      <label for="location" class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Ubicación</label>
+      <input
+        id="location"
+        [ngModel]="location()"
+        (ngModelChange)="location.set($event)"
+        name="location"
+        placeholder="Ej: Auditorio Principal UTP"
+        class="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors focus:border-[#df3432]/60"
+      />
+    </div>
+
+    <!-- Imagen URL -->
+    <div class="space-y-1.5">
+      <label for="image" class="text-xs font-semibold uppercase tracking-widest text-zinc-400">URL de Imagen</label>
+      <input
+        id="image"
+        [ngModel]="image()"
+        (ngModelChange)="image.set($event)"
+        name="image"
+        placeholder="https://..."
+        class="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors focus:border-[#df3432]/60"
+      />
+    </div>
+
+    <!-- Organizador -->
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1.5">
+        <label for="organizerName" class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Organizador</label>
+        <input
+          id="organizerName"
+          [ngModel]="organizerName()"
+          (ngModelChange)="organizerName.set($event)"
+          name="organizerName"
+          placeholder="Nombre del organizador"
+          class="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors focus:border-[#df3432]/60"
+        />
+      </div>
+      <div class="space-y-1.5">
+        <label for="organizerRole" class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Rol</label>
+        <input
+          id="organizerRole"
+          [ngModel]="organizerRole()"
+          (ngModelChange)="organizerRole.set($event)"
+          name="organizerRole"
+          placeholder="Ej: Coordinador"
+          class="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors focus:border-[#df3432]/60"
+        />
+      </div>
+    </div>
+
+    <!-- Links de Comunidad -->
+    <div class="space-y-1.5">
+      <label for="whatsapp" class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Links de Comunidad</label>
+      <div class="grid grid-cols-3 gap-3">
+        <input
+          [ngModel]="whatsapp()"
+          (ngModelChange)="whatsapp.set($event)"
+          name="whatsapp"
+          placeholder="WhatsApp"
+          class="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-xs text-white placeholder-zinc-500 outline-none transition-colors focus:border-[#df3432]/60"
+        />
+        <input
+          [ngModel]="telegram()"
+          (ngModelChange)="telegram.set($event)"
+          name="telegram"
+          placeholder="Telegram"
+          class="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-xs text-white placeholder-zinc-500 outline-none transition-colors focus:border-[#df3432]/60"
+        />
+        <input
+          [ngModel]="discord()"
+          (ngModelChange)="discord.set($event)"
+          name="discord"
+          placeholder="Discord"
+          class="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-xs text-white placeholder-zinc-500 outline-none transition-colors focus:border-[#df3432]/60"
+        />
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="flex gap-3 pt-2">
+      <button
+        type="button"
+        (click)="cancel()"
+        class="flex-1 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-zinc-400 transition-all hover:bg-white/10 hover:text-white"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        [disabled]="isSubmitting()"
+        class="flex-1 rounded-lg bg-[#df3432] px-4 py-3 text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-[#b82b29] shadow-lg shadow-[#df3432]/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      >
+        @if (isSubmitting()) {
+          <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        } @else {
+          Crear Evento
+        }
+      </button>
+    </div>
+  </form>
+</div>
