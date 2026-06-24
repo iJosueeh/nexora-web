@@ -94,14 +94,27 @@
       <div class="space-y-2">
         @for (inv of pendingInvitations(); track inv.invitationId) {
           <div class="flex items-center gap-2 rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2">
+            <img
+              [src]="inv.invitedAvatarUrl || buildAvatarUrl(inv.invitedUsername || inv.invitedUserId)"
+              class="h-7 w-7 shrink-0 rounded-full bg-white/10 object-cover"
+              alt=""
+            />
             <div class="flex-1 min-w-0">
-              <p class="text-sm text-white">@{{ inv.inviterUsername }}</p>
-              <p class="text-xs text-white/40">Invitado hace un momento</p>
+              <p class="text-sm text-white truncate">
+                @if (inv.invitedUsername) {
+                  @{{ inv.invitedUsername }}
+                } @else {
+                  Invitación pendiente
+                }
+              </p>
+              @if (inv.invitedFullName) {
+                <p class="text-xs text-white/40">{{ inv.invitedFullName }}</p>
+              }
             </div>
             <button
               type="button"
               (click)="cancelInvitation(inv)"
-              [disabled]="isCancelling"
+              [disabled]="isCancelling()"
               class="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-white/60 transition-all hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
             >
               Cancelar

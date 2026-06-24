@@ -1,7 +1,7 @@
 import { AbstractControl } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize, firstValueFrom, interval } from 'rxjs';
-import { RegisterContext } from '../../../../interfaces/auth';
+import { RegisterContext, RegisterCatalogsResponse, RegisterResponse } from '../../../../interfaces/auth';
 
 export function submitPreferencesStep(ctx: RegisterContext): void {
   if (ctx.preferencesForm.invalid) {
@@ -11,27 +11,29 @@ export function submitPreferencesStep(ctx: RegisterContext): void {
   }
 
   const payload = ctx.buildPreferencesPayload();
-  const fallbackUser = (ctx as any).buildFallbackUser();
+  const fallbackUser = ctx.buildFallbackUser();
 
   ctx.isLoading.set(true);
   ctx.authApi
     .completeRegistrationPreferences(payload)
     .pipe(finalize(() => ctx.isLoading.set(false)))
     .subscribe({
-      next: (response: any) => {
+      next: (response: RegisterResponse) => {
         const email = ctx.accountForm.controls.email.value.trim();
         const existingTokens = ctx.authSession.getTokens() ?? undefined;
-        const existingUser = ctx.authSession.getUser() ?? { email };
+        const existingUser = ctx.authSession.getUser() ?? { email, id: '' };
+
+        const mergedUser = { ...existingUser, ...(response.user ?? fallbackUser), profileComplete: true };
 
         ctx.authSession.start(
           {
-            user: { ...existingUser, ...(response.user ?? fallbackUser), profileComplete: true },
+            user: { ...mergedUser, id: mergedUser.id ?? '' },
             tokens: existingTokens!,
           },
           false
         );
 
-        (ctx as any).registerDraftStorage.clear();
+        ctx.registerDraftStorage.clear();
         ctx.draftExpiresAt.set(0);
         ctx.draftRemainingMs.set(0);
         resetFormState(ctx);
@@ -44,16 +46,16 @@ export function submitPreferencesStep(ctx: RegisterContext): void {
 
 export async function loadRegistrationCatalogs(ctx: RegisterContext): Promise<void> {
   try {
-    const catalogs: any = await firstValueFrom(ctx.authApi.getRegistrationCatalogs());
-    if (catalogs.careers.length > 0) (ctx as any).careerOptions.set(catalogs.careers);
-    if (catalogs.academicInterests.length > 0) (ctx as any).interestOptions.set(catalogs.academicInterests);
+    const catalogs: RegisterCatalogsResponse = await firstValueFrom(ctx.authApi.getRegistrationCatalogs());
+    if (catalogs.careers.length > 0) ctx.careerOptions.set(catalogs.careers);
+    if (catalogs.academicInterests.length > 0) ctx.interestOptions.set(catalogs.academicInterests);
   } catch {
     // Keep local fallback lists if catalogs cannot be loaded.
   }
 }
 
 export function restoreDraft(ctx: RegisterContext): void {
-  const draft = (ctx as any).registerDraftStorage.load();
+  const draft = ctx.registerDraftStorage.load();
   if (!draft) return;
 
   ctx.patchDraftToForm(draft);
@@ -66,25 +68,25 @@ export function restoreDraft(ctx: RegisterContext): void {
   ctx.draftExpiresAt.set(draft.expiresAt);
   updateDraftRemainingMs(ctx);
 
-  if ((ctx as any).hasActiveDraft()) {
+  if (ctx.hasActiveDraft()) {
     ctx.toastr.info('Se restauró tu borrador de registro.', 'Draft recuperado');
   }
 }
 
 export function persistDraft(ctx: RegisterContext): void {
   const raw = ctx.form.getRawValue();
-  ctx.draftExpiresAt.set((ctx as any).registerDraftStorage.save(ctx.buildDraftPayload(raw)));
+  ctx.draftExpiresAt.set(ctx.registerDraftStorage.save(ctx.buildDraftPayload(raw)));
   updateDraftRemainingMs(ctx);
 }
 
 export function startDraftCountdown(ctx: RegisterContext): void {
   interval(1000)
-    .pipe(takeUntilDestroyed((ctx as any).destroyRef))
+    .pipe(takeUntilDestroyed(ctx.destroyRef))
     .subscribe(() => handleDraftTick(ctx));
 }
 
 export function queueDraftSave(ctx: RegisterContext): void {
-  (ctx as any).draftSave$.next();
+  ctx.draftSave$.next();
 }
 
 export function markGroupTouched(group: AbstractControl): void {
@@ -123,7 +125,7 @@ function handleDraftTick(ctx: RegisterContext): void {
   updateDraftRemainingMs(ctx);
   if (ctx.draftRemainingMs() > 0) return;
 
-  (ctx as any).registerDraftStorage.clear();
+  ctx.registerDraftStorage.clear();
   ctx.draftExpiresAt.set(0);
   ctx.toastr.warning('El borrador del registro expiró tras 30 minutos.', 'Draft expirado');
 }
@@ -133,7 +135,7 @@ function updateDraftRemainingMs(ctx: RegisterContext): void {
 }
 
 function resetFormState(ctx: RegisterContext): void {
-  (ctx as any).resetFormWithDefaults();
+  ctx.resetFormWithDefaults();
   ctx.currentStep.set(1);
   ctx.showEmailInboxGuide.set(false);
   ctx.verificationCode.set('');
@@ -143,4 +145,3 @@ function resetFormState(ctx: RegisterContext): void {
 function isControlInvalid(control: AbstractControl | null): boolean {
   return !!control && control.invalid && (control.dirty || control.touched);
 }
-

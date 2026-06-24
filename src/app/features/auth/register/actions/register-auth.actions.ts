@@ -1,6 +1,6 @@
 import { finalize, firstValueFrom } from 'rxjs';
 import { normalizeEmail } from '../../../../utils/email-normalization.util';
-import { RegisterContext } from '../../../../interfaces/auth';
+import { RegisterContext, LoginResponse } from '../../../../interfaces/auth';
 
 export async function submitAccountStep(ctx: RegisterContext): Promise<void> {
   if (ctx.accountForm.invalid) {
@@ -47,7 +47,7 @@ export async function onVerifyEmailCode(ctx: RegisterContext, token = ctx.verifi
     ctx.authSession.start({ user: supabaseSession.user, tokens: supabaseSession.tokens }, false);
     sessionStarted = true;
 
-    const sessionResponse: any = await firstValueFrom(ctx.authApi.getSessionProfile());
+    const sessionResponse: LoginResponse = await firstValueFrom(ctx.authApi.getSessionProfile());
     ctx.authSession.start(
       {
         user: {

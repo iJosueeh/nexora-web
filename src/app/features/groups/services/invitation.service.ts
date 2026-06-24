@@ -20,6 +20,9 @@ export interface GroupInvitation {
   inviterUsername: string | null;
   inviterFullName: string | null;
   inviterAvatarUrl: string | null;
+  invitedUsername: string | null;
+  invitedFullName: string | null;
+  invitedAvatarUrl: string | null;
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
   invitedUserId: string;
 }
@@ -100,17 +103,16 @@ export class InvitationService {
     );
   }
 
-  inviteMember(groupId: string, username: string): Observable<GroupInvitation | null> {
+  inviteMember(groupId: string, username: string): Observable<GroupInvitation> {
     return this.apollo
       .mutate<InviteMutationResponse>({
         mutation: INVITE_MEMBER_MUTATION,
         variables: { groupId, username },
       })
       .pipe(
-        map((result) => result.data?.invitarMiembro ?? null),
-        catchError((err) => {
-          console.error('Error inviting member:', err);
-          return of(null);
+        map((result) => {
+          if (!result.data?.invitarMiembro) throw new Error('No se pudo enviar la invitación');
+          return result.data.invitarMiembro;
         })
       );
   }
@@ -122,8 +124,10 @@ export class InvitationService {
         variables: { invitationId },
       })
       .pipe(
-        map((result) => !!result.data?.aceptarInvitacion),
-        catchError(() => of(false))
+        map((result) => {
+          if (!result.data?.aceptarInvitacion) throw new Error('No se pudo aceptar la invitación');
+          return true;
+        })
       );
   }
 
@@ -134,8 +138,10 @@ export class InvitationService {
         variables: { invitationId },
       })
       .pipe(
-        map((result) => result.data?.rechazarInvitacion ?? false),
-        catchError(() => of(false))
+        map((result) => {
+          if (!result.data?.rechazarInvitacion) throw new Error('No se pudo rechazar la invitación');
+          return true;
+        })
       );
   }
 
@@ -159,8 +165,10 @@ export class InvitationService {
         variables: { invitationId },
       })
       .pipe(
-        map((result) => result.data?.cancelarInvitacion ?? false),
-        catchError(() => of(false))
+        map((result) => {
+          if (!result.data?.cancelarInvitacion) throw new Error('No se pudo cancelar la invitación');
+          return true;
+        })
       );
   }
 }

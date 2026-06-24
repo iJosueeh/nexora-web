@@ -1,16 +1,4 @@
-<app-shell-layout mode="feed">
-  <div shell-left>
-    <app-feed-sidebar></app-feed-sidebar>
-  </div>
-
-  <div shell-main>
-    <app-breadcrumb [items]="[]" />
-    <main class="w-full rounded-2xl bg-[#0d0e12]">
-      <app-feed-container />
-    </main>
-  </div>
-
-  <div shell-right>
-    <app-feed-trends></app-feed-trends>
-  </div>
-</app-shell-layout>
+<app-breadcrumb [items]="[]" />
+<main class="w-full rounded-2xl bg-[#0d0e12]">
+  <app-feed-container />
+</main>

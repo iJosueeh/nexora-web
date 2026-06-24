@@ -13,3 +13,4 @@ export * from './register-start-request.model';
 export * from './register-request.model';
 export * from './register-response.model';
 export * from './session-payload.model';
+export * from './profile-response.model';

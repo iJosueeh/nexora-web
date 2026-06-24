@@ -1,6 +1,6 @@
 import { FeedUser } from './feed/user.model';
 
-export type NotificationType = 'LIKE' | 'COMMENT' | 'COMMENT_REPLY' | 'RSVP' | 'FOLLOW';
+export type NotificationType = 'LIKE' | 'COMMENT' | 'COMMENT_REPLY' | 'RSVP' | 'FOLLOW' | 'GROUP_INVITATION';
 
 export interface Notification {
   id: string;

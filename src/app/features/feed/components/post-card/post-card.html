@@ -39,7 +39,7 @@
       </div>
     </div>
 
-    @if (canDelete()) {
+    <div class="flex items-center gap-1">
     <button
       type="button"
       (click)="toggleBookmark($event)"
@@ -64,7 +64,8 @@
       </svg>
     </button>
 
-    <button
+    @if (canDelete()) {
+      <button
         (click)="$event.stopPropagation(); showConfirmModal.set(true)"
         class="flex h-8 w-8 items-center justify-center rounded-full text-white/40 transition-all hover:bg-[#df3432]/10 hover:text-[#df3432]"
         title="Eliminar publicación"
@@ -78,6 +79,7 @@
         </svg>
       </button>
     }
+    </div>
   </header>
 
   <div class="space-y-3">

@@ -28,9 +28,7 @@ export class Navbar {
   readonly isAuthenticated = computed(() => !!this.authSession.session()?.user?.email);
   readonly isFeedRoute = computed(() => {
     const current = this.currentPath();
-    return current.startsWith('/feed') || current.startsWith('/publicar') || 
-           current.startsWith('/settings') || current.startsWith('/profile') || 
-           current.startsWith('/u/');
+    return current.startsWith('/feed') || current.startsWith('/settings') || current.startsWith('/profile') || current.startsWith('/u/');
   });
   readonly profileLink = computed(() => {
     const username = this.authSession.getUser()?.username?.trim();
@@ -66,8 +64,6 @@ export class Navbar {
   });
   readonly avatarUrl = computed(() => this.authSession.getUser()?.avatarUrl);
 
-  readonly searchQuery = signal('');
-
   constructor() {
     this.router.events
       .pipe(
@@ -77,21 +73,6 @@ export class Navbar {
       .subscribe(event => {
         this.currentPath.set(event.urlAfterRedirects);
       });
-  }
-
-  onSearch(event: Event): void {
-    const target = event.target as HTMLInputElement | null;
-    const query = target?.value?.trim() ?? '';
-    this.searchQuery.set(query);
-  }
-
-  submitSearch(event: Event): void {
-    event.preventDefault();
-    const query = this.searchQuery().trim();
-    if (query.length > 0) {
-      void this.router.navigate(['/feed/explore'], { queryParams: { q: query } });
-      this.searchQuery.set('');
-    }
   }
 
   toggleMobileMenu(): void {

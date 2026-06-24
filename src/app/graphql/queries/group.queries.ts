@@ -194,6 +194,9 @@ export const INVITE_MEMBER_MUTATION = gql`
       inviterUsername
       inviterFullName
       inviterAvatarUrl
+      invitedUsername
+      invitedFullName
+      invitedAvatarUrl
       status
       invitedUserId
     }
@@ -229,6 +232,9 @@ export const GROUP_INVITATIONS_QUERY = gql`
       inviterUsername
       inviterFullName
       inviterAvatarUrl
+      invitedUsername
+      invitedFullName
+      invitedAvatarUrl
       status
       invitedUserId
     }

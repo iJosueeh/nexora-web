@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { DatePipe } from '@angular/common';
-import { ShellLayout } from '../../../../shared/components/shell-layout/shell-layout';
-import { FeedSidebar } from '../../components/feed-sidebar/feed-sidebar';
 import { Notification } from '../../../../interfaces/notification.model';
 
 type FilterType = 'all' | 'mentions' | 'followers';
@@ -12,7 +10,7 @@ type FilterType = 'all' | 'mentions' | 'followers';
 @Component({
   selector: 'app-notifications-page',
   standalone: true,
-  imports: [CommonModule, ShellLayout, FeedSidebar],
+  imports: [CommonModule],
   templateUrl: './notifications-page.html',
   styleUrl: './notifications-page.css',
   providers: [DatePipe]

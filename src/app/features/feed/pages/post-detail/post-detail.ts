@@ -5,8 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Apollo } from 'apollo-angular';
 
-import { ShellLayout } from '../../../../shared/components/shell-layout/shell-layout';
-import { FeedSidebar } from '../../components/feed-sidebar/feed-sidebar';
 import { RichTextEditorComponent } from '../../../../shared/components/rich-text-editor/rich-text-editor';
 import { CommentThreadListComponent } from '../../components/comment-thread-list/comment-thread-list';
 import { FeedService } from '../../services/feed.service';
@@ -226,8 +224,6 @@ export abstract class PostDetailPageBase implements OnInit {
   imports: [
     CommonModule,
     FormsModule,
-    ShellLayout,
-    FeedSidebar,
     CommentThreadListComponent,
     RichTextEditorComponent,
     BreadcrumbComponent

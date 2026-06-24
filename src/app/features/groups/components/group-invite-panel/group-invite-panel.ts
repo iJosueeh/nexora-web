@@ -18,6 +18,7 @@ export class GroupInvitePanelComponent implements OnInit {
   readonly inviterUserId = input<string>('');
 
   readonly pendingInvitations = signal<GroupInvitation[]>([]);
+  private readonly pendingNames = signal<Record<string, string>>({});
   readonly searchQuery = signal('');
   readonly searchResults = signal<UserSearchResult[]>([]);
   readonly isSearching = signal(false);
@@ -54,7 +55,13 @@ export class GroupInvitePanelComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (invitations) => {
-          this.pendingInvitations.set(invitations.filter(i => i.status === 'PENDING'));
+          const pending = invitations.filter(i => i.status === 'PENDING');
+          const names = this.pendingNames();
+          this.pendingInvitations.set(pending.map(inv => ({
+            ...inv,
+            // ponytail: merge local names for invitations sent this session
+            invitedUsername: inv.invitedUsername || names[inv.invitedUserId] || null,
+          })));
         },
       });
   }
@@ -106,19 +113,19 @@ export class GroupInvitePanelComponent implements OnInit {
     this.invitationService.inviteMember(this.groupId(), user.username)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (invitation) => {
+        next: () => {
           this.isSubmitting.set(false);
-          if (invitation) {
-            this.successMessage.set(`Invitación enviada a @${user.username}`);
-            this.clearSelection();
-            this.loadPendingInvitations();
-          } else {
-            this.error.set('No se pudo enviar la invitación');
-          }
+          this.successMessage.set(`Invitación enviada a @${user.username}`);
+          // ponytail: store name locally so pending list shows it immediately
+          this.pendingNames.update(m => ({ ...m, [user.userId]: user.username }));
+          this.clearSelection();
+          this.loadPendingInvitations();
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          this.error.set(err?.message || 'Error al enviar la invitación');
+          // ponytail: GraphQL errors have the server message in graphQLErrors[0].message
+          const msg = err?.graphQLErrors?.[0]?.message || err?.message || 'Error al enviar la invitación';
+          this.error.set(msg);
         },
       });
   }
@@ -140,7 +147,8 @@ export class GroupInvitePanelComponent implements OnInit {
         },
         error: (err) => {
           this.isCancelling.set(false);
-          this.error.set(err?.message || 'Error al cancelar la invitación');
+          const msg = err?.graphQLErrors?.[0]?.message || err?.message || 'Error al cancelar la invitación';
+          this.error.set(msg);
         },
       });
   }

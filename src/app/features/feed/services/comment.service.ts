@@ -85,7 +85,7 @@ function dtoToCommentAuthor(dto: CommentThreadDTO): CommentThread['author'] {
     fullName: autor.fullName || undefined,
     avatar: autor.avatarUrl || undefined,
     verified: autor.verified || false
-  } as any;
+  };
 }
 
 function dtoToCreatedAt(createdAt?: string | null): Date {

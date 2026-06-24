@@ -37,21 +37,6 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/home/components/eventos/components/event-detail/event-detail').then(m => m.EventDetail)
             },
             {
-                path: 'feed/notifications',
-                loadComponent: () => import('./features/feed/pages/notifications-page/notifications-page').then(m => m.NotificationsPage),
-                canActivate: [authGuard]
-            },
-            {
-                path: 'feed/explore',
-                loadComponent: () => import('./features/feed/pages/explore/explore-page').then(m => m.ExplorePage),
-                canActivate: [authGuard]
-            },
-            {
-                path: 'feed/bookmarks',
-                loadComponent: () => import('./features/feed/pages/bookmarks/bookmarks').then(m => m.BookmarksPage),
-                canActivate: [authGuard]
-            },
-            {
                 path: 'groups',
                 loadComponent: () => import('./features/groups/groups-page').then(m => m.GroupsPage),
                 canActivate: [authGuard]
@@ -63,17 +48,34 @@ export const routes: Routes = [
             },
             {
                 path: 'feed',
-                loadComponent: () => import('./features/feed/pages/feed-page/feed-page').then(m => m.FeedPage),
-                canActivate: [authGuard]
-            },
-            {
-                path: 'feed/post/:id',
-                loadComponent: () => import('./features/feed/pages/post-detail/post-detail').then(m => m.PostDetailPage)
-            },
-            {
-                path: 'publicar',
-                loadComponent: () => import('./features/feed/pages/new-publication/new-publication-page').then(m => m.NewPublicationPage),
-                canActivate: [authGuard]
+                loadComponent: () => import('./features/feed/feed-layout/feed-layout').then(m => m.FeedLayout),
+                canActivate: [authGuard],
+                children: [
+                    {
+                        path: '',
+                        loadComponent: () => import('./features/feed/pages/feed-page/feed-page').then(m => m.FeedPage)
+                    },
+                    {
+                        path: 'notifications',
+                        loadComponent: () => import('./features/feed/pages/notifications-page/notifications-page').then(m => m.NotificationsPage)
+                    },
+                    {
+                        path: 'explore',
+                        loadComponent: () => import('./features/feed/pages/explore/explore-page').then(m => m.ExplorePage)
+                    },
+                    {
+                        path: 'bookmarks',
+                        loadComponent: () => import('./features/feed/pages/bookmarks/bookmarks').then(m => m.BookmarksPage)
+                    },
+                    {
+                        path: 'post/:id',
+                        loadComponent: () => import('./features/feed/pages/post-detail/post-detail').then(m => m.PostDetailPage)
+                    },
+                    {
+                        path: 'publicar',
+                        loadComponent: () => import('./features/feed/pages/new-publication/new-publication-page').then(m => m.NewPublicationPage)
+                    }
+                ]
             },
             {
                 path: 'ayuda',

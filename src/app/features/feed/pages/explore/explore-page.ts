@@ -12,8 +12,6 @@ import { Post } from '../../../../interfaces/feed';
 import { UniversityEvent } from '../../../home/components/eventos/interfaces/event.model';
 import { ResearchPaper } from '../../../home/components/explorar/interfaces/research-paper.model';
 import { PostCardComponent } from '../../components/post-card/post-card';
-import { ShellLayout } from '../../../../shared/components/shell-layout/shell-layout';
-import { FeedSidebar } from '../../components/feed-sidebar/feed-sidebar';
 import { AuthSession } from '../../../../core/services/auth-session';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { UserSuggestCard } from '../../../../features/home/components/explorar/components/user-suggest-card/user-suggest-card';
@@ -203,7 +201,7 @@ export abstract class ExplorePageBase implements OnInit {
 @Component({
   selector: 'app-explore-page',
   standalone: true,
-  imports: [CommonModule, PostCardComponent, ShellLayout, FeedSidebar, UserSuggestCard],
+  imports: [CommonModule, PostCardComponent, UserSuggestCard],
   templateUrl: './explore-page.html',
   styleUrl: './explore-page.css'
 })

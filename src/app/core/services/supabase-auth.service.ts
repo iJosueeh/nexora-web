@@ -97,7 +97,7 @@ export class SupabaseAuthService {
     const tokens = mapSupabaseSessionToTokens(refreshed.data.session);
     this.authSession.start({
       user: this.authSession.getUser() ?? {
-        id: refreshed.data.user?.id,
+        id: refreshed.data.user?.id ?? '',
         email: refreshed.data.user?.email ?? '',
       },
       tokens,

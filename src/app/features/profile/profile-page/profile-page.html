@@ -200,39 +200,44 @@
         </section>
 
         @if (!state.isAnonymousPreview()) {
-          <section class="flex gap-6 border-b border-white/5 pb-4">
-            <button type="button" (click)="state.setTab('posts')" class="relative pb-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200" [class.text-white]="state.activeTab() === 'posts'" [class.text-white/40]="state.activeTab() !== 'posts'" [class.hover:text-white/70]="state.activeTab() !== 'posts'">
-              Posts
-              @if (state.activeTab() === 'posts') {
-                <span class="absolute bottom-0 left-0 h-0.5 w-full bg-white/80"></span>
-              }
-            </button>
-            <button type="button" (click)="state.setTab('media')" class="relative pb-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200" [class.text-white]="state.activeTab() === 'media'" [class.text-white/40]="state.activeTab() !== 'media'" [class.hover:text-white/70]="state.activeTab() !== 'media'">
-              Media
-              @if (state.activeTab() === 'media') {
-                <span class="absolute bottom-0 left-0 h-0.5 w-full bg-white/80"></span>
-              }
-            </button>
-            <button type="button" (click)="state.setTab('likes')" class="relative pb-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200" [class.text-white]="state.activeTab() === 'likes'" [class.text-white/40]="state.activeTab() !== 'likes'" [class.hover:text-white/70]="state.activeTab() !== 'likes'">
-              Likes
-              @if (state.activeTab() === 'likes') {
-                <span class="absolute bottom-0 left-0 h-0.5 w-full bg-white/80"></span>
-              }
-            </button>
-            @if (state.isOwnProfile()) {
-              <button type="button" (click)="state.setTab('bookmarks')" class="relative pb-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200" [class.text-white]="state.activeTab() === 'bookmarks'" [class.text-white/40]="state.activeTab() !== 'bookmarks'" [class.hover:text-white/70]="state.activeTab() !== 'bookmarks'">
-                Guardados
-                @if (state.activeTab() === 'bookmarks') {
+          <section class="relative border-b border-white/5">
+            <div class="flex items-center gap-6 overflow-x-auto scrollbar-hide flex-nowrap pb-4">
+              <button type="button" (click)="state.setTab('posts')" class="relative shrink-0 pb-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200" [class.text-white]="state.activeTab() === 'posts'" [class.text-white/40]="state.activeTab() !== 'posts'" [class.hover:text-white/70]="state.activeTab() !== 'posts'">
+                Posts
+                @if (state.activeTab() === 'posts') {
                   <span class="absolute bottom-0 left-0 h-0.5 w-full bg-white/80"></span>
                 }
               </button>
-              <button type="button" (click)="state.setTab('invitations')" class="relative pb-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200" [class.text-white]="state.activeTab() === 'invitations'" [class.text-white/40]="state.activeTab() !== 'invitations'" [class.hover:text-white/70]="state.activeTab() !== 'invitations'">
-                Invitaciones
-                @if (state.activeTab() === 'invitations') {
+              <button type="button" (click)="state.setTab('media')" class="relative shrink-0 pb-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200" [class.text-white]="state.activeTab() === 'media'" [class.text-white/40]="state.activeTab() !== 'media'" [class.hover:text-white/70]="state.activeTab() !== 'media'">
+                Media
+                @if (state.activeTab() === 'media') {
                   <span class="absolute bottom-0 left-0 h-0.5 w-full bg-white/80"></span>
                 }
               </button>
-            }
+              <button type="button" (click)="state.setTab('likes')" class="relative shrink-0 pb-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200" [class.text-white]="state.activeTab() === 'likes'" [class.text-white/40]="state.activeTab() !== 'likes'" [class.hover:text-white/70]="state.activeTab() !== 'likes'">
+                Likes
+                @if (state.activeTab() === 'likes') {
+                  <span class="absolute bottom-0 left-0 h-0.5 w-full bg-white/80"></span>
+                }
+              </button>
+              @if (state.isOwnProfile()) {
+                <button type="button" (click)="state.setTab('bookmarks')" class="relative shrink-0 pb-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200" [class.text-white]="state.activeTab() === 'bookmarks'" [class.text-white/40]="state.activeTab() !== 'bookmarks'" [class.hover:text-white/70]="state.activeTab() !== 'bookmarks'">
+                  Guardados
+                  @if (state.activeTab() === 'bookmarks') {
+                    <span class="absolute bottom-0 left-0 h-0.5 w-full bg-white/80"></span>
+                  }
+                </button>
+                <button type="button" (click)="state.setTab('invitations')" class="relative shrink-0 pb-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200" [class.text-white]="state.activeTab() === 'invitations'" [class.text-white/40]="state.activeTab() !== 'invitations'" [class.hover:text-white/70]="state.activeTab() !== 'invitations'">
+                  Invitaciones
+                  @if (state.activeTab() === 'invitations') {
+                    <span class="absolute bottom-0 left-0 h-0.5 w-full bg-white/80"></span>
+                  }
+                </button>
+              }
+              <span class="pointer-events-none shrink-0 text-white/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </span>
+            </div>
           </section>
         }
 
