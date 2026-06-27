@@ -1,71 +1,39 @@
 <div class="px-6 py-10 lg:px-12">
-  <!-- Header con Búsqueda -->
   <header class="mb-12 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
     <div class="space-y-1">
-      <h1 class="text-4xl font-black tracking-tight text-white">Explorar <span class="text-[#df3432]">Investigación</span></h1>
-      <p class="text-zinc-400">Descubre los hallazgos más recientes de la comunidad académica UTP.</p>
-    </div>
-
-    <div class="flex items-center gap-4">
-      @if (isAuthenticated()) {
-        <button
-          (click)="toggleCreateForm()"
-          class="rounded-xl bg-[#df3432] px-5 py-3 text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-[#b82b29] shadow-lg shadow-[#df3432]/10 flex items-center gap-2"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          {{ showCreateForm() ? 'Cancelar' : 'Crear Recurso' }}
-        </button>
-      }
+      <h1 class="text-4xl font-black tracking-tight text-white">Repositorio Académico</h1>
+      <p class="text-sm text-zinc-400">Encuentra y filtra recursos compartidos por la comunidad.</p>
     </div>
   </header>
 
-  <!-- Create Form -->
-  @if (showCreateForm()) {
-    <div class="mb-10">
-      <app-resource-create-form
-        (cancelled)="showCreateForm.set(false)"
-        (created)="onPaperCreated()"
-      ></app-resource-create-form>
-    </div>
-  }
+  <div class="grid gap-8 lg:grid-cols-[280px_1fr]">
+    <aside>
+      <app-resource-filters
+        [categories]="categories()"
+        [filters]="filters()"
+        (filtersChange)="updateFilters($event)"
+      />
+    </aside>
 
-  <!-- Categorías / Filtros -->
-  <div class="mb-10 flex flex-wrap gap-3">
-    @for (category of categories(); track category) {
-      <button
-        (click)="selectCategory(category)"
-        [class]="selectedCategory() === category ? 'bg-[#df3432] text-white border-[#df3432]' : 'bg-white/5 text-zinc-400 border-white/10 hover:border-white/30'"
-        class="rounded-full border px-6 py-2 text-sm font-semibold transition-all"
-      >
-        {{ category }}
-      </button>
-    }
-  </div>
-
-  <!-- Grid de Resultados -->
-  @if (isLoading()) {
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      @for (i of [1,2,3,4,5,6,7,8]; track i) {
-        <div class="h-64 rounded-2xl bg-white/5 animate-pulse border border-white/5"></div>
-      }
-    </div>
-  } @else {
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      @for (paper of papers(); track paper.id) {
-        <app-research-card [paper]="paper"></app-research-card>
-      } @empty {
-        <div class="col-span-full flex flex-col items-center justify-center py-20 text-center">
-          <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 text-[#979dab]">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-          </div>
-          <h3 class="text-xl font-bold text-white">No se encontraron investigaciones</h3>
-          <p class="text-[#979dab] mt-2">Intenta seleccionando otra categoría o facultad.</p>
+    <section class="space-y-6">
+      @if (isLoading()) {
+        <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+            <div class="h-48 animate-pulse rounded-2xl bg-white/5"></div>
+          }
+        </div>
+      } @else if (resources().length === 0) {
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-10 text-center">
+          <p class="text-lg font-semibold text-white">No se encontraron recursos</p>
+          <p class="mt-2 text-sm text-zinc-400">Prueba ajustando los filtros o vuelve más tarde.</p>
+        </div>
+      } @else {
+        <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          @for (resource of resources(); track resource.id) {
+            <app-resource-card [resource]="resource" />
+          }
         </div>
       }
-    </div>
-  }
+    </section>
+  </div>
 </div>

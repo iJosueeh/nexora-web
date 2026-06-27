@@ -1,0 +1,43 @@
+<div class="px-6 py-10 lg:px-12">
+  <header class="mb-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div>
+      <h1 class="text-3xl font-black text-white">Mis Recursos</h1>
+      <p class="mt-1 text-sm text-zinc-400">Administra los recursos académicos que has compartido.</p>
+    </div>
+    <button
+      type="button"
+      (click)="toggleCreateForm()"
+      class="rounded-xl bg-[#df3432] px-5 py-3 text-sm font-bold uppercase tracking-wide text-white transition-all hover:bg-[#b82b29] shadow-lg shadow-[#df3432]/10"
+    >
+      + Nuevo recurso
+    </button>
+  </header>
+
+  @if (showCreateForm()) {
+    <section class="mb-10 max-w-3xl">
+      <app-resource-create-form
+        (created)="onResourceCreated()"
+        (cancelled)="onCancelCreate()"
+      />
+    </section>
+  }
+
+  @if (isLoading()) {
+    <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="h-48 animate-pulse rounded-2xl bg-white/5"></div>
+      }
+    </div>
+  } @else if (resources().length === 0) {
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-10 text-center">
+      <p class="text-lg font-semibold text-white">Aún no has subido recursos</p>
+      <p class="mt-2 text-sm text-zinc-400">Haz clic en "Nuevo recurso" para compartir tu primer material académico.</p>
+    </div>
+  } @else {
+    <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      @for (resource of resources(); track resource.id) {
+        <app-resource-card [resource]="resource" />
+      }
+    </div>
+  }
+</div>
