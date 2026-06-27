@@ -18,11 +18,28 @@ export const routes: Routes = [
             },
             {
                 path: 'explorar',
-                loadComponent: () => import('./features/home/components/explorar/explorar').then(m => m.ExplorarPage)
+                loadComponent: () => import('./features/home/components/explorar/explorar-layout/explorar-layout').then(m => m.ExplorarLayout),
+                children: [
+                    {
+                        path: '',
+                        loadComponent: () => import('./features/home/components/explorar/explorar').then(m => m.ExplorarPage)
+                    },
+                    {
+                        path: ':id',
+                        loadComponent: () => import('./features/home/components/explorar/components/resource-detail/resource-detail').then(m => m.ResourceDetail)
+                    }
+                ]
             },
             {
-                path: 'explorar/:slug',
-                loadComponent: () => import('./features/home/components/explorar/components/research-detail/research-detail').then(m => m.ResearchDetail)
+                path: 'mis-recursos',
+                loadComponent: () => import('./features/home/components/explorar/explorar-layout/explorar-layout').then(m => m.ExplorarLayout),
+                canActivate: [authGuard],
+                children: [
+                    {
+                        path: '',
+                        loadComponent: () => import('./features/home/components/explorar/pages/my-resources/my-resources').then(m => m.MyResourcesPage)
+                    }
+                ]
             },
             {
                 path: 'pulse',
@@ -30,11 +47,17 @@ export const routes: Routes = [
             },
             {
                 path: 'eventos',
-                loadComponent: () => import('./features/home/components/eventos/eventos').then(m => m.EventosPage)
-            },
-            {
-                path: 'eventos/:slug',
-                loadComponent: () => import('./features/home/components/eventos/components/event-detail/event-detail').then(m => m.EventDetail)
+                loadComponent: () => import('./features/home/components/explorar/explorar-layout/explorar-layout').then(m => m.ExplorarLayout),
+                children: [
+                    {
+                        path: '',
+                        loadComponent: () => import('./features/home/components/eventos/eventos').then(m => m.EventosPage)
+                    },
+                    {
+                        path: ':slug',
+                        loadComponent: () => import('./features/home/components/eventos/components/event-detail/event-detail').then(m => m.EventDetail)
+                    }
+                ]
             },
             {
                 path: 'groups',

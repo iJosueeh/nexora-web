@@ -1,66 +1,68 @@
-import { ChangeDetectionStrategy, Component, signal, inject, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ResearchCard } from './components/research-card/research-card';
-import { ResourceCreateForm } from './components/resource-create-form/resource-create-form';
-import { ResearchPaper } from './interfaces/research-paper.model';
-import { ResearchService } from './services/research.service';
+
 import { AuthSession } from '../../../../core/services/auth-session';
+import { ResourceService } from './services/resource.service';
+import { ResourceCard } from './components/resource-card/resource-card';
+import { ResourceFilters, ResourceFiltersValue } from './components/resource-filters/resource-filters';
+import { AcademicResource, ResourceCategory } from '../../../../interfaces/resources';
 
 @Component({
   selector: 'app-explorar',
   standalone: true,
-  imports: [CommonModule, ResearchCard, ResourceCreateForm],
+  imports: [CommonModule, ResourceCard, ResourceFilters],
   templateUrl: './explorar.html',
   styleUrl: './explorar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExplorarPage {
-  private readonly researchService = inject(ResearchService);
-  private readonly auth = inject(AuthSession);
+  private readonly resourceService = inject(ResourceService);
 
-  readonly categories = signal(['Todos', 'Sistemas', 'Software', 'Industrial', 'Arquitectura', 'Administración', 'Marketing']);
-  readonly selectedCategory = signal('Todos');
-  readonly papers = signal<ResearchPaper[]>([]);
+  readonly resources = signal<AcademicResource[]>([]);
+  readonly categories = signal<ResourceCategory[]>([]);
   readonly isLoading = signal(false);
-  readonly showCreateForm = signal(false);
+  readonly filters = signal<ResourceFiltersValue>({
+    query: '',
+    categoryId: null,
+    type: null,
+    minRating: null,
+  });
 
   constructor() {
     effect(() => {
-      this.loadPapers();
+      this.loadResources();
     }, { allowSignalWrites: true });
+
+    this.loadCategories();
   }
 
-  loadPapers(): void {
-    const category = this.selectedCategory();
-    const facultyFilter = category === 'Todos' ? undefined : category;
+  loadResources(): void {
+    const current = this.filters();
+    const filter = {
+      ...(current.categoryId ? { categoryId: current.categoryId } : {}),
+      ...(current.type ? { type: current.type } : {}),
+      ...(current.minRating ? { minRating: current.minRating } : {}),
+      ...(current.query ? { query: current.query } : {}),
+    };
 
     this.isLoading.set(true);
-    this.researchService.getResearchPapers(20, 0, facultyFilter).subscribe({
+    this.resourceService.getResources(20, 0, filter).subscribe({
       next: (data) => {
-        this.papers.set(data);
+        this.resources.set(data);
         this.isLoading.set(false);
       },
-      error: () => this.isLoading.set(false)
+      error: () => this.isLoading.set(false),
     });
   }
 
-  selectCategory(category: string): void {
-    this.selectedCategory.set(category);
+  loadCategories(): void {
+    this.resourceService.getResourceCategories().subscribe({
+      next: (data) => this.categories.set(data),
+      error: () => this.categories.set([]),
+    });
   }
 
-  toggleCreateForm(): void {
-    if (!this.auth.isAuthenticated()) {
-      return;
-    }
-    this.showCreateForm.set(!this.showCreateForm());
-  }
-
-  onPaperCreated(): void {
-    this.showCreateForm.set(false);
-    this.loadPapers();
-  }
-
-  isAuthenticated(): boolean {
-    return this.auth.isAuthenticated();
+  updateFilters(updated: ResourceFiltersValue): void {
+    this.filters.set(updated);
   }
 }

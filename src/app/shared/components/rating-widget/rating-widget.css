@@ -1,0 +1,33 @@
+:host { display: block; }
+
+.rating-widget {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.star {
+  cursor: pointer;
+  color: #52525b;
+  transition: color 150ms ease, transform 150ms ease;
+}
+
+.star.filled,
+.star:hover,
+.rating-widget:hover .star {
+  color: #fbbf24;
+}
+
+.star:hover {
+  transform: scale(1.1);
+}
+
+.star.readonly {
+  cursor: default;
+}
+
+.count {
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  color: #a1a1aa;
+}
