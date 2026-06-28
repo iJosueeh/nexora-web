@@ -4,6 +4,7 @@ import { EventService } from './services/event.service';
 import { of } from 'rxjs';
 import { UniversityEvent } from './interfaces/event.model';
 import { provideRouter } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 describe('EventosPage', () => {
   let component: EventosPage;
@@ -20,11 +21,14 @@ describe('EventosPage', () => {
       getEvents: vi.fn().mockReturnValue(of(mockEvents))
     };
 
+    const toastrSpy = { success: vi.fn(), error: vi.fn(), info: vi.fn(), warning: vi.fn() };
+
     await TestBed.configureTestingModule({
       imports: [EventosPage],
       providers: [
         provideRouter([]),
-        { provide: EventService, useValue: eventServiceSpy }
+        { provide: EventService, useValue: eventServiceSpy },
+        { provide: ToastrService, useValue: toastrSpy }
       ]
     }).compileComponents();
 

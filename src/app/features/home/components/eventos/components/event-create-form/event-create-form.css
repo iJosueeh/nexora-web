@@ -1,3 +1,9 @@
 :host {
   display: block;
 }
+
+:host ::ng-deep input:focus,
+:host ::ng-deep textarea:focus,
+:host ::ng-deep select:focus {
+  box-shadow: 0 0 0 3px rgba(223, 52, 50, 0.15);
+}

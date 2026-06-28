@@ -1,39 +1,75 @@
-<div class="px-6 py-10 lg:px-12">
-  <header class="mb-12 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-    <div class="space-y-1">
-      <h1 class="text-4xl font-black tracking-tight text-white">Repositorio Académico</h1>
-      <p class="text-sm text-zinc-400">Encuentra y filtra recursos compartidos por la comunidad.</p>
+<div class="px-4 py-6 sm:px-6 sm:py-10 lg:px-12">
+  <header class="mb-8 space-y-4 sm:mb-12">
+    <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.03] to-transparent p-5 sm:p-8">
+      <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#df3432]/5 blur-3xl"></div>
+      <div class="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-[#df3432]/3 blur-2xl"></div>
+      <div class="relative">
+        <h1 class="text-2xl font-black tracking-tight text-white sm:text-3xl lg:text-4xl">
+          Repositorio <span class="text-[#df3432]">Académico</span>
+        </h1>
+        <p class="mt-2 text-xs text-white/50 sm:text-sm">Encuentra y filtra recursos compartidos por la comunidad.</p>
+      </div>
     </div>
   </header>
 
-  <div class="grid gap-8 lg:grid-cols-[280px_1fr]">
-    <aside>
-      <app-resource-filters
-        [categories]="categories()"
-        [filters]="filters()"
-        (filtersChange)="updateFilters($event)"
-      />
-    </aside>
+  <app-resource-filters
+    [categories]="categories()"
+    [filters]="filters()"
+    (filtersChange)="updateFilters($event)"
+  />
 
-    <section class="space-y-6">
-      @if (isLoading()) {
-        <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          @for (i of [1, 2, 3, 4, 5, 6]; track i) {
-            <div class="h-48 animate-pulse rounded-2xl bg-white/5"></div>
-          }
+  <section class="mt-6">
+    @if (isLoading()) {
+      <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+          <div class="group flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-5">
+            <div class="h-4 w-24 animate-pulse rounded-full bg-white/10"></div>
+            <div class="mt-4 h-6 w-3/4 animate-pulse rounded-lg bg-white/10"></div>
+            <div class="mt-2 h-4 w-full animate-pulse rounded-lg bg-white/5"></div>
+            <div class="mt-2 h-4 w-2/3 animate-pulse rounded-lg bg-white/5"></div>
+            <div class="mt-auto pt-6 flex items-center gap-3">
+              <div class="h-8 w-8 animate-pulse rounded-full bg-white/10"></div>
+              <div class="flex-1">
+                <div class="h-3 w-20 animate-pulse rounded bg-white/10"></div>
+                <div class="mt-1 h-2 w-16 animate-pulse rounded bg-white/5"></div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (resources().length === 0) {
+      <div class="overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-12 text-center backdrop-blur-sm">
+        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
         </div>
-      } @else if (resources().length === 0) {
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-10 text-center">
-          <p class="text-lg font-semibold text-white">No se encontraron recursos</p>
-          <p class="mt-2 text-sm text-zinc-400">Prueba ajustando los filtros o vuelve más tarde.</p>
-        </div>
-      } @else {
-        <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          @for (resource of resources(); track resource.id) {
-            <app-resource-card [resource]="resource" />
-          }
+        <p class="text-lg font-semibold text-white">No se encontraron recursos</p>
+        <p class="mt-2 text-sm text-white/40">Prueba ajustando los filtros o vuelve más tarde.</p>
+      </div>
+    } @else {
+      <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        @for (resource of resources(); track resource.id) {
+          <app-resource-card [resource]="resource" />
+        }
+      </div>
+
+      @if (isLoadingMore()) {
+        <div class="mt-8 flex justify-center">
+          <div class="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-5 py-3">
+            <div class="h-4 w-4 animate-spin rounded-full border-2 border-[#df3432] border-t-transparent"></div>
+            <span class="text-sm text-white/50">Cargando más recursos...</span>
+          </div>
         </div>
       }
-    </section>
-  </div>
+
+      @if (!hasMore() && resources().length > 0) {
+        <div class="mt-8 text-center">
+          <p class="text-sm text-white/30">No hay más recursos para mostrar</p>
+        </div>
+      }
+
+      <div #sentinel class="h-1"></div>
+    }
+  </section>
 </div>

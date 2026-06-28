@@ -51,14 +51,29 @@ if (typeof (globalThis as any).Event === 'function') {
 // Global WebSocket mock to prevent undici/Node from trying to use real WebSockets
 // which causes the "instance of Event" error when it receives a JSDOM event.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-(globalThis as any).WebSocket = vi.fn(() => ({
-  addEventListener: vi.fn(),
-  removeEventListener: vi.fn(),
-  close: vi.fn(),
-  send: vi.fn(),
-  dispatchEvent: vi.fn(),
-  readyState: 0, // CONNECTING
-}));
+(globalThis as any).WebSocket = class WebSocketMock {
+  CONNECTING = 0;
+  OPEN = 1;
+  CLOSING = 2;
+  CLOSED = 3;
+  readyState = 0;
+  url = '';
+  protocol = '';
+  extensions = '';
+  binaryType = 'blob';
+  bufferedAmount = 0;
+
+  onopen: (() => void) | null = null;
+  onclose: (() => void) | null = null;
+  onmessage: (() => void) | null = null;
+  onerror: (() => void) | null = null;
+
+  addEventListener = vi.fn();
+  removeEventListener = vi.fn();
+  close = vi.fn();
+  send = vi.fn();
+  dispatchEvent = vi.fn();
+};
 
 
 // Mock global de Supabase para evitar inicializaciones reales en tests

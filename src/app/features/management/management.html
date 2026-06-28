@@ -1,5 +1,20 @@
 <div class="management-layout">
-  <aside class="management-sidebar">
+  <!-- Mobile hamburger -->
+  <button
+    type="button"
+    class="mobile-menu-btn"
+    (click)="toggleSidebar()"
+    aria-label="Abrir menú"
+  >
+    <span class="material-symbols-outlined">menu</span>
+  </button>
+
+  <!-- Sidebar backdrop -->
+  @if (isSidebarOpen()) {
+    <div class="sidebar-backdrop" (click)="closeSidebar()"></div>
+  }
+
+  <aside class="management-sidebar" [class.open]="isSidebarOpen()">
     <div class="sidebar-header">
       <div class="logo-container">
         <span class="material-symbols-outlined logo-icon">Hub</span>
@@ -8,11 +23,14 @@
           <span class="text-brand-red text-[10px] font-bold tracking-widest block -mt-1">ADMIN</span>
         </div>
       </div>
+      <button type="button" class="sidebar-close-btn" (click)="closeSidebar()" aria-label="Cerrar menú">
+        <span class="material-symbols-outlined">close</span>
+      </button>
     </div>
     
     <nav class="sidebar-nav">
       @for (item of filterMenuItems(); track item.path) {
-        <a [routerLink]="item.path" routerLinkActive="active" class="nav-item">
+        <a [routerLink]="item.path" routerLinkActive="active" class="nav-item" (click)="closeSidebar()">
           <span class="nav-icon material-symbols-outlined">{{ item.icon }}</span>
           <span class="nav-label">{{ item.label }}</span>
         </a>
@@ -20,7 +38,7 @@
     </nav>
     
     <div class="sidebar-footer">
-      <a routerLink="/" class="back-link">
+      <a routerLink="/" class="back-link" (click)="closeSidebar()">
         <span class="material-symbols-outlined">arrow_back</span>
         Volver al Sitio
       </a>
@@ -32,7 +50,7 @@
       <div class="header-breadcrumb">
         <span>Gestión</span>
         <span class="separator">/</span>
-        <span class="current">Dashboard</span>
+        <span class="current">{{ currentLabel() }}</span>
       </div>
       
       <div class="header-user">

@@ -115,7 +115,7 @@
               <input type="text" [(ngModel)]="form().title" name="title" class="form-input" placeholder="Ej: Hackathon Nexora 2026">
             </div>
             
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div class="form-group">
                 <label>Fecha y Hora</label>
                 <input type="text" [(ngModel)]="form().date" name="date" class="form-input" placeholder="25 Junio, 18:00">
@@ -149,7 +149,7 @@
 
             <div class="border-t border-border/50 pt-4 mt-4">
               <p class="text-xs font-bold text-brand-muted uppercase tracking-widest mb-3">Canales de Comunidad</p>
-              <div class="grid grid-cols-3 gap-3">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <input type="text" [(ngModel)]="form().whatsapp" name="whatsapp" class="form-input text-xs" placeholder="WhatsApp">
                 <input type="text" [(ngModel)]="form().telegram" name="telegram" class="form-input text-xs" placeholder="Telegram">
                 <input type="text" [(ngModel)]="form().discord" name="discord" class="form-input text-xs" placeholder="Discord">

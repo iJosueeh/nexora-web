@@ -5,13 +5,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AuthSession } from '../../../core/services/auth-session';
 import { NotificationCenterComponent } from '../notifications/notification-center';
+import { ProfileDropdownComponent } from './profile-dropdown';
 
 type NavbarMode = 'public' | 'authenticated' | 'feed';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, NotificationCenterComponent],
+  imports: [RouterLink, RouterLinkActive, NotificationCenterComponent, ProfileDropdownComponent],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })

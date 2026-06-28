@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal, HostListener } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 import { AuthSession } from '../../../core/services/auth-session';
@@ -18,6 +18,7 @@ export class MobileBottomNavComponent {
   private readonly router = inject(Router);
 
   readonly unreadCount = this.notificationService.unreadCount;
+  readonly isMoreMenuOpen = signal(false);
 
   readonly userAvatar = computed(() => {
     const user = this.authSession.user();
@@ -31,6 +32,7 @@ export class MobileBottomNavComponent {
 
   goToProfile(event: MouseEvent): void {
     event.preventDefault();
+    this.closeMoreMenu();
     const username = this.authSession.getUser()?.username?.trim();
     if (username) {
       void this.router.navigate(['/u', username]);
@@ -46,5 +48,27 @@ export class MobileBottomNavComponent {
   goToPublication(event: MouseEvent): void {
     event.preventDefault();
     void this.router.navigate(['/feed', 'publicar']);
+  }
+
+  toggleMoreMenu(): void {
+    this.isMoreMenuOpen.update(v => !v);
+  }
+
+  closeMoreMenu(): void {
+    this.isMoreMenuOpen.set(false);
+  }
+
+  signOut(): void {
+    this.closeMoreMenu();
+    this.authSession.clear();
+    void this.router.navigateByUrl('/login');
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.more-menu-container')) {
+      this.closeMoreMenu();
+    }
   }
 }

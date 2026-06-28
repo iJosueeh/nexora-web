@@ -32,7 +32,7 @@ export class Footer {
 
   currentYear = new Date().getFullYear();
 
-  readonly isFeedRoute = computed(() => this.router?.url.startsWith('/feed') ?? false);
+  readonly isFeedRoute = computed(() => this.router?.url?.startsWith('/feed') ?? false);
 
   socials: Social[] = [
     {
@@ -63,8 +63,8 @@ export class Footer {
       id: 1,
       title: 'Platform',
       links: [
-        { label: 'Features', path: '/funcionalidad' },
-        { label: 'Communities', path: '/comunidad' },
+        { label: 'Features', path: '/explorar' },
+        { label: 'Communities', path: '/pulse' },
       ],
     },
     {
@@ -72,7 +72,7 @@ export class Footer {
       title: 'Support',
       links: [
         { label: 'Support Center', path: '/ayuda' },
-        { label: 'Contacto', path: '/contacto' },
+        { label: 'Contacto', path: '/sobre-nosotros' },
       ],
     },
     {
