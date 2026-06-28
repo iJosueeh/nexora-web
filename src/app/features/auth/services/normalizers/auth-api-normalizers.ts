@@ -63,7 +63,7 @@ function resolveUser(payload: Record<string, unknown>, fallbackEmail: string): L
     : getStringArray(payload, 'academicInterests');
 
   return {
-    id: id || undefined,
+    id: id || '',
     email,
     username: username || undefined,
     fullName: fullName || undefined,

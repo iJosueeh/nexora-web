@@ -1,0 +1,103 @@
+@switch (card().variant) {
+  @case ('image') {
+    <article
+      class="group cursor-pointer overflow-hidden rounded-2xl bg-[#12141a] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)]"
+      (click)="navigateToPost()"
+      (keydown.enter)="navigateToPost()"
+      tabindex="0"
+      role="button"
+    >
+      <div class="relative h-64 overflow-hidden">
+        <img
+          [src]="card().imageUrl"
+          [alt]="card().title"
+          class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-[#12141a] via-transparent to-transparent opacity-60"></div>
+        <div class="absolute top-3 left-3 flex items-center gap-2">
+          <span class="rounded-md bg-[#df3432]/80 backdrop-blur-sm px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-white shadow-lg">
+            {{ card().label }}
+          </span>
+          <span class="rounded-md bg-black/40 backdrop-blur-sm px-2 py-0.5 text-[0.58rem] text-white/60">
+            {{ card().badge }}
+          </span>
+        </div>
+      </div>
+      <div class="space-y-3 p-4">
+        <h2 class="text-[2rem] font-semibold leading-tight text-white sm:text-[2.15rem] xl:text-[2.25rem] line-clamp-2">
+          {{ card().title }}
+        </h2>
+        <p class="text-sm leading-6 text-white/50 line-clamp-3">{{ card().description }}</p>
+        <div class="flex items-center gap-5 text-xs text-white/30 pt-1">
+          <span class="inline-flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            {{ card().likes || '0' }}
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            {{ card().comments || '0' }}
+          </span>
+        </div>
+      </div>
+    </article>
+  }
+  @case ('text') {
+    <article
+      class="group cursor-pointer rounded-2xl bg-[#12141a] p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)] h-full flex flex-col justify-center"
+      [class.xl:col-span-2]="featured()"
+      (click)="navigateToPost()"
+      (keydown.enter)="navigateToPost()"
+      tabindex="0"
+      role="button"
+    >
+      <div class="flex items-start gap-4">
+        <div class="shrink-0 w-1 self-stretch rounded-full bg-[#df3432]/40 group-hover:bg-[#df3432]/60 transition-colors duration-300"></div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.16em] text-[#22d3ee]/60 mb-3">
+            <span class="rounded bg-white/5 px-2 py-0.5">{{ card().label }}</span>
+            <span class="text-white/30">{{ card().badge }}</span>
+          </div>
+          <h2 class="text-[2rem] font-semibold leading-tight text-white sm:text-[2.1rem] xl:text-[2.2rem] line-clamp-3">
+            {{ card().title }}
+          </h2>
+          <p class="mt-4 text-sm leading-6 text-white/50 line-clamp-3">{{ card().description }}</p>
+          <div class="mt-6 flex items-center gap-5 text-xs text-white/30">
+            <span class="inline-flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              {{ card().likes || '0' }}
+            </span>
+            <span class="inline-flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              {{ card().comments || '0' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </article>
+  }
+  @case ('link') {
+    <article
+      class="group cursor-pointer rounded-2xl bg-[#12141a] p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)]"
+      (click)="navigateToPost()"
+      (keydown.enter)="navigateToPost()"
+      tabindex="0"
+      role="button"
+    >
+      <div class="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.16em] text-[#df3432]/50 mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+        <span>{{ card().label }}</span>
+        <span class="text-white/30">{{ card().badge }}</span>
+      </div>
+      <h2 class="text-[1.95rem] font-semibold leading-tight text-white sm:text-[2.05rem] xl:text-[2.15rem] line-clamp-2">
+        {{ card().title }}
+      </h2>
+      <p class="mt-4 text-sm leading-6 text-white/50 line-clamp-3">{{ card().description }}</p>
+      <div class="mt-6">
+        <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-[#df3432]/70 group-hover:text-[#df3432] transition-colors duration-200">
+          {{ card().cta || 'Read article' }}
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </span>
+      </div>
+    </article>
+  }
+}

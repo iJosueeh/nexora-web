@@ -1,17 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, input, inject, signal, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, inject, signal, DestroyRef, output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { CommentThread } from '../../../../interfaces/feed';
 import { CommentService } from '../../services/comment.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AuthSession } from '../../../../core/services/auth-session';
 import { Router } from '@angular/router';
+import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
 
 @Component({
 	selector: 'app-comment-thread',
 	standalone: true,
-	imports: [CommonModule, RouterLink],
+	imports: [CommonModule, RouterLink, FormsModule, ConfirmModal],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	host: {
 		class: 'block'
@@ -27,16 +29,31 @@ export class CommentThreadComponent {
 		readonly postId = input<string | undefined>(undefined);
 		readonly reloadComments = input<(() => void) | undefined>(undefined);
 
+		readonly commentDeleted = output<string>();
+
 		readonly displayName = computed(() => this.comment().author.fullName || this.comment().author.username || 'Usuario Nexora');
 		readonly avatarUrl = computed(() => this.comment().author.avatar || 'assets/images/default-avatar.webp');
 		readonly replies = computed(() => this.comment().replies ?? []);
 		readonly replyCount = computed(() => this.replies().length);
 		readonly hasReplies = computed(() => this.replyCount() > 0);
 		readonly relativeDate = computed(() => formatRelativeDate(this.comment().createdAt));
+		readonly isAuthor = computed(() => this.authSession.getUser()?.id === this.comment().author.id);
 
-		// Reply form state
+		// Local UI state for likes (to handle optimistic updates on a nested signal component)
+		// Since 'comment' is an input signal, we use these to mirror/override its state locally
+		readonly localLikesCount = signal<number | null>(null);
+		readonly localIsLiked = signal<boolean | null>(null);
+
+		readonly currentLikesCount = computed(() => this.localLikesCount() ?? this.comment().likesCount);
+		readonly currentIsLiked = computed(() => this.localIsLiked() ?? this.comment().isLiked);
+
+		// Interaction state
 		readonly showReply = signal(false);
 		readonly replyText = signal('');
+		readonly isEditing = signal(false);
+		readonly editText = signal('');
+		readonly isSubmitting = signal(false);
+		readonly isDeleteModalOpen = signal(false);
 
 		private readonly commentService = inject(CommentService);
 		private readonly toastService = inject(ToastService);
@@ -45,7 +62,84 @@ export class CommentThreadComponent {
 		private readonly destroyRef = inject(DestroyRef);
 
 		reply(): void {
+			if (this.isEditing()) this.isEditing.set(false);
 			this.showReply.update(s => !s);
+		}
+
+		toggleEdit(): void {
+			if (this.showReply()) this.showReply.set(false);
+			this.editText.set(this.comment().content);
+			this.isEditing.update(e => !e);
+		}
+
+		onDelete(): void {
+			this.isDeleteModalOpen.set(true);
+		}
+
+		confirmDelete(): void {
+			this.isSubmitting.set(true);
+			this.commentService.deleteComment(this.comment().id)
+				.pipe(takeUntilDestroyed(this.destroyRef))
+				.subscribe({
+					next: () => {
+						this.isSubmitting.set(false);
+						this.isDeleteModalOpen.set(false);
+						this.toastService.show('Comentario eliminado', 'success');
+						this.commentDeleted.emit(this.comment().id);
+					},
+					error: () => {
+						this.isSubmitting.set(false);
+						this.isDeleteModalOpen.set(false);
+						this.toastService.show('Error al eliminar comentario', 'error');
+					}
+				});
+		}
+
+		toggleLike(): void {
+			if (!this.authSession.isAuthenticated()) {
+				this.toastService.show('Inicia sesión para reaccionar', 'warning');
+				return;
+			}
+
+			const previousLiked = this.currentIsLiked();
+			const previousCount = this.currentLikesCount();
+
+			// Optimistic Update
+			this.localIsLiked.set(!previousLiked);
+			this.localLikesCount.set(previousLiked ? previousCount - 1 : previousCount + 1);
+
+			this.commentService.toggleLike(this.comment().id).subscribe({
+				error: () => {
+					// Rollback
+					this.localIsLiked.set(previousLiked);
+					this.localLikesCount.set(previousCount);
+					this.toastService.show('Error al procesar reacción', 'error');
+				}
+			});
+		}
+
+		submitEdit(): void {
+			const text = this.editText().trim();
+			if (!text || text === this.comment().content) {
+				this.isEditing.set(false);
+				return;
+			}
+
+			this.isSubmitting.set(true);
+			this.commentService.updateComment(this.comment().id, text)
+				.pipe(takeUntilDestroyed(this.destroyRef))
+				.subscribe({
+					next: () => {
+						this.isEditing.set(false);
+						this.isSubmitting.set(false);
+						this.toastService.show('Comentario actualizado', 'success');
+						if (this.reloadComments) this.reloadComments();
+					},
+					error: () => {
+						this.isSubmitting.set(false);
+						this.toastService.show('Error al actualizar comentario', 'error');
+					}
+				});
 		}
 
 		submitReply(): void {
@@ -59,18 +153,23 @@ export class CommentThreadComponent {
 			const pid = this.postId();
 			if (!pid) return;
 			const parentId = this.comment() ? this.comment().id : null;
+			
+			this.isSubmitting.set(true);
 			this.commentService.createComment(pid, parentId ?? null, text)
 				.pipe(takeUntilDestroyed(this.destroyRef))
 				.subscribe({
 					next: () => {
 						this.replyText.set('');
 						this.showReply.set(false);
+						this.isSubmitting.set(false);
 						this.toastService.show('Respuesta publicada', 'success');
 						if (this.reloadComments) this.reloadComments();
 					},
-					error: (err: any) => {
+					error: (err: unknown) => {
 						console.error('Error posting reply', err);
-						const gql = err?.graphQLErrors?.[0]?.message || err?.message || 'Error al publicar respuesta';
+						const errorPayload = err as any;
+						const gql = errorPayload?.graphQLErrors?.[0]?.message || errorPayload?.message || 'Error al publicar respuesta';
+						this.isSubmitting.set(false);
 						this.toastService.show(gql, 'error');
 					}
 				});

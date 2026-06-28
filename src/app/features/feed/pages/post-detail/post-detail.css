@@ -1,0 +1,55 @@
+:host {
+  display: block;
+}
+
+.post-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.comment-input-area {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 1rem;
+  padding: 1rem;
+  transition: background 0.2s;
+}
+
+.comment-input-area:focus-within {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.reply-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  resize: none;
+  color: #fff;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  outline: none;
+  padding: 0.25rem 0;
+  margin: 0;
+}
+
+.reply-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.action-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  transition: all 0.2s;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.action-icon-btn:hover {
+  transform: scale(1.1);
+}

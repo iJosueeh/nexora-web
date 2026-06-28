@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthSession } from '../../../../../../core/services/auth-session';
@@ -14,14 +14,16 @@ import { UniversityEvent } from '../../interfaces/event.model';
 })
 export class EventCard {
   private readonly router = inject(Router);
-  private readonly auth = inject(AuthSession);
+  readonly auth = inject(AuthSession);
 
   readonly event = input.required<UniversityEvent>();
+  readonly deleted = output<string>();
   readonly isSubmitting = signal(false);
   readonly hasConfirmed = signal(false);
+  readonly showDeleteConfirm = signal(false);
 
   confirmRSVP(e: Event): void {
-    e.stopPropagation(); // Evitar que el clic en el botón active el routerLink de la tarjeta si lo tuviera
+    e.stopPropagation();
     
     if (!this.auth.isAuthenticated()) {
       this.router.navigate(['/login'], { 
@@ -32,10 +34,25 @@ export class EventCard {
 
     this.isSubmitting.set(true);
     
-    // Simulación de API
     setTimeout(() => {
       this.isSubmitting.set(false);
       this.hasConfirmed.set(true);
     }, 1500);
+  }
+
+  onDeleteClick(e: Event): void {
+    e.stopPropagation();
+    this.showDeleteConfirm.set(true);
+  }
+
+  confirmDelete(e: Event): void {
+    e.stopPropagation();
+    this.deleted.emit(this.event().id);
+    this.showDeleteConfirm.set(false);
+  }
+
+  cancelDelete(e: Event): void {
+    e.stopPropagation();
+    this.showDeleteConfirm.set(false);
   }
 }

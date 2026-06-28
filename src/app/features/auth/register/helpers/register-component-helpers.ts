@@ -1,4 +1,6 @@
-export function buildIdentityPayload(ctx: any): any {
+import { RegisterContext, RegisterIdentityRequest, RegisterPreferencesRequest, RegisterDraft, RegisterFormValue } from '../../../../interfaces/auth';
+
+export function buildIdentityPayload(ctx: RegisterContext): RegisterIdentityRequest {
   return {
     email: ctx.accountForm.controls.email.value.trim(),
     username: ctx.identityForm.controls.username.value.trim(),
@@ -7,7 +9,7 @@ export function buildIdentityPayload(ctx: any): any {
   };
 }
 
-export function buildPreferencesPayload(ctx: any): any {
+export function buildPreferencesPayload(ctx: RegisterContext): RegisterPreferencesRequest {
   return {
     email: ctx.accountForm.controls.email.value.trim(),
     bio: ctx.preferencesForm.controls.bio.value.trim(),
@@ -17,7 +19,7 @@ export function buildPreferencesPayload(ctx: any): any {
   };
 }
 
-export function buildFallbackUser(ctx: any): { email: string; fullName: string; username: string } {
+export function buildFallbackUser(ctx: RegisterContext): { email: string; fullName: string; username: string } {
   return {
     email: ctx.accountForm.controls.email.value.trim(),
     fullName: ctx.identityForm.controls.fullName.value.trim(),
@@ -25,11 +27,11 @@ export function buildFallbackUser(ctx: any): { email: string; fullName: string; 
   };
 }
 
-export function patchDraftToForm(ctx: any, draft: any): void {
+export function patchDraftToForm(ctx: RegisterContext, draft: RegisterDraft): void {
   ctx.form.patchValue(
     {
       account: { email: draft.email, password: draft.password, confirmPassword: draft.confirmPassword },
-      identity: { username: draft.username, fullName: draft.fullName, career: draft.career },
+      identity: { username: draft.firstName, fullName: draft.lastName, career: draft.career },
       preferences: {
         bio: draft.bio,
         selectedInterests: draft.selectedInterests,
@@ -41,24 +43,25 @@ export function patchDraftToForm(ctx: any, draft: any): void {
   );
 }
 
-export function buildDraftPayload(ctx: any, raw: any): any {
+export function buildDraftPayload(ctx: RegisterContext, raw: RegisterFormValue): RegisterDraft {
   return {
     email: raw.account.email,
     password: raw.account.password,
     confirmPassword: raw.account.confirmPassword,
     isEmailGuideVisible: ctx.showEmailInboxGuide(),
-    username: raw.identity.username,
-    fullName: raw.identity.fullName,
+    firstName: raw.identity.username,
+    lastName: raw.identity.fullName,
     career: raw.identity.career,
     bio: raw.preferences.bio,
     selectedInterests: raw.preferences.selectedInterests,
     isActive: raw.preferences.isActive,
     acceptedTerms: raw.preferences.acceptedTerms,
     currentStep: ctx.currentStep(),
+    expiresAt: ctx.draftExpiresAt(),
   };
 }
 
-export function resetFormWithDefaults(ctx: any): void {
+export function resetFormWithDefaults(ctx: RegisterContext): void {
   ctx.form.reset(
     {
       account: { email: '', password: '', confirmPassword: '' },
@@ -71,3 +74,4 @@ export function resetFormWithDefaults(ctx: any): void {
   ctx.form.markAsPristine();
   ctx.form.markAsUntouched();
 }
+

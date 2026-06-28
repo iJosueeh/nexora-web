@@ -1,9 +1,17 @@
 <div class="fixed inset-0 z-[100] flex items-center justify-center p-4">
   <!-- Backdrop con desenfoque -->
-  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="onCancel()"></div>
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" 
+    (click)="onCancel()"
+    (keydown.escape)="onCancel()"
+    tabindex="-1"
+    role="presentation"></div>
   
   <!-- Modal -->
-  <div class="relative w-full max-w-sm overflow-hidden rounded-2xl border border-white/10 bg-[#161b26] p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+  <div class="relative w-full max-w-sm overflow-hidden rounded-2xl border border-white/10 bg-[#161b26] p-6 shadow-2xl animate-in fade-in zoom-in duration-200"
+    tabindex="0"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="confirm-modal-title">
     <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#df3432]/10 text-[#df3432]">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M3 6h18"></path>
@@ -12,7 +20,7 @@
       </svg>
     </div>
     
-    <h3 class="mb-2 text-xl font-bold text-white">{{ title() }}</h3>
+    <h3 id="confirm-modal-title" class="mb-2 text-xl font-bold text-white">{{ title() }}</h3>
     <p class="mb-6 text-sm text-[#9aa3b2]">{{ message() }}</p>
     
     <div class="flex gap-3">
@@ -20,6 +28,7 @@
         (click)="onCancel()"
         [disabled]="isLoading()"
         class="flex-1 rounded-xl bg-white/5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10 disabled:opacity-50"
+        type="button"
       >
         Cancelar
       </button>
@@ -27,6 +36,7 @@
         (click)="onConfirm()"
         [disabled]="isLoading()"
         class="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#df3432] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#f02d36] disabled:opacity-50"
+        type="button"
       >
         @if (isLoading()) {
           <div class="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></div>
@@ -38,3 +48,4 @@
     </div>
   </div>
 </div>
+

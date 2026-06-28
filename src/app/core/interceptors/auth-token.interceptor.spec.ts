@@ -5,12 +5,13 @@ import { authTokenInterceptor } from './auth-token.interceptor';
 import { AuthSession } from '../services/auth-session';
 import { SupabaseAuthService } from '../services/supabase-auth.service';
 import { of } from 'rxjs';
+import { vi, Mock } from 'vitest';
 
 describe('authTokenInterceptor', () => {
   let httpMock: HttpTestingController;
   let httpClient: HttpClient;
-  let authSessionSpy: any;
-  let supabaseAuthSpy: any;
+  let authSessionSpy: { getTokens: Mock };
+  let supabaseAuthSpy: { getValidTokens: Mock };
 
   beforeEach(() => {
     authSessionSpy = {

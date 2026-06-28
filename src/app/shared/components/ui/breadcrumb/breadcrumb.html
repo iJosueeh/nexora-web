@@ -1,0 +1,16 @@
+<div class="breadcrumb-container">
+  <div class="breadcrumb-item">
+    <a routerLink="/feed">Feed</a>
+  </div>
+
+  @for (item of items(); track item.label; let last = $last) {
+    <span class="separator">/</span>
+    <div class="breadcrumb-item" [class.active]="last">
+      @if (item.url && !last) {
+        <a [routerLink]="item.url">{{ item.label }}</a>
+      } @else {
+        <span>{{ item.label }}</span>
+      }
+    </div>
+  }
+</div>

@@ -2,20 +2,16 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
 
-import { ShellLayout } from '../../../../shared/components/shell-layout/shell-layout';
-import { FeedSidebar } from '../../components/feed-sidebar/feed-sidebar';
 import { FeedPublicationQueueService } from '../../services/feed-publication-queue.service';
 import { FeedPublicationService } from '../../services/feed-publication.service';
 import { PublicationDraft } from './publication-draft.model';
 import { PublicationComposerComponent } from './components/publication-composer/publication-composer';
-import { PublicationDraftsCardComponent } from './components/publication-drafts-card/publication-drafts-card';
-import { PublicationGuidelinesCardComponent } from './components/publication-guidelines-card/publication-guidelines-card';
 
 @Component({
   selector: 'app-new-publication-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ShellLayout, FeedSidebar, PublicationComposerComponent, PublicationDraftsCardComponent, PublicationGuidelinesCardComponent],
+  imports: [PublicationComposerComponent],
   templateUrl: './new-publication-page.html'
 })
 export class NewPublicationPage {

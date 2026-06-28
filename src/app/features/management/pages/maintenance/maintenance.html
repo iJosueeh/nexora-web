@@ -1,0 +1,173 @@
+<div class="maintenance-container">
+  <header class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Mantenimiento de Catálogos</h1>
+      <p class="page-subtitle">Gestiona las facultades, carreras e intereses de la plataforma.</p>
+    </div>
+    <button class="add-btn" (click)="openModal('create')">
+      <span class="material-symbols-outlined">add</span>
+      Nuevo Registro
+    </button>
+  </header>
+
+  <!-- Tabs Navigation -->
+  <nav class="tabs-nav">
+    <button 
+      class="tab-link" 
+      [class.active]="activeTab() === 'faculties'"
+      (click)="setTab('faculties')"
+    >
+      Facultades
+    </button>
+    <button 
+      class="tab-link" 
+      [class.active]="activeTab() === 'courses'"
+      (click)="setTab('courses')"
+    >
+      Carreras
+    </button>
+    <button 
+      class="tab-link" 
+      [class.active]="activeTab() === 'interests'"
+      (click)="setTab('interests')"
+    >
+      Intereses Académicos
+    </button>
+  </nav>
+
+  <!-- Content Section -->
+  <div class="table-card">
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <span>Cargando datos...</span>
+      </div>
+    } @else {
+      <div class="table-scroll">
+        <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            @if (activeTab() === 'courses') {
+              <th>Facultad</th>
+            }
+            <th class="actions-col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (activeTab() === 'faculties') {
+            @for (f of faculties(); track f.id) {
+              <tr>
+                <td class="font-semibold text-white">{{ f.name }}</td>
+                <td class="actions-cell">
+                  <button class="action-btn edit" (click)="openModal('edit', f)">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="action-btn delete" (click)="delete(f)">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </td>
+              </tr>
+            }
+          } @else if (activeTab() === 'courses') {
+            @for (c of courses(); track c.id) {
+              <tr>
+                <td class="font-semibold text-white">{{ c.name }}</td>
+                <td><span class="faculty-badge">{{ c.faculty.name }}</span></td>
+                <td class="actions-cell">
+                  <button class="action-btn edit" (click)="openModal('edit', c)">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="action-btn delete" (click)="delete(c)">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </td>
+              </tr>
+            }
+          } @else if (activeTab() === 'interests') {
+            @for (i of academicInterests(); track i.id) {
+              <tr>
+                <td class="font-semibold text-white">{{ i.name }}</td>
+                <td class="actions-cell">
+                  <button class="action-btn edit" (click)="openModal('edit', i)">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="action-btn delete" (click)="delete(i)">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal -->
+@if (isModalOpen()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2 class="modal-title">
+          @if (modalMode() === 'delete') {
+            Confirmar Eliminación
+          } @else {
+            {{ modalMode() === 'create' ? 'Nuevo' : 'Editar' }} 
+            @switch (activeTab()) {
+              @case ('faculties') { Facultad }
+              @case ('courses') { Carrera }
+              @case ('interests') { Interés }
+            }
+          }
+        </h2>
+        <button class="close-btn" (click)="closeModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        @if (modalMode() === 'delete') {
+          <div class="delete-confirmation">
+            <span class="material-symbols-outlined delete-icon">warning</span>
+            <p>¿Estás seguro de que deseas eliminar permanentemente <strong>"{{ selectedItem()?.name }}"</strong>?</p>
+            <p class="warning-text">Esta acción no se puede deshacer y puede afectar a usuarios vinculados.</p>
+          </div>
+        } @else {
+          <div class="form-group">
+            <label class="form-label">Nombre</label>
+            <input 
+              type="text" 
+              [(ngModel)]="itemName"
+              placeholder="Introduce el nombre..."
+              class="form-input"
+            >
+          </div>
+
+          @if (activeTab() === 'courses') {
+            <div class="form-group">
+              <label class="form-label">Facultad</label>
+              <select [(ngModel)]="selectedFacultyId" class="form-select">
+                <option value="" disabled>Selecciona una facultad</option>
+                @for (f of faculties(); track f.id) {
+                  <option [value]="f.id">{{ f.name }}</option>
+                }
+              </select>
+            </div>
+          }
+        }
+      </div>
+
+      <footer class="modal-footer">
+        <button class="cancel-btn" (click)="closeModal()">Cancelar</button>
+        @if (modalMode() === 'delete') {
+          <button class="save-btn delete-confirm-btn" (click)="confirmDelete()">Eliminar Registro</button>
+        } @else {
+          <button class="save-btn" (click)="save()">Guardar Cambios</button>
+        }
+      </footer>
+    </div>
+  </div>
+}

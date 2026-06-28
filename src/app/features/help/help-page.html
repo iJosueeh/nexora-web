@@ -1,0 +1,155 @@
+<app-shell-layout [showRight]="false">
+  <div shell-left>
+    <app-feed-sidebar></app-feed-sidebar>
+  </div>
+
+  <div shell-main>
+    <div class="help-container mx-auto max-w-4xl px-4 py-8 md:px-6">
+      <header class="mb-10 space-y-2">
+        <h1 class="text-4xl font-bold tracking-tight text-white">Centro de Ayuda</h1>
+        <p class="text-[var(--brand-muted)]">Encuentra respuestas a tus dudas o contacta con el equipo de Nexora.</p>
+      </header>
+
+      <!-- Tabs -->
+      <div class="mb-8 flex border-b border-white/5">
+        <button 
+          (click)="setTab('faq')"
+          class="flex-1 py-4 text-sm font-bold uppercase tracking-widest transition-all"
+          [class.text-[var(--brand-red)]]="activeTab() === 'faq'"
+          [class.border-b-2]="activeTab() === 'faq'"
+          [class.border-[var(--brand-red)]]="activeTab() === 'faq'"
+          [class.text-[var(--brand-muted)]]="activeTab() !== 'faq'"
+        >
+          Preguntas Frecuentes
+        </button>
+        <button 
+          (click)="setTab('soporte')"
+          class="flex-1 py-4 text-sm font-bold uppercase tracking-widest transition-all"
+          [class.text-[var(--brand-red)]]="activeTab() === 'soporte'"
+          [class.border-b-2]="activeTab() === 'soporte'"
+          [class.border-[var(--brand-red)]]="activeTab() === 'soporte'"
+          [class.text-[var(--brand-muted)]]="activeTab() !== 'soporte'"
+        >
+          Soporte Técnico
+        </button>
+      </div>
+
+      <!-- FAQ Content -->
+      @if (activeTab() === 'faq') {
+        <div class="space-y-6">
+          <section class="rounded-2xl border border-white/5 bg-white/5 p-6 md:p-8">
+            <h2 class="mb-6 text-xl font-bold text-white">Pautas de la Comunidad</h2>
+            <div class="grid gap-4 md:grid-cols-2">
+              <div class="space-y-4">
+                <div class="flex gap-3">
+                  <div class="mt-1 h-2 w-2 shrink-0 rounded-full bg-[var(--brand-red)]"></div>
+                  <p class="text-sm leading-relaxed text-[#c8cbd3]">
+                    <strong>Integridad Académica:</strong> Nexora es un espacio para el crecimiento. No compartas respuestas de exámenes ni material protegido.
+                  </p>
+                </div>
+                <div class="flex gap-3">
+                  <div class="mt-1 h-2 w-2 shrink-0 rounded-full bg-[var(--brand-red)]"></div>
+                  <p class="text-sm leading-relaxed text-[#c8cbd3]">
+                    <strong>Respeto Mutuo:</strong> Las críticas deben ser constructivas. El acoso o discurso de odio resultará en ban inmediato.
+                  </p>
+                </div>
+              </div>
+              <div class="space-y-4">
+                <div class="flex gap-3">
+                  <div class="mt-1 h-2 w-2 shrink-0 rounded-full bg-[var(--brand-red)]"></div>
+                  <p class="text-sm leading-relaxed text-[#c8cbd3]">
+                    <strong>Contenido Oficial:</strong> Solo las cuentas verificadas por la universidad pueden marcar posts como "Oficiales".
+                  </p>
+                </div>
+                <div class="flex gap-3">
+                  <div class="mt-1 h-2 w-2 shrink-0 rounded-full bg-[var(--brand-red)]"></div>
+                  <p class="text-sm leading-relaxed text-[#c8cbd3]">
+                    <strong>Privacidad:</strong> No publiques datos personales sensibles propios o de terceros.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="space-y-4">
+            <h2 class="px-4 text-sm font-black uppercase tracking-[0.2em] text-[var(--brand-muted)]">Preguntas Comunes</h2>
+            
+            <div class="rounded-2xl border border-white/5 bg-black/20 overflow-hidden">
+              <details class="group border-b border-white/5">
+                <summary class="flex cursor-pointer items-center justify-between p-5 text-sm font-bold text-white transition-colors hover:bg-white/5">
+                  ¿Cómo puedo editar mi perfil?
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-open:rotate-180"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </summary>
+                <div class="p-5 text-sm leading-relaxed text-[#a0a6b0] bg-white/2">
+                  Ve a la sección "Configuración" en la barra lateral o haz clic en tu foto de perfil para acceder a los ajustes de cuenta.
+                </div>
+              </details>
+
+              <details class="group border-b border-white/5">
+                <summary class="flex cursor-pointer items-center justify-between p-5 text-sm font-bold text-white transition-colors hover:bg-white/5">
+                  ¿Para qué sirven las etiquetas (#)?
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-open:rotate-180"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </summary>
+                <div class="p-5 text-sm leading-relaxed text-[#a0a6b0] bg-white/2">
+                  Las etiquetas ayudan a organizar el contenido por temas (ej. #java, #campus). Los posts con etiquetas aparecen en la sección "Explorar" y generan tendencias.
+                </div>
+              </details>
+
+              <details class="group">
+                <summary class="flex cursor-pointer items-center justify-between p-5 text-sm font-bold text-white transition-colors hover:bg-white/5">
+                  ¿Cómo funcionan las métricas de tendencias?
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-open:rotate-180"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </summary>
+                <div class="p-5 text-sm leading-relaxed text-[#a0a6b0] bg-white/2">
+                  Calculamos las tendencias basándonos en el volumen de interacciones reales (me gusta y comentarios) de los posts más recientes que contienen un hashtag específico.
+                </div>
+              </details>
+            </div>
+          </section>
+        </div>
+      }
+
+      <!-- Support Content -->
+      @if (activeTab() === 'soporte') {
+        <div class="flex flex-col items-center justify-center py-12">
+          <div class="w-full max-w-2xl overflow-hidden rounded-[32px] border border-white/5 bg-white/5 p-8 text-center shadow-2xl md:p-12">
+            <div class="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-[var(--brand-red)]/10 text-[var(--brand-red)] shadow-inner">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><line x1="9" y1="10" x2="15" y2="10"></line><line x1="12" y1="7" x2="12" y2="13"></line></svg>
+            </div>
+            
+            <h2 class="mb-4 text-3xl font-bold text-white">¿Necesitas ayuda técnica?</h2>
+            <p class="mb-10 text-lg leading-relaxed text-[#a0a6b0]">
+              Para garantizar la seguridad de tus archivos y datos, nuestro formulario de soporte oficial se abre en una plataforma segura externa gestionada por Google.
+            </p>
+
+            <div class="space-y-4">
+              <a 
+                [href]="supportFormLink" 
+                target="_blank" 
+                class="inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-[var(--brand-red)] py-5 text-sm font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-[#ee4542] hover:shadow-[0_15px_40px_rgba(223,52,50,0.3)] active:scale-[0.98] sm:w-auto sm:px-12"
+              >
+                Abrir Formulario Oficial
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </a>
+              
+              <p class="pt-4 text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--brand-muted)]">
+                Conexión segura cifrada de punto a punto
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-12 grid w-full max-w-2xl gap-4 md:grid-cols-2">
+            <div class="rounded-2xl border border-white/5 bg-black/20 p-6">
+              <h3 class="mb-2 text-xs font-black uppercase tracking-widest text-white">Reporte de Bugs</h3>
+              <p class="text-[11px] leading-relaxed text-[var(--brand-muted)]">Envía capturas de pantalla si algo no funciona como debería en la plataforma.</p>
+            </div>
+            <div class="rounded-2xl border border-white/5 bg-black/20 p-6">
+              <h3 class="mb-2 text-xs font-black uppercase tracking-widest text-white">Sugerencias</h3>
+              <p class="text-[11px] leading-relaxed text-[var(--brand-muted)]">¿Tienes una idea para mejorar Nexora? Nos encantaría escuchar tus propuestas académicas.</p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</app-shell-layout>

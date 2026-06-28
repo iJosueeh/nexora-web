@@ -1,47 +1,111 @@
-import { ChangeDetectionStrategy, Component, signal, computed, inject, effect } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, effect, inject, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ResearchCard } from './components/research-card/research-card';
-import { ResearchPaper } from './interfaces/research-paper.model';
-import { ResearchService } from './services/research.service';
+
+import { AuthSession } from '../../../../core/services/auth-session';
+import { ResourceService } from './services/resource.service';
+import { ResourceCard } from './components/resource-card/resource-card';
+import { ResourceFilters, ResourceFiltersValue } from './components/resource-filters/resource-filters';
+import { AcademicResource, ResourceCategory } from '../../../../interfaces/resources';
+
+const PAGE_SIZE = 20;
 
 @Component({
   selector: 'app-explorar',
   standalone: true,
-  imports: [CommonModule, ResearchCard],
+  imports: [CommonModule, ResourceCard, ResourceFilters],
   templateUrl: './explorar.html',
   styleUrl: './explorar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExplorarPage {
-  private readonly researchService = inject(ResearchService);
+export class ExplorarPage implements AfterViewInit, OnDestroy {
+  private readonly resourceService = inject(ResourceService);
+  private observer: IntersectionObserver | null = null;
 
-  readonly categories = signal(['Todos', 'Sistemas', 'Software', 'Industrial', 'Arquitectura', 'Administración', 'Marketing']);
-  readonly selectedCategory = signal('Todos');
-  readonly papers = signal<ResearchPaper[]>([]);
+  readonly sentinel = viewChild<ElementRef<HTMLElement>>('sentinel');
+
+  readonly resources = signal<AcademicResource[]>([]);
+  readonly categories = signal<ResourceCategory[]>([]);
   readonly isLoading = signal(false);
+  readonly isLoadingMore = signal(false);
+  readonly hasMore = signal(true);
+  readonly filters = signal<ResourceFiltersValue>({
+    query: '',
+    categoryId: null,
+    type: null,
+    minRating: null,
+  });
+
+  private offset = 0;
 
   constructor() {
-    // Recargar datos cuando cambie la categoría
     effect(() => {
-      this.loadPapers();
+      this.offset = 0;
+      this.hasMore.set(true);
+      this.loadResources(true);
     }, { allowSignalWrites: true });
+
+    this.loadCategories();
   }
 
-  loadPapers(): void {
-    const category = this.selectedCategory();
-    const facultyFilter = category === 'Todos' ? undefined : category;
-    
+  ngAfterViewInit(): void {
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !this.isLoadingMore() && this.hasMore()) {
+          this.loadMore();
+        }
+      },
+      { rootMargin: '200px' },
+    );
+
+    const el = this.sentinel()?.nativeElement;
+    if (el) {
+      this.observer.observe(el);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.observer?.disconnect();
+  }
+
+  loadResources(replace = false): void {
+    const current = this.filters();
+    const filter = {
+      ...(current.categoryId ? { categoryId: current.categoryId } : {}),
+      ...(current.type ? { type: current.type } : {}),
+      ...(current.minRating ? { minRating: current.minRating } : {}),
+      ...(current.query ? { query: current.query } : {}),
+    };
+
     this.isLoading.set(true);
-    this.researchService.getResearchPapers(20, 0, facultyFilter).subscribe({
+    this.resourceService.getResources(PAGE_SIZE, this.offset, filter).subscribe({
       next: (data) => {
-        this.papers.set(data);
+        if (replace) {
+          this.resources.set(data);
+        } else {
+          this.resources.update((prev) => [...prev, ...data]);
+        }
+        this.hasMore.set(data.length === PAGE_SIZE);
         this.isLoading.set(false);
       },
-      error: () => this.isLoading.set(false)
+      error: () => this.isLoading.set(false),
     });
   }
 
-  selectCategory(category: string): void {
-    this.selectedCategory.set(category);
+  loadMore(): void {
+    this.offset += PAGE_SIZE;
+    this.isLoadingMore.set(true);
+    this.loadResources(false);
+    this.isLoadingMore.set(false);
+  }
+
+  loadCategories(): void {
+    this.resourceService.getResourceCategories().subscribe({
+      next: (data) => this.categories.set(data),
+      error: () => this.categories.set([]),
+    });
+  }
+
+  updateFilters(updated: ResourceFiltersValue): void {
+    this.filters.set(updated);
   }
 }

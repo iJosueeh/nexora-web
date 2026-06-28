@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AbstractControl, FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, DestroyRef, inject, OnInit } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, FormGroup, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subject, debounceTime } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
+import { Subject, debounceTime } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AuthSession } from '../../../core/services/auth-session';
 import { SupabaseAuthService } from '../../../core/services/supabase-auth.service';
-import { RegisterIdentityRequest, RegisterPreferencesRequest } from '../../../interfaces/auth';
+import { RegisterForm, RegisterDraft, RegisterIdentityRequest, RegisterPreferencesRequest, RegisterFormValue } from '../../../interfaces/auth';
 import { Loading } from '../../../shared/components/loading/loading';
 import { AuthApiService } from '../services/auth-api.service';
 import { RegisterAccountStep } from './components/register-account-step/register-account-step';
@@ -48,6 +48,7 @@ import {
 
 @Component({
   selector: 'app-register',
+  standalone: true,
   imports: [
     ReactiveFormsModule,
     Loading,
@@ -60,7 +61,7 @@ import {
   styleUrl: './register.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Register {
+export class Register implements OnInit {
   private readonly fb = inject(FormBuilder);
   readonly router = inject(Router);
   readonly toastr = inject(ToastrService);
@@ -87,10 +88,10 @@ export class Register {
   readonly otpResetNonce = this.state.otpResetNonce;
   readonly resendCooldownSeconds = this.state.resendCooldownSeconds;
   readonly loadingMessage = this.state.loadingMessage;
-  readonly form = this.state.form as any;
-  readonly accountForm = this.form.controls['account'] as any;
-  readonly identityForm = this.form.controls['identity'] as any;
-  readonly preferencesForm = this.form.controls['preferences'] as any;
+  readonly form = this.state.form as unknown as FormGroup<RegisterForm>;
+  readonly accountForm = this.form.controls.account;
+  readonly identityForm = this.form.controls.identity;
+  readonly preferencesForm = this.form.controls.preferences;
   readonly draftExpiresAt = this.state.draftExpiresAt;
   readonly draftRemainingMs = this.state.draftRemainingMs;
   readonly hasActiveDraft = this.state.hasActiveDraft;
@@ -137,22 +138,22 @@ export class Register {
   showStepValidationToast(): void { showStepValidationToast(this); }
 
   buildIdentityPayload(): RegisterIdentityRequest {
-    return buildIdentityPayload(this) as RegisterIdentityRequest;
+    return buildIdentityPayload(this);
   }
 
   buildPreferencesPayload(): RegisterPreferencesRequest {
-    return buildPreferencesPayload(this) as RegisterPreferencesRequest;
+    return buildPreferencesPayload(this);
   }
 
   buildFallbackUser(): { email: string; fullName: string; username: string } {
     return buildFallbackUser(this);
   }
 
-  patchDraftToForm(draft: any): void {
+  patchDraftToForm(draft: RegisterDraft): void {
     patchDraftToForm(this, draft);
   }
 
-  buildDraftPayload(raw: any): any {
+  buildDraftPayload(raw: RegisterFormValue): RegisterDraft {
     return buildDraftPayload(this, raw);
   }
 

@@ -4,11 +4,12 @@ import { EventService } from './services/event.service';
 import { of } from 'rxjs';
 import { UniversityEvent } from './interfaces/event.model';
 import { provideRouter } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 describe('EventosPage', () => {
   let component: EventosPage;
   let fixture: ComponentFixture<EventosPage>;
-  let eventServiceSpy: any;
+  let eventServiceSpy: { getEvents: ReturnType<typeof vi.fn> };
 
   const mockEvents: UniversityEvent[] = [
     { id: '1', slug: 'e1', title: 'Event 1', category: 'Debate', attendeesCount: 5, date: '', description: '', location: '' },
@@ -20,11 +21,14 @@ describe('EventosPage', () => {
       getEvents: vi.fn().mockReturnValue(of(mockEvents))
     };
 
+    const toastrSpy = { success: vi.fn(), error: vi.fn(), info: vi.fn(), warning: vi.fn() };
+
     await TestBed.configureTestingModule({
       imports: [EventosPage],
       providers: [
         provideRouter([]),
-        { provide: EventService, useValue: eventServiceSpy }
+        { provide: EventService, useValue: eventServiceSpy },
+        { provide: ToastrService, useValue: toastrSpy }
       ]
     }).compileComponents();
 

@@ -1,0 +1,52 @@
+@if (isOpen()) {
+  <div
+    class="absolute right-0 mt-2.5 w-56 origin-top-right rounded-2xl border border-[#1d2432] bg-[#0d1119] p-1.5 shadow-[0_10px_40px_rgba(0,0,0,0.5)] focus:outline-none z-[60]"
+    (click)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+    tabindex="-1"
+    role="presentation"
+  >
+    <div class="px-3 py-2.5 mb-1.5 border-b border-white/5">
+      <p class="text-sm font-bold text-[#f4f5f7] truncate">{{ displayName() }}</p>
+      <p class="text-[0.65rem] font-medium uppercase tracking-wider text-[#9aa3b2] truncate">{{ userHandle() }}</p>
+    </div>
+
+    <a
+      [routerLink]="profileLink()"
+      (click)="close()"
+      class="group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-[0.82rem] font-medium text-[#c8cbd3] transition-colors hover:bg-white/5 hover:text-white"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#707887] transition-colors group-hover:text-[#df3432]"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      Ver Perfil
+    </a>
+
+    <a
+      routerLink="/feed/bookmarks"
+      (click)="close()"
+      class="group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-[0.82rem] font-medium text-[#c8cbd3] transition-colors hover:bg-white/5 hover:text-white"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#707887] transition-colors group-hover:text-[#df3432]"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+      Guardados
+    </a>
+
+    <a
+      routerLink="/settings"
+      (click)="close()"
+      class="group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-[0.82rem] font-medium text-[#c8cbd3] transition-colors hover:bg-white/5 hover:text-white"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#707887] transition-colors group-hover:text-[#df3432]"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.58a2 2 0 0 1-1.73 1h-.18a2 2 0 0 0-2 2v.44a2 2 0 0 0 2 2h.18a2 2 0 0 1 1.73 1l.43.58a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.58a2 2 0 0 1 1.73-1h.18a2 2 0 0 0 2-2v-.44a2 2 0 0 0-2-2h-.18a2 2 0 0 1-1.73-1l-.43-.58a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+      Ajustes
+    </a>
+
+    <hr class="my-1.5 border-white/5" />
+
+    <button
+      type="button"
+      (click)="onSignOut()"
+      class="group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-[0.82rem] font-medium text-[#f1b0aa] transition-colors hover:bg-[#df3432]/10 hover:text-[#f4f5f7]"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#df3432]/70 transition-colors group-hover:text-[#df3432]"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      Cerrar Sesión
+    </button>
+  </div>
+}

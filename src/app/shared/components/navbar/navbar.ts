@@ -5,13 +5,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AuthSession } from '../../../core/services/auth-session';
 import { NotificationCenterComponent } from '../notifications/notification-center';
+import { ProfileDropdownComponent } from './profile-dropdown';
 
 type NavbarMode = 'public' | 'authenticated' | 'feed';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, NotificationCenterComponent],
+  imports: [RouterLink, RouterLinkActive, NotificationCenterComponent, ProfileDropdownComponent],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
@@ -20,14 +21,15 @@ export class Navbar {
   private readonly authSession = inject(AuthSession);
   private readonly destroyRef = inject(DestroyRef);
 
-  readonly menuOpen = signal(false);
+  readonly isMobileMenuOpen = signal(false);
   readonly profileDropdownOpen = signal(false);
   readonly currentPath = signal(this.router.url);
+  readonly isScrolled = signal(false);
 
   readonly isAuthenticated = computed(() => !!this.authSession.session()?.user?.email);
   readonly isFeedRoute = computed(() => {
     const current = this.currentPath();
-    return current.startsWith('/feed') || current.startsWith('/publicar') || current.startsWith('/profile') || current.startsWith('/u/');
+    return current.startsWith('/feed') || current.startsWith('/settings') || current.startsWith('/profile') || current.startsWith('/u/');
   });
   readonly profileLink = computed(() => {
     const username = this.authSession.getUser()?.username?.trim();
@@ -74,12 +76,12 @@ export class Navbar {
       });
   }
 
-  toggleMenu(): void {
-    this.menuOpen.update(value => !value);
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen.update(value => !value);
   }
 
-  closeMenu(): void {
-    this.menuOpen.set(false);
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen.set(false);
   }
 
   toggleProfileDropdown(event: MouseEvent): void {
@@ -90,6 +92,11 @@ export class Navbar {
   @HostListener('document:click')
   closeProfileDropdown(): void {
     this.profileDropdownOpen.set(false);
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    this.isScrolled.set(window.scrollY > 20);
   }
 
   signOut(): void {

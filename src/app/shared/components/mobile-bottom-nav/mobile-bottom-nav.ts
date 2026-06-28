@@ -1,0 +1,74 @@
+import { Component, computed, inject, signal, HostListener } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+
+import { AuthSession } from '../../../core/services/auth-session';
+import { NotificationService } from '../../../core/services/notification.service';
+import { buildAvatarUrl } from '../../../features/profile/profile-page/profile-page.helpers';
+
+@Component({
+  selector: 'app-mobile-bottom-nav',
+  standalone: true,
+  imports: [RouterLink, RouterLinkActive],
+  templateUrl: './mobile-bottom-nav.html',
+  styleUrl: './mobile-bottom-nav.css'
+})
+export class MobileBottomNavComponent {
+  private readonly authSession = inject(AuthSession);
+  private readonly notificationService = inject(NotificationService);
+  private readonly router = inject(Router);
+
+  readonly unreadCount = this.notificationService.unreadCount;
+  readonly isMoreMenuOpen = signal(false);
+
+  readonly userAvatar = computed(() => {
+    const user = this.authSession.user();
+    return user?.avatarUrl || buildAvatarUrl(user?.username || user?.email || 'nexora');
+  });
+
+  readonly profileLink = computed(() => {
+    const username = this.authSession.getUser()?.username?.trim();
+    return username ? ['/u', username] : ['/profile'];
+  });
+
+  goToProfile(event: MouseEvent): void {
+    event.preventDefault();
+    this.closeMoreMenu();
+    const username = this.authSession.getUser()?.username?.trim();
+    if (username) {
+      void this.router.navigate(['/u', username]);
+      return;
+    }
+    if (this.authSession.isAuthenticated()) {
+      void this.router.navigate(['/profile']);
+      return;
+    }
+    void this.router.navigate(['/login']);
+  }
+
+  goToPublication(event: MouseEvent): void {
+    event.preventDefault();
+    void this.router.navigate(['/feed', 'publicar']);
+  }
+
+  toggleMoreMenu(): void {
+    this.isMoreMenuOpen.update(v => !v);
+  }
+
+  closeMoreMenu(): void {
+    this.isMoreMenuOpen.set(false);
+  }
+
+  signOut(): void {
+    this.closeMoreMenu();
+    this.authSession.clear();
+    void this.router.navigateByUrl('/login');
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.more-menu-container')) {
+      this.closeMoreMenu();
+    }
+  }
+}

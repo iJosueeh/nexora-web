@@ -1,0 +1,138 @@
+<div class="editor-container">
+  @if (isMobile()) {
+    <!-- ═══ MOBILE: textarea simple, sin toolbar ═══ -->
+    <textarea
+      #mobileTextarea
+      class="mobile-textarea"
+      [value]="content()"
+      (input)="onMobileInput($event)"
+      placeholder="¿Qué quieres compartir con tu comunidad?"
+      rows="4"
+    ></textarea>
+  } @else {
+    <!-- ═══ DESKTOP: TipTap editor ═══ -->
+    <div class="tiptap-toolbar">
+      <button
+        type="button"
+        class="toolbar-btn"
+        [class.is-active]="isBoldActive()"
+        (click)="toggleBold()"
+        title="Negrita (Ctrl+B)"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path>
+          <path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path>
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        class="toolbar-btn"
+        [class.is-active]="isItalicActive()"
+        (click)="toggleItalic()"
+        title="Cursiva (Ctrl+I)"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="4" x2="10" y2="4"></line>
+          <line x1="14" y1="20" x2="5" y2="20"></line>
+          <line x1="15" y1="4" x2="9" y2="20"></line>
+        </svg>
+      </button>
+
+      <div class="toolbar-divider"></div>
+
+      <button
+        #emojiBtn
+        type="button"
+        class="toolbar-btn"
+        [class.is-active]="showEmojiPicker()"
+        (click)="toggleEmojiPicker($event)"
+        title="Emojis"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+          <line x1="9" y1="9" x2="9.01" y2="9"></line>
+          <line x1="15" y1="9" x2="15.01" y2="9"></line>
+        </svg>
+      </button>
+
+      <div class="toolbar-divider"></div>
+
+      <button
+        type="button"
+        class="toolbar-btn"
+        [class.is-active]="isLinkActive()"
+        (click)="toggleLink()"
+        title="Enlace"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Link Input -->
+    @if (showLinkInput()) {
+      <div class="link-input-container">
+        <input
+          type="url"
+          [value]="linkUrl()"
+          (input)="onLinkUrlChange($event)"
+          placeholder="https://ejemplo.com"
+          class="link-input"
+        />
+        <button type="button" class="link-btn confirm" (click)="confirmLink()">Aceptar</button>
+        <button type="button" class="link-btn cancel" (click)="cancelLink()">Cancelar</button>
+      </div>
+    }
+
+    <!-- TipTap -->
+    @if (editor(); as ed) {
+      <tiptap-editor [editor]="ed"></tiptap-editor>
+    }
+  }
+
+  <!-- Emoji Picker Panel (shared) -->
+  @if (showEmojiPicker()) {
+    <div class="emoji-picker-panel" [style.top.px]="emojiPickerTop()" [style.left.px]="emojiPickerLeft()">
+      <div class="emoji-search-container">
+        <input
+          type="text"
+          [value]="emojiSearchQuery()"
+          (input)="onEmojiSearch($event)"
+          placeholder="Buscar emoji..."
+          class="emoji-search-input"
+        />
+      </div>
+
+      @if (emojiSearchQuery().length >= 3) {
+        @if (emojiSearchResults().length > 0) {
+          <div class="emoji-results">
+            @for (emoji of emojiSearchResults(); track emoji.emoji) {
+              <button type="button" class="emoji-btn" (click)="addEmoji(emoji.emoji)">
+                {{ emoji.emoji }}
+              </button>
+            }
+          </div>
+        } @else {
+          <p class="no-results">Sin resultados</p>
+        }
+      } @else {
+        @for (category of emojiCategories; track category.name) {
+          <div class="mb-3 last:mb-0">
+            <p class="emoji-category-title">{{ category.name }}</p>
+            <div class="emoji-grid">
+              @for (emojiData of category.emojis; track emojiData.emoji) {
+                <button type="button" class="emoji-btn" (click)="addEmoji(emojiData.emoji)">
+                  {{ emojiData.emoji }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+</div>

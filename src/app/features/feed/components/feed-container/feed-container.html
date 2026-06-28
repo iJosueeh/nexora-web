@@ -1,20 +1,20 @@
-<section class="space-y-4 px-5 py-4">
+<section class="space-y-4 px-3 sm:px-5 py-4">
   <app-post-creator (created)="prependPost($event)" />
 
   @if (isInitialLoading()) {
     @for (item of skeletonRows; track item) {
       <article
-        class="animate-pulse rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-5"
+        class="animate-pulse rounded-2xl border border-white/5 bg-white/[0.02] p-5"
         aria-hidden="true"
       >
-        <div class="mb-4 h-4 w-40 rounded bg-[var(--brand-border)]"></div>
-        <div class="mb-2 h-3 w-full rounded bg-[var(--brand-border)]"></div>
-        <div class="mb-4 h-3 w-4/5 rounded bg-[var(--brand-border)]"></div>
-        <div class="h-52 rounded-2xl bg-[var(--brand-border)]"></div>
+        <div class="mb-4 h-4 w-40 rounded bg-white/5"></div>
+        <div class="mb-2 h-3 w-full rounded bg-white/5"></div>
+        <div class="mb-4 h-3 w-4/5 rounded bg-white/5"></div>
+        <div class="h-52 rounded-2xl bg-white/5"></div>
       </article>
     }
   } @else if (!visiblePosts().length) {
-    <div class="rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-8 text-center text-sm text-[var(--brand-muted)]">
+    <div class="rounded-2xl border border-white/5 bg-white/[0.02] p-8 text-center text-sm text-white/40">
       No hay publicaciones disponibles.
     </div>
   } @else {
@@ -22,15 +22,15 @@
       @defer (on viewport) {
         <app-post-card [post]="post" (deleted)="removePost($event)" />
       } @placeholder {
-        <article class="rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-5">
-          <div class="h-20 animate-pulse rounded bg-[var(--brand-border)]"></div>
+        <article class="rounded-2xl border border-white/5 bg-white/[0.02] p-5">
+          <div class="h-20 animate-pulse rounded bg-white/5"></div>
         </article>
       }
     }
   }
 
   @if (isLoadingMore()) {
-    <div class="py-3 text-center text-xs text-[var(--brand-muted)]">Cargando mas publicaciones...</div>
+    <div class="py-3 text-center text-xs text-white/30">Cargando mas publicaciones...</div>
   }
 
   <div #sentinel class="h-1 w-full" aria-hidden="true"></div>

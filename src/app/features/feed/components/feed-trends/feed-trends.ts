@@ -1,83 +1,103 @@
-import { Component, signal, inject, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Component, signal, inject, OnInit, DestroyRef, Directive } from '@angular/core';
+import { RouterLink, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { FeedTagsService } from '../../services/feed-tags.service';
 import { FeedService } from '../../services/feed.service';
 import { Trend, SuggestedUser } from '../../models/trend.model';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { ToastService } from '../../../../core/services/toast.service';
-import { Router } from '@angular/router';
+import { AuthSession } from '../../../../core/services/auth-session';
 
-@Component({
-  selector: 'app-feed-trends',
-  standalone: true,
-  imports: [CommonModule, RouterLink],
-  templateUrl: './feed-trends.html',
-  styleUrl: './feed-trends.css'
-})
-export class FeedTrends {
-  private readonly feedTags = inject(FeedTagsService);
-  private readonly subs = new Subscription();
-  private readonly router = inject(Router);
+@Directive()
+export abstract class FeedTrendsBase implements OnInit {
+  protected readonly feedTags = inject(FeedTagsService);
+  protected readonly router = inject(Router);
+  protected readonly feedService = inject(FeedService);
+  protected readonly profileService = inject(ProfileService);
+  protected readonly toastService = inject(ToastService);
+  protected readonly authSession = inject(AuthSession);
+  protected readonly destroyRef = inject(DestroyRef);
 
   loading = signal(true);
+  loadingSuggestions = signal(true);
   error = signal('');
-
   trends = signal<Trend[]>([]);
   suggestedUsers = signal<SuggestedUser[]>([]);
 
-  private readonly feedService = inject(FeedService);
-  private readonly profileService = inject(ProfileService);
-  private readonly toastService = inject(ToastService);
-
-  constructor() {
-    // Subscribe to trends exposed by the tags service (reusable mapping)
-    this.subs.add(
-      this.feedTags.getTrends('', 6).subscribe(
-        (mapped) => {
-          this.trends.set(mapped.slice(0, 3));
+  ngOnInit(): void {
+    // Subscribe to trends
+    this.feedTags.getTrends('', 6)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (mapped) => {
+          this.trends.set(mapped.slice(0, 5));
           this.loading.set(false);
         },
-        (err) => {
+        error: (err) => {
           console.error('Error loading trends', err);
           this.error.set('No fue posible cargar tendencias');
           this.loading.set(false);
         }
-      )
-    );
+      });
 
-    // Load suggested users dynamically from recent posts' authors
-    this.subs.add(
-      this.feedService.getPosts(20, 0).subscribe({
-        next: (posts) => {
-          const seen = new Set<string>();
-          const users: SuggestedUser[] = [];
-          for (const p of posts) {
-            const username = p.author.username ?? String(p.author.id ?? '');
-            if (!username || seen.has(username)) continue;
-            seen.add(username);
-            const avatar = p.author.avatar ?? `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(username)}`;
-            users.push({
-              id: String(p.author.id ?? username),
-              name: p.author.fullName || username,
-              role: (p.author as any).role || 'Investigador',
-              avatar,
-              isFollowing: (p.author as any).isFollowing ?? false
-            });
-            if (users.length >= 3) break;
-          }
-          this.suggestedUsers.set(users);
-        },
-        error: (err) => {
-          console.error('Error loading suggested users', err);
-        }
-      })
-    );
+    // Load suggested users with accurate following check
+    this.loadSuggestions();
   }
 
-  ngOnDestroy(): void {
-    this.subs.unsubscribe();
+  protected loadSuggestions(): void {
+    const user = this.authSession.getUser();
+    const currentUserId = user?.id;
+
+    if (!currentUserId) {
+      this.loadingSuggestions.set(false);
+      return;
+    }
+
+    this.loadingSuggestions.set(true);
+
+    forkJoin({
+      posts: this.feedService.getPosts(50, 0).pipe(catchError(() => of([]))),
+      following: this.profileService.getFollowing(currentUserId).pipe(catchError(() => of([])))
+    })
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
+      next: ({ posts, following }) => {
+        const followingIds = new Set(following.map(u => u.id));
+        const seen = new Set<string>();
+        const users: SuggestedUser[] = [];
+        
+        for (const p of posts) {
+          const author = p.author;
+          const username = author.username ?? String(author.id ?? '');
+          
+          // Exclude: self, already followed (from our fresh list), and duplicates
+          if (!username || seen.has(username)) continue;
+          if (author.id === currentUserId) continue;
+          if (followingIds.has(author.id)) continue;
+          
+          seen.add(username);
+          const avatar = author.avatar ?? `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(username)}`;
+          
+          users.push({
+            id: String(author.id ?? username),
+            name: author.fullName || username,
+            role: author.role || 'Investigador',
+            avatar,
+            isFollowing: false
+          });
+          
+          if (users.length >= 3) break;
+        }
+        this.suggestedUsers.set(users);
+        this.loadingSuggestions.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading suggested users', err);
+        this.loadingSuggestions.set(false);
+      }
+    });
   }
 
   onToggleFollow(user: SuggestedUser, event: MouseEvent): void {
@@ -118,3 +138,12 @@ export class FeedTrends {
     void this.router.navigate(['/feed'], { queryParams: { tag } });
   }
 }
+
+@Component({
+  selector: 'app-feed-trends',
+  standalone: true,
+  imports: [RouterLink],
+  templateUrl: './feed-trends.html',
+  styleUrl: './feed-trends.css'
+})
+export class FeedTrends extends FeedTrendsBase {}

@@ -11,7 +11,7 @@ describe('ResearchCard', () => {
     id: '1',
     slug: 'test-paper',
     title: 'Test Paper',
-    author: { fullName: 'Test Author' },
+    author: { id: '1', fullName: 'Test Author' },
     faculty: 'Sistemas',
     createdAt: '2024-01-01',
     summary: 'Test Summary',

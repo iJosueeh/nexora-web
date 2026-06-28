@@ -1,4 +1,5 @@
-import { Injectable, inject, signal, effect, NgZone } from '@angular/core';
+import { Injectable, inject, signal, effect, NgZone, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Apollo } from 'apollo-angular';
 import { SupabaseAuthService } from './supabase-auth.service';
 import { AuthSession } from './auth-session';
@@ -11,47 +12,63 @@ import {
   MARK_ALL_NOTIFICATIONS_AS_READ_MUTATION 
 } from '../../graphql/graphql.queries';
 
+interface NotificationPayload {
+  new: {
+    id: string;
+    user_id?: string;
+    userId?: string;
+    type: string;
+    is_read: boolean;
+    sender_id?: string;
+    senderId?: string;
+  };
+  eventType: 'INSERT' | 'UPDATE' | 'DELETE';
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationService {
-  
+  private readonly apollo = inject(Apollo);
+  private readonly supabase = inject(SupabaseAuthService);
+  private readonly authSession = inject(AuthSession);
+  private readonly toastr = inject(ToastrService);
+  private readonly ngZone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly notificationsSignal = signal<Notification[]>([]);
   private readonly unreadCountSignal = signal<number>(0);
-  private currentChannel: any = null;
+  private currentChannel: ReturnType<ReturnType<SupabaseAuthService['getClient']>['channel']> | null = null;
 
   readonly notifications = this.notificationsSignal.asReadonly();
   readonly unreadCount = this.unreadCountSignal.asReadonly();
 
-  constructor(
-    private readonly apollo: Apollo,
-    private readonly supabase: SupabaseAuthService,
-    private readonly authSession: AuthSession,
-    private readonly toastr: ToastrService,
-    private readonly ngZone: NgZone
-  ) {
+  constructor() {
     effect(() => {
-      const isTest = typeof (globalThis as any).vi !== 'undefined' || typeof (globalThis as any).describe !== 'undefined';
+      const isTest = typeof (globalThis as { vi?: unknown }).vi !== 'undefined' || typeof (globalThis as { describe?: unknown }).describe !== 'undefined';
       const user = this.authSession.user();
       const userId = user?.id;
       
       if (userId && !isTest) {
-        setTimeout(() => this.initRealtime(userId), 200);
-        this.loadInitialData();
-      } else if (userId && isTest) {
-        // En tests solo cargamos datos iniciales, no iniciamos realtime real
-        this.loadInitialData();
+        queueMicrotask(() => this.initRealtime(userId));
       } else {
         this.cleanup();
       }
-    }, { allowSignalWrites: true });
+    });
+
+    effect(() => {
+      const user = this.authSession.user();
+      if (user?.id) {
+        queueMicrotask(() => this.loadInitialData());
+      }
+    });
   }
 
   private cleanup(): void {
     if (this.currentChannel) {
-      this.supabase.getClient().removeChannel(this.currentChannel);
+      const ch = this.currentChannel;
       this.currentChannel = null;
+      this.supabase.getClient().removeChannel(ch).catch(() => undefined);
     }
     this.notificationsSignal.set([]);
     this.unreadCountSignal.set(0);
@@ -71,11 +88,12 @@ export class NotificationService {
 
     this.currentChannel = this.supabase.getClient()
       .channel(`notif-realtime-${cleanUserId}`)
-      .on('postgres_changes', { 
-        event: '*', 
+      .on('postgres_changes' as const, { 
+        event: '*' as const, 
         schema: 'public', 
         table: 'notifications'
-      }, (payload: any) => {
+      // ponytail: supabase types not matching overload, use any
+      } as never, (payload: NotificationPayload) => {
         this.ngZone.run(() => {
           const data = payload.new;
           if (data) {
@@ -88,16 +106,14 @@ export class NotificationService {
               this.fetchHistory(10, 0);
 
               if (payload.eventType === 'INSERT' && !data.is_read) {
-                const type = data.type;
-                const senderId = data.sender_id || data.senderId;
-
-                if (type === 'FOLLOW') {
-                  // Intentar obtener el username del sender desde la API si es posible, 
-                  // o mostrar un mensaje mejorado. 
-                  // Por ahora, usaremos el mensaje tipo @Username si el objeto ya viniera completo, 
-                  // pero como es Realtime de tabla pura, solo tenemos el ID.
-                  // Optaremos por un mensaje directo y recarga de datos.
+                if (data.type === 'FOLLOW') {
                   this.toastr.info('¡Tienes un nuevo seguidor!', 'Nexora Social', {
+                    timeOut: 5000,
+                    progressBar: true,
+                    positionClass: 'toast-top-right',
+                  });
+                } else if (data.type === 'GROUP_INVITATION') {
+                  this.toastr.info('¡Te invitaron a un grupo de estudio!', 'Nexora Académico', {
                     timeOut: 5000,
                     progressBar: true,
                     positionClass: 'toast-top-right',
@@ -122,7 +138,7 @@ export class NotificationService {
       query: NOTIFICATION_HISTORY_QUERY,
       variables: { limit, offset },
       fetchPolicy: 'network-only'
-    }).subscribe({
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
         if (result.data) {
           this.notificationsSignal.set(result.data.notificationHistory);
@@ -136,7 +152,7 @@ export class NotificationService {
     this.apollo.query<{ unreadNotificationsCount: number }>({
       query: UNREAD_NOTIFICATIONS_COUNT_QUERY,
       fetchPolicy: 'network-only'
-    }).subscribe({
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
         if (result.data) {
           this.unreadCountSignal.set(result.data.unreadNotificationsCount);
@@ -150,7 +166,7 @@ export class NotificationService {
     this.apollo.mutate({
       mutation: MARK_NOTIFICATION_AS_READ_MUTATION,
       variables: { notificationId }
-    }).subscribe({
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.notificationsSignal.update(list => 
           list.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
@@ -164,7 +180,7 @@ export class NotificationService {
   markAllAsRead(): void {
     this.apollo.mutate({
       mutation: MARK_ALL_NOTIFICATIONS_AS_READ_MUTATION
-    }).subscribe({
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.notificationsSignal.update(list => 
           list.map(n => ({ ...n, isRead: true }))

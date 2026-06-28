@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+.about-hero {
+  background: radial-gradient(circle at 50% -20%, rgba(223, 52, 50, 0.15), transparent 70%);
+}
+
+.team-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}

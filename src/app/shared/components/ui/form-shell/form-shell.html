@@ -1,8 +1,17 @@
-<div class="form-shell-overlay" (click)="onCancel.emit()">
-  <div class="form-shell-card" (click)="$event.stopPropagation()">
+<div class="form-shell-overlay" 
+  (click)="dismiss.emit()"
+  (keydown.escape)="dismiss.emit()"
+  tabindex="-1"
+  role="presentation">
+  <div class="form-shell-card" 
+    (click)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+    tabindex="0"
+    role="dialog"
+    aria-modal="true">
     <header class="form-shell-header">
       <h2>{{ title() }}</h2>
-      <button class="close-btn" (click)="onCancel.emit()">×</button>
+      <button class="close-btn" (click)="dismiss.emit()">×</button>
     </header>
     
     <main class="form-shell-content">
@@ -10,10 +19,10 @@
     </main>
     
     <footer class="form-shell-footer">
-      <button class="nexora-btn btn-secondary" [disabled]="loading()" (click)="onCancel.emit()">
+      <button class="nexora-btn btn-secondary" [disabled]="loading()" (click)="dismiss.emit()">
         {{ cancelLabel() }}
       </button>
-      <button class="nexora-btn btn-primary" [disabled]="loading()" (click)="onSave.emit()">
+      <button class="nexora-btn btn-primary" [disabled]="loading()" (click)="save.emit()">
         @if (loading()) {
           <span class="spinner"></span>
         } @else {

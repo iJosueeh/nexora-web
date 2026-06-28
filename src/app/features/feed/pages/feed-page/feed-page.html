@@ -1,15 +1,4 @@
-<app-shell-layout mode="feed">
-  <div shell-left>
-    <app-feed-sidebar></app-feed-sidebar>
-  </div>
-
-  <div shell-main>
-    <main class="min-h-full w-full overflow-hidden rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-black)]">
-      <app-feed-container />
-    </main>
-  </div>
-
-  <div shell-right>
-    <app-feed-trends></app-feed-trends>
-  </div>
-</app-shell-layout>
+<app-breadcrumb [items]="[]" />
+<main class="w-full rounded-2xl bg-[#0d0e12]">
+  <app-feed-container />
+</main>

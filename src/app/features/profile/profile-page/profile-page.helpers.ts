@@ -1,7 +1,8 @@
 import { AuthUser } from '../../../interfaces/auth';
 import { Post } from '../../../interfaces/feed';
+import { formatRelativeTime } from '../../../utils/date.util';
 
-export type ProfileTab = 'posts' | 'media' | 'likes';
+export type ProfileTab = 'posts' | 'media' | 'likes' | 'bookmarks' | 'invitations';
 
 export interface ProfileCard {
   id: string;
@@ -33,13 +34,28 @@ export interface ProfileViewModel extends AuthUser {
   isFollowing?: boolean;
 }
 
+export function normalizeHandle(handle: string | null | undefined): string {
+  if (!handle) return '';
+  return handle.replace(/^@/, '').trim().toLowerCase();
+}
+
+export function resolvePreferredHandle(user: { username?: string; email?: string } | null | undefined): string {
+  const username = normalizeHandle(user?.username);
+  if (username) {
+    return username;
+  }
+
+  const emailPrefix = user?.email?.split('@')[0] ?? '';
+  return normalizeHandle(emailPrefix);
+}
+
 export function buildProfileViewModel(user: AuthUser | null | undefined): ProfileViewModel {
   const email = user?.email ?? 'usuario@nexora.app';
   const baseName = user?.fullName?.trim() || user?.username?.trim() || email.split('@')[0] || 'Usuario Nexora';
   const handle = `@${(user?.username?.trim() || email.split('@')[0] || 'nexora').toLowerCase()}`;
 
   return {
-    ...(user ?? { email }),
+    ...(user ?? { id: '', email }),
     email,
     displayName: baseName,
     handle,
@@ -96,23 +112,3 @@ export function formatCompact(value: number): string {
   return value.toString();
 }
 
-export function formatRelativeTime(value: Date | string): string {
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) return 'Reciente';
-
-  const diffMs = Date.now() - date.getTime();
-  const minute = 60_000;
-  const hour = 60 * minute;
-  const day = 24 * hour;
-
-  if (diffMs < minute) return 'Hace un momento';
-  if (diffMs < hour) return `Hace ${Math.floor(diffMs / minute)} min`;
-  if (diffMs < day) return `Hace ${Math.floor(diffMs / hour)} h`;
-  if (diffMs < 7 * day) return `Hace ${Math.floor(diffMs / day)} d`;
-
-  return date.toLocaleDateString('es-PE', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}

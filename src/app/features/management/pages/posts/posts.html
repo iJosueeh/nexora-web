@@ -115,8 +115,17 @@
 
 <!-- Modal de Moderación Centrado -->
 @if (isModalOpen()) {
-  <div class="modal-overlay" (click)="closeModal()">
-    <div class="modal-content shadow-2xl" (click)="$event.stopPropagation()">
+  <div class="modal-overlay" 
+    (click)="closeModal()" 
+    (keydown.escape)="closeModal()"
+    tabindex="-1"
+    role="presentation">
+    <div class="modal-content shadow-2xl" 
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+      tabindex="0"
+      role="dialog"
+      aria-modal="true">
       <div class="modal-header">
         <div class="header-icon-container" [class.danger-mode]="modalAction() === 'delete'">
           <span class="material-symbols-outlined">

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ManagementService } from '../../services/management.service';
 import { BaseChartDirective } from 'ng2-charts';
@@ -19,21 +19,43 @@ export class DashboardView implements OnInit {
   readonly stats = this.managementService.stats;
   readonly loading = this.managementService.loading;
 
-  // Configuración de Gráfico de Líneas (Crecimiento)
-  public lineChartData: ChartConfiguration<'line'>['data'] = {
-    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-    datasets: [
-      {
-        data: [65, 59, 80, 81, 56, 55],
-        label: 'Nuevos Usuarios',
-        fill: true,
-        tension: 0.4,
-        borderColor: '#e3262e',
-        backgroundColor: 'rgba(227, 38, 46, 0.1)',
-        pointBackgroundColor: '#e3262e',
-      }
-    ]
-  };
+  // Chart Data as Computed Signals
+  readonly lineChartData = computed<ChartConfiguration<'line'>['data']>(() => {
+    const s = this.stats();
+    if (!s) return { labels: [], datasets: [] };
+
+    return {
+      labels: s.userGrowth.map(m => m.label),
+      datasets: [
+        {
+          data: s.userGrowth.map(m => m.value),
+          label: 'Usuarios Totales',
+          fill: true,
+          tension: 0.4,
+          borderColor: '#e3262e',
+          backgroundColor: 'rgba(227, 38, 46, 0.1)',
+          pointBackgroundColor: '#e3262e',
+        }
+      ]
+    };
+  });
+
+  readonly pieChartData = computed<ChartConfiguration<'doughnut'>['data']>(() => {
+    const s = this.stats();
+    if (!s || !s.careerDistribution.length) {
+       return { labels: ['Sin Datos'], datasets: [{ data: [1], backgroundColor: ['#1d2432'] }] };
+    }
+
+    return {
+      labels: s.careerDistribution.map(m => m.category),
+      datasets: [{
+        data: s.careerDistribution.map(m => m.count),
+        backgroundColor: ['#e3262e', '#1d2432', '#9aa3b2', '#4c566a', '#3b4252'],
+        hoverBackgroundColor: ['#f02d36', '#2a3447', '#cbd5e1', '#5e6a7c', '#434c5e'],
+        borderWidth: 0
+      }]
+    };
+  });
 
   public lineChartOptions: ChartOptions<'line'> = {
     responsive: true,
@@ -48,17 +70,6 @@ export class DashboardView implements OnInit {
         ticks: { color: '#9aa3b2' }
       }
     }
-  };
-
-  // Configuración de Gráfico de Pastel (Distribución)
-  public pieChartData: ChartConfiguration<'doughnut'>['data'] = {
-    labels: ['Investigaciones', 'Eventos', 'Social'],
-    datasets: [{
-      data: [300, 150, 100],
-      backgroundColor: ['#e3262e', '#1d2432', '#9aa3b2'],
-      hoverBackgroundColor: ['#f02d36', '#2a3447', '#cbd5e1'],
-      borderWidth: 0
-    }]
   };
 
   public pieChartOptions: ChartOptions<'doughnut'> = {

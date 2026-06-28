@@ -1,3 +1,7 @@
+:host {
+  display: block;
+}
+
 .management-layout {
   display: grid;
   grid-template-columns: 280px 1fr;
@@ -5,6 +9,35 @@
   background-color: var(--brand-black);
   color: var(--brand-text);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Mobile hamburger */
+.mobile-menu-btn {
+  display: none;
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 60;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background: rgba(13, 17, 25, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--brand-border);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mobile-menu-btn:hover {
+  background: rgba(13, 17, 25, 1);
+  border-color: var(--brand-red);
+}
+
+.sidebar-backdrop {
+  display: none;
 }
 
 .management-sidebar {
@@ -18,6 +51,13 @@
 
 .sidebar-header {
   padding: 2.5rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-close-btn {
+  display: none;
 }
 
 .logo-container {
@@ -194,12 +234,81 @@
   border-radius: 10px;
 }
 
+/* Mobile responsive */
 @media (max-width: 1024px) {
   .management-layout {
     grid-template-columns: 1fr;
   }
-  
+
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 40;
+  }
+
   .management-sidebar {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    z-index: 50;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .management-sidebar.open {
+    left: 0;
+  }
+
+  .sidebar-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--brand-muted);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .sidebar-close-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+  }
+
+  .content-header {
+    padding-left: 3.5rem;
+    height: 64px;
+  }
+
+  .content-body {
+    padding: 1.5rem;
+  }
+
+  .user-info {
     display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .content-header {
+    padding: 0 1rem 0 3.5rem;
+  }
+
+  .content-body {
+    padding: 1rem;
+  }
+
+  .header-breadcrumb {
+    font-size: 0.75rem;
   }
 }

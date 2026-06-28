@@ -1,105 +1,89 @@
-<section class="rounded-[30px] border border-[var(--brand-border)] bg-[var(--brand-surface)] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.35)] lg:p-8">
-  <!-- User Input Section -->
-  <div class="flex items-start gap-5 md:gap-6">
+<section class="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/5 p-3 sm:p-6 md:p-8">
+  <!-- User Row -->
+  <div class="flex items-center gap-3">
     <img
       [src]="userAvatar()"
       [alt]="userName()"
-      class="h-12 w-12 flex-shrink-0 rounded-full border border-[var(--brand-border)] object-cover"
+      class="h-10 w-10 flex-shrink-0 rounded-full border border-white/10 object-cover"
     />
-
-    <div class="min-w-0 flex-1 space-y-4">
-      <label class="sr-only" for="publication-title">Publication title</label>
-      <input
-        id="publication-title"
-        type="text"
-        [value]="title()"
-        (input)="updateTitle($event)"
-        placeholder="Título de la publicación"
-        class="w-full bg-transparent text-[22px] font-semibold leading-tight tracking-[-0.02em] text-[var(--brand-text)] placeholder:text-[#6e6270] focus:outline-none"
-      />
-
-      <label class="sr-only" for="publication-description">Publication description</label>
-      <textarea
-        id="publication-description"
-        rows="5"
-        [value]="description()"
-        (input)="updateDescription($event)"
-        placeholder="Describe la publicación, novedades, hallazgos o contexto..."
-        class="min-h-[140px] w-full resize-none bg-transparent text-[18px] font-medium leading-8 tracking-[-0.02em] text-[var(--brand-text)] placeholder:text-[#6e6270] focus:outline-none"
-      ></textarea>
-
-      @if (extractedTags().length > 0 && selectedTags().length === 0) {
-        <div class="mt-3 flex flex-wrap gap-2">
-          <span class="text-xs text-[#8b7f8a]">Auto-detected:</span>
-          @for (tag of extractedTags(); track tag) {
-            <span
-              class="inline-block rounded-full bg-[rgba(255,70,82,0.15)] px-3 py-1 text-xs font-medium text-[#ff4652]"
-            >
-              {{ tag }}
-            </span>
-          }
-        </div>
-      }
-    </div>
+    <span class="text-sm font-medium text-white/80 truncate">{{ userName() }}</span>
   </div>
 
-  <!-- Media Dropzone -->
-  <div class="mt-8">
-    <app-publication-media-dropzone (filesSelected)="updateAttachments($event)" />
+  <!-- Title -->
+  <div class="mt-4">
+    <label class="sr-only" for="publication-title">Título de la publicación</label>
+    <input
+      id="publication-title"
+      type="text"
+      [value]="title()"
+      (input)="updateTitle($event)"
+      placeholder="Un título impactante..."
+      class="w-full bg-transparent text-lg sm:text-2xl font-bold tracking-tight text-white placeholder:text-white/30 focus:outline-none"
+    />
   </div>
 
-  <div class="mt-8 flex flex-wrap items-end justify-between gap-4">
-    <app-publication-action-chips (actionsChanged)="updateActions($event)" />
-
-    <div class="flex flex-wrap items-center gap-3">
-      <app-publication-visibility-selector [value]="visibility()" (visibilityChanged)="updateVisibility($event)" />
-
-      <button
-        type="button"
-        (click)="publish()"
-        [disabled]="!canPublish()"
-        class="inline-flex items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#ff4652,#d71f2c)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-white shadow-[0_18px_40px_rgba(215,31,44,0.34)] transition-all hover:translate-y-[-1px] hover:shadow-[0_20px_45px_rgba(215,31,44,0.42)] disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        Publicar
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="m5 12h14"></path>
-          <path d="m13 6 6 6-6 6"></path>
-        </svg>
-      </button>
-    </div>
+  <!-- Editor -->
+  <div class="mt-3">
+    <label class="sr-only" for="publication-description">Descripción de la publicación</label>
+    <app-rich-text-editor
+      [content]="description()"
+      (contentChange)="updateDescription($event)"
+      (pasteWithImages)="handlePastedImages($event)"
+    />
   </div>
 
-  @if (isTagsOpen() || isLocationOpen()) {
-    <div class="mt-6 grid gap-4 md:grid-cols-2">
-      @if (isTagsOpen()) {
-        <app-publication-tags-select
-          [selectedTagsInput]="selectedTags()"
-          (tagsChanged)="updateSelectedTags($event)"
-        />
-      }
-
-      @if (isLocationOpen()) {
-        <app-publication-location-select
-          [value]="location()"
-          (locationChanged)="updateLocation($event)"
-        />
+  <!-- Extracted Tags -->
+  @if (extractedTags().length > 0 && selectedTags().length === 0) {
+    <div class="mt-3 flex flex-wrap gap-2">
+      <span class="text-xs text-white/40">Detectado:</span>
+      @for (tag of extractedTags(); track tag) {
+        <span class="inline-block rounded-full bg-[#df3432]/20 px-3 py-1 text-xs font-medium text-[#df3432]">
+          {{ tag }}
+        </span>
       }
     </div>
   }
 
-  <!-- Disclaimer -->
-  <p class="mt-8 text-[11px] text-[#6a6261]">
+  <!-- Media Dropzone -->
+  <div class="mt-6">
+    <app-publication-media-dropzone (filesSelected)="updateAttachments($event)" (uploadingChanged)="setUploading($event)" />
+  </div>
+
+  <!-- Action Chips -->
+  <div class="mt-6">
+    <app-publication-action-chips (actionsChanged)="updateActions($event)" />
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <app-publication-visibility-selector [value]="visibility()" (visibilityChanged)="updateVisibility($event)" />
+
+    <button
+      type="button"
+      (click)="publish()"
+      [disabled]="!canPublish()"
+      class="group relative w-full sm:w-auto rounded-2xl bg-gradient-to-r from-[#df3432] to-[#b82a29] px-6 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-white shadow-[0_0_20px_rgba(223,52,50,0.4)] transition-all hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(223,52,50,0.6)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+    >
+      Publicar
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="m5 12h14"></path>
+        <path d="m13 6 6 6-6 6"></path>
+      </svg>
+    </button>
+  </div>
+
+  @if (isTagsOpen() || isLocationOpen()) {
+    <div class="mt-6 grid gap-4 sm:grid-cols-2">
+      @if (isTagsOpen()) {
+        <app-publication-tags-select [selectedTagsInput]="selectedTags()" (tagsChanged)="updateSelectedTags($event)" />
+      }
+      @if (isLocationOpen()) {
+        <app-publication-location-select [value]="location()" (locationChanged)="updateLocation($event)" />
+      }
+    </div>
+  }
+
+  <p class="mt-6 text-[11px] text-white/30">
     Las publicaciones se adhieren a la Política de Integridad de la Universidad.
   </p>
 </section>

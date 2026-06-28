@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, inject } from '@angular/core';
-import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { provideRouter, withInMemoryScrolling, withPreloading, PreloadAllModules } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideToastr } from 'ngx-toastr';
 
@@ -19,7 +19,10 @@ import { environment } from '../environments/environment';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top', anchorScrolling: 'enabled' })),
+    provideRouter(routes,
+      withInMemoryScrolling({ scrollPositionRestoration: 'top', anchorScrolling: 'enabled' }),
+      withPreloading(PreloadAllModules),
+    ),
     provideAnimations(),
     provideToastr({
       timeOut: 3500,
@@ -44,7 +47,10 @@ export const appConfig: ApplicationConfig = {
       const supabaseAuth = inject(SupabaseAuthService);
 
       const authLink = setContext(async (_, context) => {
-        const liveTokens = await supabaseAuth.getValidTokens();
+        const liveTokens = await Promise.race([
+          supabaseAuth.getValidTokens(),
+          new Promise<null>(resolve => setTimeout(() => resolve(null), 5000)),
+        ]);
         const accessToken = liveTokens?.accessToken ?? authSession.getTokens()?.accessToken;
 
         if (!accessToken) {
@@ -61,7 +67,17 @@ export const appConfig: ApplicationConfig = {
 
       return {
         link: from([authLink, httpLink.create({ uri: graphqlUrl })]),
-        cache: new InMemoryCache(),
+        cache: new InMemoryCache({
+          typePolicies: {
+            Query: {
+              fields: {
+                groupInvitations: {
+                  merge(_existing, incoming) { return incoming; },
+                },
+              },
+            },
+          },
+        }),
       };
     }),
   ],

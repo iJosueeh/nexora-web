@@ -1,23 +1,34 @@
-<section class="mb-4 space-y-3 rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-4">
-  <div class="flex flex-wrap items-center gap-2">
+<section class="mb-4 space-y-3 rounded-2xl bg-white/[0.03] p-4">
+  <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
     @for (tab of tabs; track tab) {
       <button
         type="button"
         (click)="activeTab.set(tab)"
-        class="rounded-full px-4 py-1.5 text-xs font-semibold transition-colors"
-        [class.bg-[var(--brand-red)]]="activeTab() === tab"
+        class="flex-shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200 whitespace-nowrap"
+        [class.bg-[#df3432]]="activeTab() === tab"
         [class.text-white]="activeTab() === tab"
-        [class.bg-black/20]="activeTab() !== tab"
-        [class.text-[var(--brand-muted)]]="activeTab() !== tab"
+        [class.bg-white/5]="activeTab() !== tab"
+        [class.text-white/50]="activeTab() !== tab"
+        [class.hover:bg-white/10]="activeTab() !== tab"
       >
         {{ tab }}
       </button>
     }
   </div>
 
-  <div class="flex items-start gap-3 rounded-xl border border-[var(--brand-border)] bg-black/20 p-3">
-    <div class="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--brand-red)]/20 text-xs font-bold text-[var(--brand-red)]">
-      YO
+  <div class="flex items-start gap-3 rounded-2xl bg-white/[0.03] p-3 border border-white/10 relative">
+    @if (hasDraft()) {
+      <button
+        type="button"
+        (click)="discardDraft()"
+        class="absolute top-2 right-2 text-[10px] text-white/30 hover:text-white/60 transition-colors uppercase tracking-wider"
+        title="Descartar borrador"
+      >
+        Borrador · x
+      </button>
+    }
+    <div class="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-white/10 bg-[#df3432]/10">
+      <img [src]="userAvatar()" alt="Mi perfil" class="h-full w-full object-cover" />
     </div>
     <div class="flex-1">
       <label class="sr-only" for="quick-post-title">Titulo de la publicacion</label>
@@ -27,26 +38,43 @@
         [value]="quickTitle()"
         (input)="updateTitle($event)"
         placeholder="Título (opcional)"
-        class="mb-2 w-full bg-transparent text-sm font-semibold text-[var(--brand-text)] placeholder:text-[var(--brand-muted)] outline-none"
+        class="mb-2 w-full bg-transparent text-sm font-semibold text-white placeholder:text-white/30 outline-none"
       />
 
-      <label class="sr-only" for="quick-post-description">Descripcion de la publicacion</label>
-      <textarea
-        id="quick-post-description"
-        rows="2"
-        [value]="quickDescription()"
-        (input)="updateDescription($event)"
-        placeholder="Descripción: comparte algo con tu comunidad..."
-        class="w-full resize-none bg-transparent text-sm text-[var(--brand-text)] placeholder:text-[var(--brand-muted)] outline-none"
-      ></textarea>
+      <div class="relative">
+        <textarea
+          id="quick-post-description"
+          rows="3"
+          [value]="quickDescription()"
+          (input)="updateDescription($event)"
+          (paste)="onPaste($event)"
+          placeholder="Descripción: comparte algo con tu comunidad..."
+          class="w-full resize-none bg-transparent pr-11 text-sm text-white placeholder:text-white/30 outline-none"
+        ></textarea>
+        <div class="absolute bottom-1 right-1">
+          <app-emoji-picker-mini (emojiSelected)="addEmoji($event)" />
+        </div>
+      </div>
+
+      @if (attachments().length > 0) {
+        <div class="mt-2 flex flex-wrap gap-2">
+          @for (file of attachments(); track file.name) {
+            <span class="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[10px] text-white/60">
+              {{ file.name }}
+              <button type="button" class="text-white/40 hover:text-white" (click)="removeAttachment($index)">x</button>
+            </span>
+          }
+        </div>
+      }
+
       <div class="mt-2 flex items-center justify-between">
-        <p class="text-[11px] uppercase tracking-wide text-[var(--brand-muted)]">
+        <p class="text-[11px] uppercase tracking-wide text-white/30">
           Vista: {{ activeTab() }}
         </p>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <a
-            routerLink="/publicar"
-            class="rounded-full border border-[var(--brand-border)] bg-black/20 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-[var(--brand-muted)] transition-colors hover:text-[var(--brand-text)]"
+            routerLink="/feed/publicar"
+            class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-white/50 transition-all duration-200 hover:bg-white/10 hover:text-white/70"
           >
             Completo
           </a>
@@ -54,7 +82,7 @@
             type="button"
             (click)="publish()"
             [disabled]="!canPublish()"
-            class="rounded-full bg-[var(--brand-red)] px-4 py-2 text-xs font-semibold text-white transition-colors enabled:hover:bg-[#f13a43] disabled:cursor-not-allowed disabled:opacity-40"
+            class="rounded-full bg-[#df3432] px-4 py-2 text-xs font-semibold text-white transition-all duration-200 hover:brightness-110 hover:shadow-[0_0_12px_rgba(223,52,50,0.4)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
           >
             @if (isSubmitting()) {
               Publicando...
