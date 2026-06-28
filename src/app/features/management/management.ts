@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, NavigationEnd, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { PermissionService } from '../../core/services/permission.service';
 
 @Component({
@@ -12,6 +13,10 @@ import { PermissionService } from '../../core/services/permission.service';
 })
 export class ManagementPage {
   readonly permissionService = inject(PermissionService);
+  private readonly router = inject(Router);
+
+  readonly isSidebarOpen = signal(false);
+  readonly currentPath = signal(this.router.url);
 
   readonly menuItems = [
     { label: 'Dashboard', icon: 'dashboard', path: './dashboard' },
@@ -21,10 +26,30 @@ export class ManagementPage {
     { label: 'Mantenimiento', icon: 'settings', path: './maintenance', roles: ['ROLE_ADMIN'] },
   ];
 
+  readonly currentLabel = computed(() => {
+    const path = this.currentPath();
+    const item = this.menuItems.find(i => path.includes(i.path.replace('./', '')));
+    return item?.label ?? 'Dashboard';
+  });
+
+  constructor() {
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe(e => this.currentPath.set(e.urlAfterRedirects));
+  }
+
   filterMenuItems() {
     return this.menuItems.filter(item => {
       if (!item.roles) return true;
       return item.roles.some(role => this.permissionService.hasRole(role));
     });
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarOpen.update(v => !v);
+  }
+
+  closeSidebar(): void {
+    this.isSidebarOpen.set(false);
   }
 }

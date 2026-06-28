@@ -12,7 +12,6 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-height: 320px; /* Asegura un tamaño consistente */
 }
 
 .mod-card:hover {
@@ -51,12 +50,19 @@
 }
 
 .post-thumb-container {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   border-radius: 1rem;
   overflow: hidden;
   background: var(--brand-border);
   flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .post-thumb-container {
+    width: 100px;
+    height: 100px;
+  }
 }
 
 .post-thumb {
@@ -175,4 +181,25 @@
 .header-icon-container.danger-mode {
   background: rgba(227, 38, 46, 0.1);
   color: var(--brand-red);
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .mod-card {
+    padding: 1rem;
+  }
+
+  .mod-card-content {
+    gap: 0.75rem;
+  }
+
+  .mod-card-actions {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+  }
+
+  .mod-btn {
+    padding: 0.625rem;
+    font-size: 0.7rem;
+  }
 }

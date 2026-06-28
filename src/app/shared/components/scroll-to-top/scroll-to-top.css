@@ -32,3 +32,9 @@
   background-color: #ee4542;
   box-shadow: 0 0 20px rgba(223, 52, 50, 0.4);
 }
+
+@media (max-width: 1023px) {
+  .scroll-btn {
+    bottom: 5rem;
+  }
+}

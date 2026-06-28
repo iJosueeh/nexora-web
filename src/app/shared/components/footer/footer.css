@@ -1,11 +1,14 @@
 .app-footer {
-	position: relative;
-	z-index: 1;
+  position: relative;
+  z-index: 1;
 }
 
 @media (min-width: 1024px) {
-	.footer--feed {
-		margin-left: 16rem;
-		margin-right: 20rem;
-	}
+  .footer--feed {
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }

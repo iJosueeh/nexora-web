@@ -5,6 +5,7 @@ import { AuthSession } from '../../../../../../core/services/auth-session';
 import { of, throwError } from 'rxjs';
 import { provideRouter, Router } from '@angular/router';
 import { Component } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({ template: '', standalone: true })
 class DummyComponent {}
@@ -18,6 +19,7 @@ describe('EventCreateForm', () => {
   beforeEach(async () => {
     eventServiceSpy = { createEvent: vi.fn().mockReturnValue(of({ id: '1', slug: 'test' })) };
     authSpy = { isAuthenticated: vi.fn().mockReturnValue(true) };
+    const toastrSpy = { success: vi.fn(), error: vi.fn(), info: vi.fn(), warning: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [EventCreateForm],
@@ -27,6 +29,7 @@ describe('EventCreateForm', () => {
         ]),
         { provide: EventService, useValue: eventServiceSpy },
         { provide: AuthSession, useValue: authSpy },
+        { provide: ToastrService, useValue: toastrSpy },
       ]
     }).compileComponents();
 
@@ -81,7 +84,7 @@ describe('EventCreateForm', () => {
     expect(eventServiceSpy.createEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         title: 'Test Event',
-        date: '2025-01-01T10:00',
+        date: expect.stringContaining('2025-01-01'),
         description: 'A description',
         location: 'Location',
         category: 'Taller',

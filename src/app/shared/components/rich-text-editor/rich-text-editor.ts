@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input, output, signal, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, inject, input, output, signal, ViewChild, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
@@ -7,6 +7,8 @@ import Link from '@tiptap/extension-link';
 
 import { TiptapEditorDirective } from 'ngx-tiptap';
 import { EmojiData, emojiCategories, quickEmojis, searchEmojis } from './emoji-data';
+
+const MOBILE_BREAKPOINT = 640;
 
 @Component({
   selector: 'app-rich-text-editor',
@@ -24,6 +26,8 @@ export class RichTextEditorComponent implements OnInit, OnDestroy {
 
   private readonly cdr = inject(ChangeDetectorRef);
 
+  @ViewChild('emojiBtn') emojiBtnRef!: ElementRef<HTMLButtonElement>;
+
   readonly editor = signal<Editor | null>(null);
   readonly showEmojiPicker = signal(false);
   readonly emojiSearchQuery = signal('');
@@ -31,9 +35,14 @@ export class RichTextEditorComponent implements OnInit, OnDestroy {
   readonly showLinkInput = signal(false);
   readonly linkUrl = signal('');
 
+  readonly emojiPickerTop = signal(0);
+  readonly emojiPickerLeft = signal(0);
+
   readonly isBoldActive = signal(false);
   readonly isItalicActive = signal(false);
   readonly isLinkActive = signal(false);
+
+  readonly isMobile = signal(false);
 
   readonly quickEmojis = quickEmojis;
   readonly emojiCategories = emojiCategories;
@@ -59,6 +68,39 @@ export class RichTextEditorComponent implements OnInit, OnDestroy {
   ];
 
   ngOnInit(): void {
+    this.checkMobile();
+    window.addEventListener('resize', this._onResize);
+
+    if (!this.isMobile()) {
+      this.initEditor();
+    }
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('resize', this._onResize);
+    this.editor()?.destroy();
+  }
+
+  private readonly _onResize = (): void => {
+    const wasMobile = this.isMobile();
+    this.checkMobile();
+
+    if (wasMobile !== this.isMobile()) {
+      if (this.isMobile()) {
+        this.editor()?.destroy();
+        this.editor.set(null);
+      } else {
+        this.initEditor();
+      }
+      this.cdr.markForCheck();
+    }
+  };
+
+  private checkMobile(): void {
+    this.isMobile.set(window.innerWidth < MOBILE_BREAKPOINT);
+  }
+
+  private initEditor(): void {
     const e = new Editor({
       extensions: this.extensions,
       content: this.content(),
@@ -98,10 +140,6 @@ export class RichTextEditorComponent implements OnInit, OnDestroy {
     this.editor.set(e);
   }
 
-  ngOnDestroy(): void {
-    this.editor()?.destroy();
-  }
-
   private _syncActiveStates(): void {
     const e = this.editor();
     if (!e) return;
@@ -109,6 +147,15 @@ export class RichTextEditorComponent implements OnInit, OnDestroy {
     this.isItalicActive.set(e.isActive('italic'));
     this.isLinkActive.set(e.isActive('link'));
   }
+
+  /* ─── Mobile textarea ─── */
+
+  onMobileInput(event: Event): void {
+    const target = event.target as HTMLTextAreaElement;
+    this.contentChange.emit(target.value);
+  }
+
+  /* ─── Desktop toolbar ─── */
 
   toggleBold(): void {
     this.editor()?.chain().focus().toggleBold().run();
@@ -157,8 +204,20 @@ export class RichTextEditorComponent implements OnInit, OnDestroy {
     this.linkUrl.set(target?.value ?? '');
   }
 
-  toggleEmojiPicker(): void {
+  toggleEmojiPicker(event: MouseEvent): void {
+    event.stopPropagation();
+
+    if (!this.showEmojiPicker()) {
+      const btn = this.emojiBtnRef?.nativeElement;
+      if (btn) {
+        const rect = btn.getBoundingClientRect();
+        this.emojiPickerTop.set(rect.bottom + 4);
+        this.emojiPickerLeft.set(rect.left);
+      }
+    }
+
     this.showEmojiPicker.update(v => !v);
+
     if (!this.showEmojiPicker()) {
       this.emojiSearchQuery.set('');
       this.emojiSearchResults.set([]);
@@ -192,4 +251,15 @@ export class RichTextEditorComponent implements OnInit, OnDestroy {
     this.activeEmojiCategory.set(categoryName);
   }
 
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.showEmojiPicker()) {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.emoji-picker-panel') && !this.emojiBtnRef?.nativeElement?.contains(target)) {
+        this.showEmojiPicker.set(false);
+        this.emojiSearchQuery.set('');
+        this.emojiSearchResults.set([]);
+      }
+    }
+  }
 }

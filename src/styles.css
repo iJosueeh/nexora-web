@@ -19,6 +19,11 @@ body {
 	color: var(--brand-text);
 }
 
+button,
+[role="button"] {
+	cursor: pointer;
+}
+
 /* Utility: hide scrollbar but keep functionality */
 .nexora-scrollbar-hidden {
 	-ms-overflow-style: none;

@@ -50,6 +50,9 @@
   text-decoration: none;
   transition: color 0.2s ease, background-color 0.2s ease;
   min-width: 3.5rem;
+  border: none;
+  background: none;
+  cursor: pointer;
 }
 
 .mobile-bottom-nav-item:hover {
@@ -145,4 +148,135 @@
 
 .mobile-bottom-nav-fab:active {
   transform: scale(0.95);
+}
+
+/* More Menu Popup */
+.more-menu-container {
+  position: relative;
+}
+
+.more-menu-popup {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 0.5rem;
+  width: 220px;
+  background: rgba(20, 21, 26, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  animation: popupSlideUp 0.2s ease-out;
+}
+
+@keyframes popupSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.more-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+}
+
+.more-menu-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid rgba(223, 52, 50, 0.4);
+  flex-shrink: 0;
+}
+
+.more-menu-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.more-menu-user {
+  min-width: 0;
+}
+
+.more-menu-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #f4f5f7;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.more-menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 0;
+}
+
+.more-menu-nav {
+  padding: 0.375rem 0;
+}
+
+.more-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.more-menu-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f4f5f7;
+}
+
+.more-menu-item svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.more-menu-item:hover svg {
+  opacity: 1;
+}
+
+.more-menu-footer {
+  padding: 0.375rem 0;
+}
+
+.more-menu-logout {
+  color: #f1b0aa;
+}
+
+.more-menu-logout:hover {
+  background: rgba(223, 52, 50, 0.1);
+  color: #ff6b6b;
+}
+
+.more-menu-logout svg {
+  color: #f1b0aa;
+}
+
+.more-menu-logout:hover svg {
+  color: #ff6b6b;
 }

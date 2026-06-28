@@ -47,6 +47,22 @@ const mockCategories = [
   { id: 'c1', name: 'Sistemas', career: { id: 'car1', name: 'Ingeniería' } },
 ];
 
+// Ensure IntersectionObserver is available in the test environment
+// (the global mock in test-setup.ts may not always reach this spec)
+if (typeof IntersectionObserver === 'undefined') {
+  const mockObserver = { observe: vi.fn(), unobserve: vi.fn(), disconnect: vi.fn(), takeRecords: vi.fn().mockReturnValue([]) };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (globalThis as any).IntersectionObserver = class {
+    observe = mockObserver.observe;
+    unobserve = mockObserver.unobserve;
+    disconnect = mockObserver.disconnect;
+    takeRecords = mockObserver.takeRecords;
+    root = null;
+    rootMargin = '0px';
+    thresholds = [];
+  };
+}
+
 describe('ExplorarPage', () => {
   let component: ExplorarPage;
   let fixture: ComponentFixture<ExplorarPage>;

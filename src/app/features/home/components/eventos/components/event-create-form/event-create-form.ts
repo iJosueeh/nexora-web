@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { EventService } from '../../services/event.service';
 import { CreateEventInput } from '../../interfaces/event.model';
 import { AuthSession } from '../../../../../../core/services/auth-session';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-event-create-form',
@@ -18,6 +19,7 @@ export class EventCreateForm {
   private readonly eventService = inject(EventService);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthSession);
+  private readonly toastr = inject(ToastrService);
 
   readonly cancelled = output<void>();
   readonly created = output<void>();
@@ -38,6 +40,12 @@ export class EventCreateForm {
   readonly isSubmitting = signal(false);
   readonly error = signal('');
 
+  private formatDateToIso(dateStr: string): string {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toISOString();
+  }
+
   submit(): void {
     if (!this.auth.isAuthenticated()) {
       this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
@@ -55,7 +63,7 @@ export class EventCreateForm {
     const input: CreateEventInput = {
       title: this.title(),
       description: this.description() || undefined,
-      date: this.date(),
+      date: this.formatDateToIso(this.date()),
       location: this.location() || undefined,
       category: this.category(),
       image: this.image() || undefined,
@@ -67,13 +75,16 @@ export class EventCreateForm {
     };
 
     this.eventService.createEvent(input).subscribe({
-      next: () => {
+      next: (result) => {
         this.isSubmitting.set(false);
-        this.created.emit();
+        if (result && result.id) {
+          this.created.emit();
+        }
       },
       error: (err) => {
         this.isSubmitting.set(false);
         this.error.set(err?.message || 'Error al crear el evento');
+        this.toastr.error(err?.message || 'Error al crear el evento', 'Error');
       }
     });
   }
