@@ -123,6 +123,7 @@ export class Login {
 
       if (response.user?.profileComplete === false && !isManagementUser) {
         this.toastr.info('Completa tu perfil academico para continuar.', 'Perfil incompleto');
+        sessionStorage.setItem('nexora.register.resume', 'true');
         this.router.navigate(['/register']);
         return;
       }
@@ -135,7 +136,7 @@ export class Login {
       } else {
         this.router.navigate(['/feed']);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (sessionStarted) {
         this.authSession.clear();
         await this.supabaseAuth.signOut().catch(() => undefined);

@@ -2,13 +2,14 @@ import { Component, signal, inject, OnInit, DestroyRef, Directive } from '@angul
 import { RouterLink, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { FeedTagsService } from '../../services/feed-tags.service';
 import { FeedService } from '../../services/feed.service';
 import { Trend, SuggestedUser } from '../../models/trend.model';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AuthSession } from '../../../../core/services/auth-session';
+import { InvitationService } from '../../../groups/services/invitation.service';
 
 @Directive()
 export abstract class FeedTrendsBase implements OnInit {
@@ -18,6 +19,7 @@ export abstract class FeedTrendsBase implements OnInit {
   protected readonly profileService = inject(ProfileService);
   protected readonly toastService = inject(ToastService);
   protected readonly authSession = inject(AuthSession);
+  protected readonly invitationService = inject(InvitationService);
   protected readonly destroyRef = inject(DestroyRef);
 
   loading = signal(true);
@@ -90,8 +92,32 @@ export abstract class FeedTrendsBase implements OnInit {
           
           if (users.length >= 3) break;
         }
-        this.suggestedUsers.set(users);
-        this.loadingSuggestions.set(false);
+
+        if (users.length > 0) {
+          this.suggestedUsers.set(users);
+          this.loadingSuggestions.set(false);
+          return;
+        }
+
+        // Fallback: discover users from backend when posts don't yield suggestions
+        const excludeIds = Array.from(followingIds).concat(currentUserId).filter((id): id is string => !!id);
+        this.invitationService.discoverUsers(excludeIds).subscribe({
+          next: (discovered) => {
+            const fallback: SuggestedUser[] = discovered.slice(0, 3).map(u => ({
+              id: u.userId,
+              name: u.fullName || u.username,
+              role: 'Investigador',
+              avatar: u.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(u.username)}`,
+              isFollowing: false
+            }));
+            this.suggestedUsers.set(fallback);
+            this.loadingSuggestions.set(false);
+          },
+          error: () => {
+            this.suggestedUsers.set([]);
+            this.loadingSuggestions.set(false);
+          }
+        });
       },
       error: (err) => {
         console.error('Error loading suggested users', err);

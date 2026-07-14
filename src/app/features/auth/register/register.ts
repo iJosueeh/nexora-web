@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, DestroyRef, inject, OnInit } from '
 import { FormBuilder, ReactiveFormsModule, FormGroup, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Subject, debounceTime } from 'rxjs';
+import { Subject, debounceTime, firstValueFrom } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AuthSession } from '../../../core/services/auth-session';
@@ -100,6 +100,8 @@ export class Register implements OnInit {
   readonly backDisabled = this.state.backDisabled;
 
   ngOnInit(): void {
+    void this.tryResumeIncompleteRegistration();
+
     void loadRegistrationCatalogs(this);
     restoreDraft(this);
     startDraftCountdown(this);
@@ -111,6 +113,39 @@ export class Register implements OnInit {
     this.draftSave$
       .pipe(debounceTime(250), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => persistDraft(this));
+  }
+
+  private async tryResumeIncompleteRegistration(): Promise<void> {
+    const resumeFlag = sessionStorage.getItem('nexora.register.resume');
+    const hasSession = this.authSession.isAuthenticated();
+
+    if (!resumeFlag && !hasSession) return;
+
+    // Si viene de login con perfil incompleto, usar las credenciales de la sesión
+    if (resumeFlag) {
+      sessionStorage.removeItem('nexora.register.resume');
+    }
+
+    if (!this.authSession.getTokens()?.accessToken) return;
+
+    try {
+      const response = await firstValueFrom(this.authApi.getSessionProfile());
+      if (!response || response.user?.profileComplete !== false) return;
+
+      // Pre-poblar formulario con datos existentes del backend
+      const user = response.user;
+      if (user.username) this.identityForm.controls.username.setValue(user.username);
+      if (user.fullName) this.identityForm.controls.fullName.setValue(user.fullName);
+      if (user.career) this.identityForm.controls.career.setValue(user.career);
+      if (user.bio) this.preferencesForm.controls.bio.setValue(user.bio);
+      if (user.academicInterests?.length) {
+        this.preferencesForm.controls.selectedInterests.setValue([...user.academicInterests]);
+      }
+
+      this.currentStep.set(2);
+    } catch {
+      // Si falla getSessionProfile, seguir con el flujo normal
+    }
   }
 
   nextStep(): void { nextStep(this); }
