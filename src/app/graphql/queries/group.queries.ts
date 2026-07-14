@@ -257,3 +257,14 @@ export const SEARCH_USERS_QUERY = gql`
     }
   }
 `;
+
+export const DISCOVER_USERS_QUERY = gql`
+  query DiscoverUsers($excludeUserIds: [ID!]) {
+    discoverUsers(excludeUserIds: $excludeUserIds) {
+      userId
+      username
+      fullName
+      avatarUrl
+    }
+  }
+`;
