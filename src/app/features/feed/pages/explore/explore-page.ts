@@ -15,6 +15,7 @@ import { PostCardComponent } from '../../components/post-card/post-card';
 import { AuthSession } from '../../../../core/services/auth-session';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { UserSuggestCard } from '../../../../features/home/components/explorar/components/user-suggest-card/user-suggest-card';
+import { InvitationService } from '../../../groups/services/invitation.service';
 
 @Directive()
 export abstract class ExplorePageBase implements OnInit {
@@ -23,6 +24,7 @@ export abstract class ExplorePageBase implements OnInit {
   protected readonly paginationQueue = inject(FeedPaginationQueueService);
   protected readonly authSession = inject(AuthSession);
   protected readonly profileService = inject(ProfileService);
+  protected readonly invitationService = inject(InvitationService);
   protected readonly destroyRef = inject(DestroyRef);
   protected readonly route = inject(ActivatedRoute);
 
@@ -192,7 +194,26 @@ export abstract class ExplorePageBase implements OnInit {
             isFollowing: false
           });
         }
-        this.suggestedUsers.set(users);
+        if (users.length > 0) {
+          this.suggestedUsers.set(users);
+          return;
+        }
+
+        // Fallback: discover users from backend
+        const excludeIds = Array.from(followingIds).concat(user.id).filter((id): id is string => !!id);
+        this.invitationService.discoverUsers(excludeIds).subscribe({
+          next: (discovered) => {
+            const fallback: SuggestedUser[] = discovered.slice(0, 5).map(u => ({
+              id: u.userId,
+              name: u.fullName || u.username,
+              role: 'Investigador',
+              avatar: u.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(u.username)}`,
+              isFollowing: false
+            }));
+            this.suggestedUsers.set(fallback);
+          },
+          error: () => this.suggestedUsers.set([])
+        });
       });
     });
   }

@@ -10,7 +10,8 @@ import {
   GROUP_INVITATIONS_QUERY,
   CANCEL_INVITATION_MUTATION,
   SEARCH_USERS_QUERY,
-} from '../../../graphql/graphql.queries';
+  DISCOVER_USERS_QUERY,
+} from '../../../graphql/queries/group.queries';
 
 export interface GroupInvitation {
   invitationId: string;
@@ -44,6 +45,10 @@ interface GroupInvitationsQueryResponse {
 
 interface SearchUsersQueryResponse {
   searchUsers: UserSearchResult[];
+}
+
+interface DiscoverUsersQueryResponse {
+  discoverUsers: UserSearchResult[];
 }
 
 interface InviteMutationResponse {
@@ -101,6 +106,19 @@ export class InvitationService {
       distinctUntilChanged(),
       switchMap((query) => this.searchUsers(query)),
     );
+  }
+
+  discoverUsers(excludeUserIds: string[] = []): Observable<UserSearchResult[]> {
+    return this.apollo
+      .query<DiscoverUsersQueryResponse>({
+        query: DISCOVER_USERS_QUERY,
+        variables: { excludeUserIds: excludeUserIds.length > 0 ? excludeUserIds : null },
+        fetchPolicy: 'network-only',
+      })
+      .pipe(
+        map((result) => result.data?.discoverUsers ?? []),
+        catchError(() => of([]))
+      );
   }
 
   inviteMember(groupId: string, username: string): Observable<GroupInvitation> {

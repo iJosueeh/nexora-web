@@ -7,6 +7,7 @@ import { provideRouter } from '@angular/router';
 import { AuthSession } from '../../../core/services/auth-session';
 import { ProfileService } from '../../profile/services/profile.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { InvitationService } from '../../groups/services/invitation.service';
 import { TestBed } from '@angular/core/testing';
 import { signal, DestroyRef } from '@angular/core';
 
@@ -54,6 +55,10 @@ describe('FeedTrends Logic', () => {
       show: vi.fn()
     };
 
+    const mockInvitationService: Partial<InvitationService> = {
+      discoverUsers: () => of([])
+    };
+
     await TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
@@ -63,6 +68,7 @@ describe('FeedTrends Logic', () => {
         { provide: ProfileService, useValue: mockProfileService },
         { provide: ToastService, useValue: mockToastService },
         { provide: DestroyRef, useValue: { onDestroy: () => {} } },
+        { provide: InvitationService, useValue: mockInvitationService },
         TestFeedTrends
       ]
     });

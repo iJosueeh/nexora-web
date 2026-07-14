@@ -22,9 +22,52 @@ export async function submitAccountStep(ctx: RegisterContext): Promise<void> {
     ctx.queueDraftSave();
     ctx.toastr.success('Revisa tu correo para validar la cuenta y continuar.', 'Correo enviado');
   } catch (error) {
+    // Usuario ya registrado: intentar login y saltar a completar perfil
+    if (ctx.supabaseAuth.isUserAlreadyConfirmedOrRegisteredError(error)) {
+      await handleAlreadyRegisteredUser(ctx, email, password);
+      return;
+    }
+
     ctx.toastr.error(ctx.supabaseAuth.toHumanErrorMessage(error), 'Registro detenido');
   } finally {
     ctx.isLoading.set(false);
+  }
+}
+
+async function handleAlreadyRegisteredUser(
+  ctx: RegisterContext,
+  email: string,
+  password: string
+): Promise<void> {
+  try {
+    const result = await ctx.supabaseAuth.signInWithEmail(email, password);
+    ctx.authSession.start({ user: result.user, tokens: result.tokens }, false);
+
+    const response = await firstValueFrom(ctx.authApi.getSessionProfile());
+    if (response?.user?.profileComplete === false) {
+      // Pre-poblar con datos existentes y saltar al paso de identidad
+      const user = response.user;
+      if (user.username) ctx.identityForm.controls.username.setValue(user.username);
+      if (user.fullName) ctx.identityForm.controls.fullName.setValue(user.fullName);
+      if (user.career) ctx.identityForm.controls.career.setValue(user.career);
+      if (user.bio) ctx.preferencesForm.controls.bio.setValue(user.bio);
+      if (user.academicInterests?.length) {
+        ctx.preferencesForm.controls.selectedInterests.setValue([...user.academicInterests]);
+      }
+      ctx.currentStep.set(2);
+      ctx.toastr.info('Completa tu perfil académico para continuar.', 'Perfil incompleto');
+      return;
+    }
+
+    // Perfil ya completo: redirigir a feed
+    ctx.toastr.success('Tu cuenta ya estaba registrada.', 'Bienvenido de nuevo');
+    ctx.router.navigate(['/feed']);
+  } catch {
+    ctx.toastr.info(
+      'Este correo ya está registrado. Inicia sesión para continuar.',
+      'Cuenta existente'
+    );
+    ctx.router.navigate(['/login']);
   }
 }
 
