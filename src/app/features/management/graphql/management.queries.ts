@@ -191,3 +191,15 @@ export const DELETE_EVENT_MUTATION = `
     eliminarEvento(eventId: $id)
   }
 `;
+
+export const PROMOTE_USER_MUTATION = `
+  mutation PromoteUser($userId: ID!, $role: UserRole!) {
+    promoteUser(userId: $userId, role: $role) {
+      id
+      username
+      fullName
+      career
+      email
+    }
+  }
+`;

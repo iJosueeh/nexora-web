@@ -54,16 +54,14 @@ describe('ManagementService', () => {
     expect(service.loading()).toBe(false);
   });
 
-  it('should load users and append them when requested', () => {
+  it('should load users and append them when requested', async () => {
     const initialUsers = [{ id: '1', fullName: 'User 1' }];
     const newUsers = [{ id: '2', fullName: 'User 2' }];
 
-    // Mock initial state
     service.users.set(initialUsers as any);
-
     httpClientSpy.post.mockReturnValue(of({ data: { allUsers: newUsers } }));
 
-    service.loadUsers(10, 0, true);
+    await firstValueFrom(service.loadUsers(10, 0, true));
 
     expect(service.users().length).toBe(2);
     expect(service.users()[1].fullName).toBe('User 2');
