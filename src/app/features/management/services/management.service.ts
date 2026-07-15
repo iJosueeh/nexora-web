@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, tap, finalize } from 'rxjs';
 import { GRAPHQL_URL } from '../../../core/tokens/api-endpoints.token';
 import { Post } from '../../../interfaces/feed/post.model';
 import {
@@ -9,6 +9,7 @@ import {
   GET_CATALOGS, CREATE_FACULTY, UPDATE_FACULTY, DELETE_FACULTY, CREATE_COURSE,
   UPDATE_COURSE, DELETE_COURSE, CREATE_INTEREST, UPDATE_INTEREST, DELETE_INTEREST,
   GET_ADMIN_EVENTS, CREATE_EVENT_MUTATION, UPDATE_EVENT_MUTATION, DELETE_EVENT_MUTATION,
+  PROMOTE_USER_MUTATION,
 } from '../graphql/management.queries';
 import {
   AdminStats, UserProfile, Faculty, Course, AcademicInterest, AdminEvent,
@@ -87,21 +88,22 @@ export class ManagementService {
       });
   }
 
-  loadUsers(limit = 20, offset = 0, append = false, search = ''): void {
+  loadUsers(limit = 20, offset = 0, append = false, search = ''): Observable<UserProfile[]> {
     this.loading.set(true);
-    this.http.post<GqlRes<{ allUsers: UserProfile[] }>>(this.graphqlUrl, {
+    return this.http.post<GqlRes<{ allUsers: UserProfile[] }>>(this.graphqlUrl, {
       query: GET_ALL_USERS, variables: { limit, offset, search },
-    }).pipe(map(r => {
-      if (!r.data) throw new Error(r.errors?.[0]?.message || 'Error GQL');
-      return r.data.allUsers;
-    })).subscribe({
-      next: (data) => {
+    }).pipe(
+      map(r => {
+        if (!r.data) throw new Error(r.errors?.[0]?.message || 'Error GQL');
+        return r.data.allUsers;
+      }),
+      tap(data => {
         if (append) this.users.update(c => [...c, ...data]);
         else this.users.set(data);
-        this.loading.set(false);
-      },
-      error: () => { if (!append) this.users.set([]); this.loading.set(false); },
-    });
+      }),
+      catchError(() => { this.users.set([]); return []; }),
+      finalize(() => this.loading.set(false)),
+    );
   }
 
   loadPosts(limit = 10, offset = 0, append = false): void {
@@ -170,5 +172,12 @@ export class ManagementService {
       if (!r.data) throw new Error('Error GQL');
       return r.data.updateProfileAdmin;
     }));
+  }
+
+  promoteUser(userId: string, role: string): Observable<unknown> {
+    return this.http.post(this.graphqlUrl, {
+      query: PROMOTE_USER_MUTATION,
+      variables: { userId, role },
+    });
   }
 }
