@@ -66,13 +66,13 @@ export class UsersView implements OnInit, OnDestroy {
 
   loadInitialUsers(): void {
     this.currentOffset.set(0);
-    this.managementService.loadUsers(this.LIMIT, 0, false, this.searchTerm());
+    this.managementService.loadUsers(this.LIMIT, 0, false, this.searchTerm()).subscribe();
   }
 
   loadMoreUsers(): void {
     const nextOffset = this.currentOffset() + this.LIMIT;
     this.currentOffset.set(nextOffset);
-    this.managementService.loadUsers(this.LIMIT, nextOffset, true, this.searchTerm());
+    this.managementService.loadUsers(this.LIMIT, nextOffset, true, this.searchTerm()).subscribe();
   }
 
   openConfirmModal(user: UserProfile, action: 'activate' | 'deactivate'): void {
@@ -133,7 +133,7 @@ export class UsersView implements OnInit, OnDestroy {
     const isActive = this.modalAction() === 'activate';
     this.managementService.updateUserStatus(user.id, isActive).subscribe({
       next: () => {
-        this.managementService.loadUsers(this.LIMIT, this.currentOffset(), false, this.searchTerm());
+        this.managementService.loadUsers(this.LIMIT, this.currentOffset(), false, this.searchTerm()).subscribe();
         this.closeModal();
       },
       error: (err) => {
