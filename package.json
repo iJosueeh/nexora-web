@@ -37,6 +37,7 @@
     "apollo-angular": "^13.0.0",
     "chart.js": "^4.5.1",
     "graphql": "^16",
+    "jspdf": "^4.2.1",
     "ng2-charts": "^10.0.0",
     "ngx-tiptap": "^14.0.1",
     "ngx-toastr": "^20.0.5",

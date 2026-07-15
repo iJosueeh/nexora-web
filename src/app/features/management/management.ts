@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { PermissionService } from '../../core/services/permission.service';
+import { SupabaseAuthService } from '../../core/services/supabase-auth.service';
 
 @Component({
   selector: 'app-management',
@@ -14,6 +15,7 @@ import { PermissionService } from '../../core/services/permission.service';
 export class ManagementPage {
   readonly permissionService = inject(PermissionService);
   private readonly router = inject(Router);
+  private readonly authService = inject(SupabaseAuthService);
 
   readonly isSidebarOpen = signal(false);
   readonly currentPath = signal(this.router.url);
@@ -51,5 +53,10 @@ export class ManagementPage {
 
   closeSidebar(): void {
     this.isSidebarOpen.set(false);
+  }
+
+  async signOut(): Promise<void> {
+    await this.authService.signOut();
+    this.router.navigate(['/login']);
   }
 }
